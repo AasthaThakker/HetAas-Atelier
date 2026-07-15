@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HetAas Atelier - Handmade Resin Treasures</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Floating Navigation Bar Wrapper -->
+    <div class="header-wrapper">
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <a href="#home">
+                        <h1>HetAas Atelier</h1>
+                        <p>Resin Art</p>
+                    </a>
+                </div>
+                <nav class="nav">
+                    <a href="#products" class="nav-link">Shop All</a>
+                    <a href="#customizer" class="nav-link">Collections</a>
+                    <!-- <a href="#about" class="nav-link">About</a> -->
+                    <a href="#faq" class="nav-link">Contact</a>
+                </nav>
+                <!-- Header Icons Menu (Search, Account, Cart) -->
+                <div class="nav-icons">
+                    <!-- Search Icon Button -->
+                    <button class="nav-icon-btn" id="searchBtn" aria-label="Search Shop">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                    <!-- Account Icon Button -->
+                    <button class="nav-icon-btn" id="profileBtn" aria-label="Profile Account">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <!-- Cart Icon Button -->
+                    <div class="nav-cart-btn-wrapper">
+                        <button class="nav-icon-btn" id="navCartBtn" aria-label="Open Basket">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </button>
+                        <span class="cart-badge" id="cartBadgeCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Hero Section with organic double-bordered wavy glass panel (Bokeh backdrop) -->
+    <section id="home" class="hero">
+        <div class="hero-sparkle sparkle-1">✨</div>
+        <div class="hero-sparkle sparkle-2">🌸</div>
+        <div class="hero-sparkle sparkle-3">✨</div>
+        <div class="hero-sparkle sparkle-4">💖</div>
+        
+        <!-- Organic Wavy Glass Card (Static - First Card Does Not Move) -->
+        <div class="hero-glass-panel">
+            <h2>Handmade Resin Treasures</h2>
+            
+            <p class="subtext">Capture nature's beauty in timeless resin art, crafted with love.</p>
+            
+            <!-- Atelier Dictionary Meaning Subtext -->
+            <p style="font-size: 0.78rem; color: var(--color-secondary); opacity: 0.9; max-width: 480px; font-style: italic; margin-top: -0.6rem; line-height: 1.45;">
+                <strong>Atelier</strong> /a·tel·ier/ (noun): An artist's workshop or studio. Step into our space where raw resin transforms into handcrafted botanical treasures.
+            </p>
+            
+            <a href="#products" class="cta-button">Shop the Collection</a>
+
+            <!-- Pink Puddle Resin Drop on bottom-left -->
+            <div class="hero-resin-blob"></div>
+
+            <!-- Sparkles inside the panel -->
+            <div class="hero-sparkle" style="top: 15px; left: 20px;">✨</div>
+            <div class="hero-sparkle" style="top: 30px; right: 25px;">✨</div>
+
+            <!-- Decorative Botanical SVGs inside the panel (Growing from bottom-left & bottom-right edges) -->
+            <svg class="hero-deco-plant hero-deco-left" viewBox="0 0 100 150" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width: 42px; height: auto;">
+                <path d="M50,140 Q55,100 50,20" />
+                <path d="M50,110 Q25,100 20,90 C15,80 30,70 50,90" />
+                <path d="M50,80 Q75,70 80,60 C85,50 70,40 50,60" />
+                <path d="M50,50 Q30,40 25,30 C20,20 35,15 50,35" />
+            </svg>
+            <svg class="hero-deco-plant hero-deco-right" viewBox="0 0 100 150" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width: 42px; height: auto;">
+                <path d="M50,140 Q45,100 50,25" />
+                <path d="M50,115 Q75,105 80,95 C85,85 70,75 50,95" />
+                <path d="M50,85 Q25,75 20,65 C15,55 30,45 50,65" />
+                <path d="M50,55 Q70,45 75,35 C80,25 65,20 50,40" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Our Collection</h2>
+            <p class="section-subtitle">Pick from our pre-designed creations or open quick details for care guides</p>
+            
+            <!-- Category Filter -->
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">Shop All</button>
+                <button class="filter-btn" data-filter="Earrings">Earrings</button>
+                <button class="filter-btn" data-filter="Coasters">Coasters</button>
+                <button class="filter-btn" data-filter="Bookmarks">Bookmarks</button>
+                <button class="filter-btn" data-filter="Keychains">Keychains</button>
+                <button class="filter-btn" data-filter="Decor">Decor</button>
+                <button class="filter-btn" data-filter="Spiritual">Spiritual</button>
+                <button class="filter-btn" data-filter="Bowls">Bowls</button>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsGrid">
+                <div class="loading">Loading products...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Customizer Section -->
+    <section id="customizer" class="customizer-section">
+        <div class="container">
+            <h2 class="section-title">Custom Design Studio</h2>
+            <p class="section-subtitle">Choose your options below to design your bespoke resin treasure!</p>
+            
+            <div class="customizer-container">
+                <div class="customizer-steps">
+                    <!-- Step 1: Base Shape -->
+                    <div class="step-group">
+                        <h3 class="step-title"><span>1</span> Choose Base Resin Item</h3>
+                        <div class="options-grid" id="baseItemGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Background Color (Free Selection) -->
+                    <div class="step-group">
+                        <h3 class="step-title"><span>2</span> Choose Resin Tint / Color</h3>
+                        <div class="options-grid" id="bgStyleGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Botanical Inclusions & Foils -->
+                    <div class="step-group">
+                        <h3 class="step-title"><span>3</span> Add Florals & Foils</h3>
+                        <div class="options-grid" id="inclusionsGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Metallic Name Sticker Toggle (+₹90) -->
+                    <div class="step-group">
+                        <h3 class="step-title"><span>4</span> Add Name Customization</h3>
+                        <div class="sticker-checkbox-container" id="stickerCheckboxContainer">
+                            <input type="checkbox" id="addStickerCheckbox">
+                            <div class="sticker-checkbox-text">
+                                <h4>Add Metallic Name Sticker (+₹90)</h4>
+                                <p>We embed shiny golden custom letters inside the cured resin</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Input Text for name -->
+                    <div class="step-group">
+                        <h3 class="step-title"><span>5</span> Type Personalization Name</h3>
+                        <input type="text" id="customText" class="custom-input-text" placeholder="Check Step 4 to type initials or name..." maxlength="15" disabled>
+                    </div>
+                </div>
+
+                <!-- Customizer Live Preview panel -->
+                <div class="customizer-preview">
+                    <div>
+                        <h3 class="preview-title">Design Summary 🌸</h3>
+                        <div class="preview-detail-list" id="previewDetailList">
+                            <!-- Dynamic preview elements -->
+                        </div>
+                    </div>
+                    
+                    <div class="customizer-price-footer">
+                        <div class="custom-price-row">
+                            <span class="custom-price-label">Item Total:</span>
+                            <span class="custom-price-val" id="customPrice">₹249</span>
+                        </div>
+                        <button class="add-custom-btn" id="addCustomBtn">
+                            Add Custom Item to Basket
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section - Small, Cute, and Simple (Commented for now)
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <h2>About HetAas Atelier</h2>
+                <p>We handcraft botanical keepsakes and decorative resin art directly in Ahmedabad, Gujarat. Each product blends high-grade crystal-clear resin with beautifully preserved organic dried flowers, sparkles, and foil accents, curing over several days into a unique work of art.</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <span class="feature-icon">✨</span>
+                        <h3>Handcrafted locally</h3>
+                        <p>Poured and polished with care in Ahmedabad.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌸</span>
+                        <h3>Dried Botanicals</h3>
+                        <p>Real organic flowers sealed in gloss.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎨</span>
+                        <h3>Made to Order</h3>
+                        <p>Tailored options for colors and initials.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- Interactive FAQ & Care Guide Section -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Order Policies & FAQs</h2>
+            <p class="section-subtitle">Please read our shipping, return, and creation guidelines below.</p>
+            
+            <div class="faq-container">
+                <!-- FAQ 1 -->
+                <div class="faq-card">
+                    <div class="faq-question">
+                        <span>How do I place an order?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Add your desired items (either standard shop items or customized creations) to your <strong>Resin Basket</strong>. When ready, open the basket and click checkout. You can choose to order via <strong>Instagram DM</strong> or <strong>WhatsApp</strong>. This copies a fully detailed order list to your clipboard so you can paste and send it directly!
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ 2 -->
+                <div class="faq-card">
+                    <div class="faq-question">
+                        <span>What are the payment and refund rules?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We accept <strong>pre-paid orders only</strong>. Since all items are handcrafted and customized specifically for you, <strong>no returns, refunds, or exchanges are accepted</strong>.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-card">
+                    <div class="faq-question">
+                        <span>How long does it take to make customized items?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Resin curing is a slow, artistic process. It takes around <strong>4 to 6 days</strong> to design, pour, bubble-pop, and fully cure a customized order before it can be collected or dispatched.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-card">
+                    <div class="faq-question">
+                        <span>What is the shipping policy?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We do not offer free shipping. Customers in Ahmedabad can arrange a self-pickup. If you want us to ship anywhere else across India, the <strong>delivery costs must be borne entirely by the buyer</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Happy Customers Section -->
+    <section class="reviews-section" id="reviews">
+        <div class="container">
+            <h2 class="section-title">Happy Customers</h2>
+            <p class="section-subtitle">Hear what others say about their resin treasures!</p>
+            
+            <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); border-radius: 28px; padding: 3rem 2rem; max-width: 600px; margin: 0 auto; text-align: center; box-shadow: var(--box-shadow);">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 0.8rem;">✨✍️🌸</span>
+                <h3 style="font-family: var(--font-primary); font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 0.5rem;">Reviews Coming Soon!</h3>
+                <p style="font-size: 0.85rem; color: var(--color-secondary); line-height: 1.5; margin: 0;">We are currently collecting feedback from our early Ahmedabad patrons. Check back soon to see what others love about our botanical resin creations!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 HetAas Atelier. All rights reserved.</p>
+            <p>Handcrafted locally in Ahmedabad, Gujarat, India 🎨✨</p>
+            <p>DM orders: <a href="https://instagram.com/hetaas.atelier" target="_blank">@hetaas.atelier</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Basket Trigger Button -->
+    <button class="floating-cart-trigger" id="floatingCartBtn" aria-label="Open Basket">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="floating-cart-badge" id="floatingCartBadgeCount">0</span>
+    </button>
+
+    <!-- Resin Basket Drawer (Slide-out Cart) -->
+    <div class="cart-drawer-overlay" id="cartDrawerOverlay">
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Your Basket
+                </h2>
+                <button class="close-drawer-btn" id="closeDrawerBtn" aria-label="Close basket">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="cart-items-container" id="cartItemsContainer">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="cart-notes-wrapper">
+                <label for="cartNotes">Special Instructions / Custom Notes:</label>
+                <textarea id="cartNotes" class="cart-notes-input" placeholder="E.g., custom colors, packaging requests..."></textarea>
+            </div>
+
+            <div class="cart-footer">
+                <div class="cart-summary-row">
+                    <span class="cart-total-label">Basket Total:</span>
+                    <span class="cart-total-val" id="cartTotal">₹0</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn">
+                    Place Order via Instagram DM 🌸
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Quick View Modal -->
+    <div class="modal-overlay" id="quickViewOverlay">
+        <div class="modal-container">
+            <button class="modal-close-btn" id="closeModalBtn" aria-label="Close details">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-body" id="modalBodyContent">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Search Bar Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box-container">
+            <div class="search-input-row">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchBarInput" class="search-bar-input" placeholder="Search creations (e.g. Earrings, Coasters)..." autofocus>
+            </div>
+            <div class="search-results-list" id="searchResultsList">
+                <!-- Dynamic search results -->
+            </div>
+            <span class="search-close-btn" id="closeSearchBtn">Close Search</span>
+        </div>
+    </div>
+
+    <!-- Checkout Clipboard Instructions Dialog Box -->
+    <div class="checkout-popup-overlay" id="checkoutPopupOverlay">
+        <div class="checkout-popup">
+            <span class="checkout-popup-icon">📋✨</span>
+            <h3>Order Details Copied!</h3>
+            <p>Your order list and policies have been copied to your clipboard. Send this message to our DMs to confirm! 🌸</p>
+            <div class="checkout-code-box" id="checkoutCodeBox">
+                <!-- Formatted order text here -->
+            </div>
+            
+            <div class="checkout-popup-buttons">
+                <!-- Instagram DM Button -->
+                <button class="checkout-popup-btn" id="checkoutGoBtn">
+                    Send to Instagram DM
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+                <!-- WhatsApp Option Button -->
+                <button class="checkout-popup-btn whatsapp-btn" id="checkoutWaBtn">
+                    Order via WhatsApp
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer">
+        <span id="toastIcon">🌸</span>
+        <span id="toastMessage">Added to your basket!</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

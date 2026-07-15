@@ -1,0 +1,148 @@
+{
+  "products": [
+    {
+      "id": 9,
+      "name": "Handmade Studs Set",
+      "category": "Earrings",
+      "price": 180,
+      "image": "images/earrings-studs.jpg",
+      "description": "Charming studs: circular yellow floral & trapezoidal pink glitter designs"
+    },
+    {
+      "id": 10,
+      "name": "Yellow Oval Dangles",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-yellow-oval.jpg",
+      "description": "Delicate yellow botanical petals embedded in oval transparent resin loops"
+    },
+    {
+      "id": 11,
+      "name": "Sparkly Green Circles",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-green-circles.jpg",
+      "description": "Three-tier cascading sparkly emerald green circles with gold dust accents"
+    },
+    {
+      "id": 12,
+      "name": "Emerald Monstera Leaves",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-green-leaves.jpg",
+      "description": "Detailed tropical monstera leaf dangles with green sparkles and shine"
+    },
+    {
+      "id": 13,
+      "name": "Bubbly Flower Earrings",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-bubbly-flower.jpg",
+      "description": "Charming rectangular dangles with embedded green blossoms and tiny bubbles"
+    },
+    {
+      "id": 14,
+      "name": "Golden Butterfly Keychain",
+      "category": "Keychains",
+      "price": 180,
+      "image": "images/keychain-gold-butterfly.jpg",
+      "description": "Delicate golden butterfly keychain embedded with dried blossoms and golden flakes"
+    },
+    {
+      "id": 15,
+      "name": "Amber Butterfly Keychain",
+      "category": "Keychains",
+      "price": 180,
+      "image": "images/keychain-brown-butterfly.jpg",
+      "description": "Warm amber-brown butterfly keychain with a matching leaf inclusion"
+    },
+    {
+      "id": 16,
+      "name": "Citrus Butterfly Keychain",
+      "category": "Keychains",
+      "price": 180,
+      "image": "images/keychain-green-butterfly.jpg",
+      "description": "Vibrant yellow-green butterfly keychain decorated with white baby's breath"
+    },
+    {
+      "id": 17,
+      "name": "Pink Shimmer Butterfly Keychain",
+      "category": "Keychains",
+      "price": 180,
+      "image": "images/keychain-pink-butterfly.jpg",
+      "description": "Whimsical pink and lavender butterfly keychain accented with shiny diamantes"
+    },
+    {
+      "id": 18,
+      "name": "Teal Butterfly Keychain",
+      "category": "Keychains",
+      "price": 180,
+      "image": "images/keychain-teal-butterfly.jpg",
+      "description": "Stunning teal and turquoise butterfly keychain with a deep blue body"
+    },
+    {
+      "id": 19,
+      "name": "Blue Flower Dangles",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-blue-flowers.jpg",
+      "description": "Delightful two-tier blue flower resin dangles with white dots and pearls"
+    },
+    {
+      "id": 20,
+      "name": "Red Sparkle Twin Set",
+      "category": "Earrings",
+      "price": 220,
+      "image": "images/earrings-red-twins.jpg",
+      "description": "Double pair combo set: glittery red teardrops and matching oval loops (4 earrings total)"
+    },
+    {
+      "id": 21,
+      "name": "Red Sparkle Rectangle Frames",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-red-parent.jpg",
+      "description": "Bold rectangular frames filled with shimmering red glitter"
+    },
+    {
+      "id": 22,
+      "name": "Multicolor Petal Drops",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-multicolor-petal.jpg",
+      "description": "Beautiful transparent teardrops embedded with colorful dried botanical leaves"
+    },
+    {
+      "id": 23,
+      "name": "Ocean Sea Coaster (Single)",
+      "category": "Coasters",
+      "price": 250,
+      "image": "images/coasters-sea.jpg",
+      "description": "Single wavy-edged ocean-themed coaster with real seashells, sand, pearls, and resin waves"
+    },
+    {
+      "id": 24,
+      "name": "Ocean Sea Coasters (Pair)",
+      "category": "Coasters",
+      "price": 450,
+      "image": "images/coasters-sea.jpg",
+      "description": "Set of 2 wavy-edged ocean-themed coasters with real seashells, sand, pearls, and resin waves"
+    },
+    {
+      "id": 25,
+      "name": "Turtle Ocean Decor Plate (8-inch)",
+      "category": "Decor",
+      "price": 700,
+      "image": "images/decor-turtle-plate.jpg",
+      "description": "Stunning 8-inch wavy-edged ocean-themed decor plate with sand, seashells, and swimming sea turtle"
+    },
+    {
+      "id": 26,
+      "name": "Purple Shimmer Coaster",
+      "category": "Coasters",
+      "price": 250,
+      "image": "images/coasters-purple-shimmer.jpg",
+      "description": "Beautiful wavy-edged coaster styled with deep pink and purple glitter swirls"
+    }
+  ]
+}
