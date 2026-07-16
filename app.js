@@ -240,6 +240,94 @@ async function loadProducts() {
                 "price": 250,
                 "image": "images/coasters-purple-shimmer.jpg",
                 "description": "Beautiful wavy-edged coaster styled with deep pink and purple glitter swirls"
+            },
+            {
+                "id": 27,
+                "name": "Magenta Floral Teardrops",
+                "category": "Earrings",
+                "price": 120,
+                "image": "images/earrings-magenta-teardrops.jpg",
+                "description": "Elegant gold-framed teardrop earrings with a shimmery magenta pink base, a band of gold foil, and dried orange blossoms in clear resin"
+            },
+            {
+                "id": 28,
+                "name": "Pastel Rainbow Sprinkles Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-rainbow.jpg",
+                "description": "Playful clear resin bookmark containing colorful pastel sprinkles and a cute rainbow decal, complete with a white ribbon tassel"
+            },
+            {
+                "id": 29,
+                "name": "Crimson Marble Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-crimson-marble.jpg",
+                "description": "Stunning resin bookmark featuring elegant swirls of crimson red, soft pink, and white marble patterns, complete with a red ribbon tassel"
+            },
+            {
+                "id": 30,
+                "name": "Emerald & Gold Wave Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-green-gold.jpg",
+                "description": "Scenic resin bookmark with a mint green base transitioning into white waves and clear resin with gold foil, finished with a golden heart symbol and green ribbon tassel"
+            },
+            {
+                "id": 31,
+                "name": "Ocean Beach Shells Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-ocean-shells.jpg",
+                "description": "Beautiful ocean-themed bookmark featuring a blue sky, teal sea, crashing white waves, and real sand with embedded seashells, complete with a teal ribbon tassel"
+            },
+            {
+                "id": 32,
+                "name": "Iridescent Butterfly Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-butterfly-custom.jpg",
+                "description": "Charming iridescent pink and white bookmark featuring a bold black butterfly design and 'crush' lettering, complete with a red ribbon tassel"
+            },
+            {
+                "id": 33,
+                "name": "Colorful Smiley Beads Coaster",
+                "category": "Coasters",
+                "price": 250,
+                "image": "images/coasters-beads-smiley.jpg",
+                "description": "Whimsical clear round resin coaster filled with vibrant colorful beads, patterned tubes, and a cheerful central smiley-face heart"
+            },
+            {
+                "id": 34,
+                "name": "Sparkly Mint Bunny Coaster",
+                "category": "Coasters",
+                "price": 250,
+                "image": "images/coasters-mint-sprinkles.jpg",
+                "description": "Delightful mint green sparkly resin coaster decorated with colorful confetti sprinkles and adorable little cartoon rabbit faces"
+            },
+            {
+                "id": 35,
+                "name": "Custom Purple Butterfly Coaster",
+                "category": "Coasters",
+                "price": 250,
+                "image": "images/coasters-purple-butterfly-hetal.jpg",
+                "description": "Elegant purple shimmer coaster featuring a wavy scalloped border, a golden butterfly decal, and custom 'HETAL' golden lettering"
+            },
+            {
+                "id": 36,
+                "name": "2-in-1 Purple Star & Galaxy Pendant",
+                "category": "Pendants",
+                "price": 100,
+                "image": "images/pendant-purple-2in1.jpg",
+                "description": "Handcrafted double-sided resin pendant (2-in-1 design) featuring shimmery purple with teal star outlines on one side and a textured cosmic galaxy streak on the other"
+            },
+            {
+                "id": 37,
+                "name": "Emerald Shimmer Pendants",
+                "category": "Pendants",
+                "price": 100,
+                "image": "images/pendants-green-shimmer.jpg",
+                "description": "Handcrafted resin pendants with a green jade-like shimmer. Available in Kite, Oval, and Diamond shapes (₹100 each)"
             }
         ];
     }
@@ -695,6 +783,11 @@ function getResinCareTips(category) {
             dimensions: 'Size: 5.5 x 1 inch. Includes decorative tassel.',
             care: 'Avoid bending or loading under heavy objects. Keep out of extreme heat.'
         };
+    } else if (category === 'Pendants') {
+        return {
+            dimensions: 'Size: Approx 1.5 - 2 inches. Elegant and lightweight.',
+            care: 'Keep in a soft pouch when not wearing. Avoid spraying perfumes or chemicals directly on the resin.'
+        };
     } else {
         return {
             dimensions: 'Size: Handcrafted sizing details vary per creation.',
@@ -997,19 +1090,11 @@ function initUIHandlers() {
     document.getElementById('checkoutBtn').onclick = handleCheckout;
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
-    
     document.getElementById('checkoutGoBtn').onclick = () => {
         popupOverlay.classList.remove('open');
-        window.open('https://instagram.com/hetaas.atelier', '_blank');
+        window.open('https://ig.me/m/aastha.thakker', '_blank');
     };
-    
-    document.getElementById('checkoutWaBtn').onclick = () => {
-        popupOverlay.classList.remove('open');
-        const codeBox = document.getElementById('checkoutCodeBox');
-        const messageText = codeBox.textContent;
-        const waUrl = `https://wa.me/919999999999?text=${encodeURIComponent(messageText)}`;
-        window.open(waUrl, '_blank');
-    };
+
     
     popupOverlay.onclick = (e) => {
         if (e.target === popupOverlay) {
