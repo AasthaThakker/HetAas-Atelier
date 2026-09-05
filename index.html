@@ -123,6 +123,19 @@
         </div>
     </section>
 
+    <!-- Thin Trust Bar -->
+    <div class="trust-bar">
+        <div class="container trust-bar-content">
+            <div class="trust-item"><span>🔒</span> Pre-Paid & Secure Orders</div>
+            <div class="trust-divider">•</div>
+            <div class="trust-item"><span>🚚</span> Gujarat Shipping</div>
+            <div class="trust-divider">•</div>
+            <div class="trust-item"><span>⭐</span> 50+ Happy Patrons</div>
+            <div class="trust-divider">•</div>
+            <div class="trust-item"><span>📍</span> Handcrafted in Ahmedabad</div>
+        </div>
+    </div>
+
     <!-- Products Section -->
     <section id="products" class="products-section">
         <div class="container">
@@ -223,34 +236,38 @@
         </div>
     </section>
 
-    <!-- About Section - Small, Cute, and Simple (Commented for now)
+    <!-- About Section / Handmade Story Strip -->
     <section id="about" class="about-section">
         <div class="container">
-            <div class="about-content">
-                <h2>About HetAas Atelier</h2>
-                <p>We handcraft botanical keepsakes and decorative resin art directly in Ahmedabad, Gujarat. Each product blends high-grade crystal-clear resin with beautifully preserved organic dried flowers, sparkles, and foil accents, curing over several days into a unique work of art.</p>
+            <div class="about-card">
+                <span class="about-badge">✨ Handmade Story</span>
+                <h2 class="section-title" style="margin-bottom: 0.4rem;">Why HetAas Atelier?</h2>
+                <p class="section-subtitle" style="margin-bottom: 1.8rem;">Poured & polished with love in Ahmedabad, Gujarat since 2022</p>
+                
+                <div class="about-story-text">
+                    Born out of a deep love for botanical art, <strong>HetAas Atelier</strong> transforms organic pressed flowers, foil accents, and high-clarity resin into timeless keepsakes. From personalized golden name keychains to sacred pooja thalis and home decor, every single creation is individually poured, cured over 4 to 6 days, and polished by hand in our studio.
+                </div>
                 
                 <div class="features">
                     <div class="feature">
-                        <span class="feature-icon">✨</span>
-                        <h3>Handcrafted locally</h3>
-                        <p>Poured and polished with care in Ahmedabad.</p>
+                        <span class="feature-icon">🏡</span>
+                        <h3>Handcrafted in Ahmedabad</h3>
+                        <p>Locally made with individual attention to detail.</p>
                     </div>
                     <div class="feature">
                         <span class="feature-icon">🌸</span>
-                        <h3>Dried Botanicals</h3>
-                        <p>Real organic flowers sealed in gloss.</p>
+                        <h3>Real Botanicals</h3>
+                        <p>100% genuine dried flowers preserved in gloss.</p>
                     </div>
                     <div class="feature">
-                        <span class="feature-icon">🎨</span>
-                        <h3>Made to Order</h3>
-                        <p>Tailored options for colors and initials.</p>
+                        <span class="feature-icon">✨</span>
+                        <h3>Custom Inscriptions</h3>
+                        <p>Golden name stickers & custom color palettes.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    -->
 
     <!-- Interactive FAQ & Care Guide Section -->
     <section class="faq-section" id="faq">
@@ -339,9 +356,21 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 HetAas Atelier. All rights reserved.</p>
-            <p>Handcrafted locally in Ahmedabad, Gujarat, India 🎨✨</p>
-            <p>DM orders: <a href="https://ig.me/m/aastha.thakker" target="_blank">@aastha.thakker</a></p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>HetAas Atelier</h3>
+                    <p>Handcrafted Resin Art</p>
+                    <p class="footer-est">• Ahmedabad, Gujarat, India 🎨✨</p>
+                </div>
+                <div class="footer-info">
+                    <h4>Direct Orders & Inquiries</h4>
+                    <p>Instagram: <a href="https://www.instagram.com/hetaas_atelier" target="_blank">@hetaas_atelier</a></p>
+                    <p class="footer-policy-note">🔒 100% Pre-paid Orders • Gujarat Courier Shipping • Crafting Time: 4-8 Days</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HetAas Atelier. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
@@ -431,18 +460,30 @@
     <!-- Checkout Clipboard Instructions Dialog Box -->
     <div class="checkout-popup-overlay" id="checkoutPopupOverlay">
         <div class="checkout-popup">
-            <span class="checkout-popup-icon">📋✨</span>
-            <h3>Order Details Copied!</h3>
-            <p>Your order list and policies have been copied to your clipboard. Send this message to our DMs to confirm! 🌸</p>
-            <div class="checkout-code-box" id="checkoutCodeBox">
-                <!-- Formatted order text here -->
+            <div class="checkout-popup-header">
+                <span class="checkout-popup-icon">📋✨</span>
+                <h3>Order Receipt Ready!</h3>
+                <p>Your itemized order receipt has been copied to your clipboard. Click below to paste & send via Instagram DM! 🌸</p>
+            </div>
+            
+            <div class="receipt-card">
+                <div class="receipt-top-bar">
+                    <span class="receipt-brand-title">HetAas Atelier</span>
+                    <span class="receipt-badge-tag">OFFICIAL RECEIPT</span>
+                </div>
+                <div class="checkout-code-box" id="checkoutCodeBox">
+                    <!-- Formatted order text here -->
+                </div>
+                <div class="receipt-footer-note">
+                    🔒 100% Pre-Paid Order • Hand-cured in 4-6 Days • Pan-India Shipping
+                </div>
             </div>
             
             <div class="checkout-popup-buttons">
                 <!-- Instagram DM Button -->
-                <button class="checkout-popup-btn" id="checkoutGoBtn" style="grid-column: span 2;">
-                    Send to Instagram DM
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                <button class="checkout-popup-btn" id="checkoutGoBtn">
+                    <span>Send Order via Instagram</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                     </svg>

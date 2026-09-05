@@ -9,7 +9,7 @@ const customizerData = {
         { id: 'coaster', name: 'Coaster', price: 250, emoji: '🍵', category: 'Coasters' },
         { id: 'keychain', name: 'Butterfly Keychain', price: 180, emoji: '🦋', category: 'Keychains' },
         { id: 'earrings', name: 'Earrings', price: 120, emoji: '💎', category: 'Earrings' },
-        { id: 'thali', name: 'Pooja Thali', price: 1200, emoji: '🪔', category: 'Thali' },
+        { id: 'thali', name: 'Pooja Thali', price: 1800, emoji: '🪔', category: 'Thali' },
         { id: 'decor-plate', name: 'Decor Plate (8-inch)', price: 800, emoji: '🏺', category: 'Decor' }
     ],
     colors: [
@@ -120,6 +120,7 @@ async function loadProducts() {
                 "category": "Earrings",
                 "price": 120,
                 "image": "images/earrings-green-circles.jpg",
+                "bestseller": true,
                 "description": "Three-tier cascading sparkly emerald green circles with gold dust accents"
             },
             {
@@ -128,6 +129,7 @@ async function loadProducts() {
                 "category": "Earrings",
                 "price": 120,
                 "image": "images/earrings-green-leaves.jpg",
+                "bestseller": true,
                 "description": "Detailed tropical monstera leaf dangles with green sparkles and shine"
             },
             {
@@ -184,6 +186,7 @@ async function loadProducts() {
                 "category": "Earrings",
                 "price": 120,
                 "image": "images/earrings-blue-flowers.jpg",
+                "bestseller": true,
                 "description": "Delightful two-tier blue flower resin dangles with white dots and pearls"
             },
             {
@@ -208,6 +211,7 @@ async function loadProducts() {
                 "category": "Earrings",
                 "price": 120,
                 "image": "images/earrings-multicolor-petal.jpg",
+                "bestseller": true,
                 "description": "Beautiful transparent teardrops embedded with colorful dried botanical leaves"
             },
             {
@@ -216,6 +220,7 @@ async function loadProducts() {
                 "category": "Coasters",
                 "price": 250,
                 "image": "images/coasters-sea.jpg",
+                "bestseller": true,
                 "description": "Single wavy-edged ocean-themed coaster with real seashells, sand, pearls, and resin waves"
             },
             {
@@ -224,6 +229,7 @@ async function loadProducts() {
                 "category": "Coasters",
                 "price": 450,
                 "image": "images/coasters-sea.jpg",
+                "bestseller": true,
                 "description": "Set of 2 wavy-edged ocean-themed coasters with real seashells, sand, pearls, and resin waves"
             },
             {
@@ -248,6 +254,7 @@ async function loadProducts() {
                 "category": "Earrings",
                 "price": 150,
                 "image": "images/earrings-magenta-teardrops.jpg",
+                "bestseller": true,
                 "description": "Elegant gold-framed teardrop earrings with a shimmery magenta pink base, a band of gold foil, and dried orange blossoms in clear resin"
             },
             {
@@ -256,6 +263,7 @@ async function loadProducts() {
                 "category": "Bookmarks",
                 "price": 100,
                 "image": "images/bookmark-rainbow.jpg",
+                "bestseller": true,
                 "description": "Playful clear resin bookmark containing colorful pastel sprinkles and a cute rainbow decal, complete with a white ribbon tassel"
             },
             {
@@ -280,6 +288,7 @@ async function loadProducts() {
                 "category": "Bookmarks",
                 "price": 100,
                 "image": "images/bookmark-ocean-shells.jpg",
+                "bestseller": true,
                 "description": "Beautiful ocean-themed bookmark featuring a blue sky, teal sea, crashing white waves, and real sand with embedded seashells, complete with a teal ribbon tassel"
             },
             {
@@ -352,6 +361,7 @@ async function loadProducts() {
                 "category": "Bookmarks",
                 "price": 100,
                 "image": "images/bookmark-burgundy-rose-gold.jpg",
+                "bestseller": true,
                 "description": "Elegant clear resin bookmark embedded with deep burgundy rose petals and luxury gold foil flakes, finished with a red ribbon tassel"
             },
             {
@@ -360,6 +370,7 @@ async function loadProducts() {
                 "category": "Bookmarks",
                 "price": 100,
                 "image": "images/bookmark-ivory-rose-pink.jpg",
+                "bestseller": true,
                 "description": "Delicate clear resin bookmark with dried ivory petals and shimmering pink glitter, finished with a soft pink ribbon tassel"
             },
             {
@@ -421,6 +432,7 @@ async function loadProducts() {
                 "price": 100,
                 "image": "images/bookmark-custom-name-aqua.jpg",
                 "customizable": true,
+                "bestseller": true,
                 "description": "Personalized aqua turquoise resin bookmark with white ocean waves, custom golden name inscription (e.g. 'Ms. Mohona'), and green ribbon tassel with pearl beads"
             },
             {
@@ -429,6 +441,7 @@ async function loadProducts() {
                 "category": "Bookmarks",
                 "price": 100,
                 "image": "images/bookmark-namaste-aqua.jpg",
+                "bestseller": true,
                 "description": "Aqua turquoise resin bookmark with white ocean wave swirls, traditional black Namaste lady decal, and vibrant green ribbon tassel with pearl beads"
             },
             {
@@ -496,8 +509,18 @@ function displayProducts(products) {
         productCard.className = 'product-card';
         productCard.style.animationDelay = `${index * 0.05}s`;
         
+        let featureTagHtml = '';
+        if (product.bestseller) {
+            featureTagHtml = `<div class="product-tag bestseller-tag">🔥 Bestseller</div>`;
+        } else if (product.customizable) {
+            featureTagHtml = `<div class="product-tag custom-tag">✨ Customizable</div>`;
+        } else if (product.category === 'Spiritual' || product.category === 'Thali' || product.id >= 50) {
+            featureTagHtml = `<div class="product-tag bestseller-tag">🔥 Bestseller</div>`;
+        }
+        
         productCard.innerHTML = `
             <div class="product-image" onclick="openQuickView(${product.id})">
+                ${featureTagHtml}
                 <img src="${product.image}" alt="${product.name}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
                 <div class="category-badge">${product.category}</div>
             </div>
@@ -796,7 +819,7 @@ function renderCustomizerOptions() {
         card.innerHTML = `
             <span class="option-emoji">${item.emoji}</span>
             <span class="option-name">${item.name}</span>
-            <span class="option-price">Free</span>
+            <span class="option-price"></span>
         `;
         incGrid.appendChild(card);
     });
@@ -1421,7 +1444,7 @@ function initUIHandlers() {
         popupOverlay.classList.remove('open');
         const orderText = document.getElementById('checkoutCodeBox').textContent;
         copyTextToClipboard(orderText);
-        window.open('https://ig.me/m/aastha.thakker', '_blank');
+        window.open('https://ig.me/m/hetaas_atelier', '_blank');
     };
 
     
