@@ -9,6 +9,7 @@ const customizerData = {
         { id: 'coaster', name: 'Coaster', price: 250, emoji: '🍵', category: 'Coasters' },
         { id: 'keychain', name: 'Butterfly Keychain', price: 180, emoji: '🦋', category: 'Keychains' },
         { id: 'earrings', name: 'Earrings', price: 120, emoji: '💎', category: 'Earrings' },
+        { id: 'thali', name: 'Pooja Thali', price: 1200, emoji: '🪔', category: 'Thali' },
         { id: 'decor-plate', name: 'Decor Plate (8-inch)', price: 800, emoji: '🏺', category: 'Decor' }
     ],
     colors: [
@@ -52,7 +53,7 @@ function getSvgPlaceholder(productName, category) {
     else if (category === 'Bookmarks') { icon = '🔖'; }
     else if (category === 'Decor') { icon = '🏺'; }
     else if (category === 'Spiritual') { icon = '🕉️'; }
-    else if (category === 'Bowls') { icon = '🥣'; }
+    else if (category === 'Thali') { icon = '🪔'; }
     
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
         <defs>
@@ -91,7 +92,7 @@ async function loadProducts() {
         const response = await fetch('products.json');
         if (!response.ok) throw new Error('Fetch failed');
         const data = await response.json();
-        allProducts = data.products;
+        allProducts = data.products.sort((a, b) => b.id - a.id);
     } catch (error) {
         console.warn('Unable to load products.json via fetch (often due to local CORS block on double-clicking index.html). Using local fallback products list.', error);
         
@@ -245,7 +246,7 @@ async function loadProducts() {
                 "id": 27,
                 "name": "Magenta Floral Teardrops",
                 "category": "Earrings",
-                "price": 120,
+                "price": 150,
                 "image": "images/earrings-magenta-teardrops.jpg",
                 "description": "Elegant gold-framed teardrop earrings with a shimmery magenta pink base, a band of gold foil, and dried orange blossoms in clear resin"
             },
@@ -315,21 +316,159 @@ async function loadProducts() {
             },
             {
                 "id": 36,
-                "name": "2-in-1 Purple Star & Galaxy Pendant",
+                "name": "Emerald Shimmer Kite Pendant",
                 "category": "Pendants",
                 "price": 100,
-                "image": "images/pendant-purple-2in1.jpg",
-                "description": "Handcrafted double-sided resin pendant (2-in-1 design) featuring shimmery purple with teal star outlines on one side and a textured cosmic galaxy streak on the other"
+                "image": "images/pendant-green-kite.jpg",
+                "description": "Handcrafted kite-shaped resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
             },
             {
                 "id": 37,
-                "name": "Emerald Shimmer Pendants",
+                "name": "Emerald Shimmer Oval Pendant",
                 "category": "Pendants",
                 "price": 100,
-                "image": "images/pendants-green-shimmer.jpg",
-                "description": "Handcrafted resin pendants with a green jade-like shimmer. Available in Kite, Oval, and Diamond shapes (₹100 each)"
+                "image": "images/pendant-green-oval.jpg",
+                "description": "Handcrafted oval resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
+            },
+            {
+                "id": 38,
+                "name": "Emerald Shimmer Diamond Pendant",
+                "category": "Pendants",
+                "price": 100,
+                "image": "images/pendant-green-diamond.jpg",
+                "description": "Handcrafted diamond-shaped resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
+            },
+            {
+                "id": 39,
+                "name": "Golden Poppy Stem Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-yellow-flower-hook.jpg",
+                "description": "Handcrafted resin bookmark featuring a clear golden yellow flower clip mounted on a metal page stem"
+            },
+            {
+                "id": 40,
+                "name": "Burgundy Rose & Gold Leaf Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-burgundy-rose-gold.jpg",
+                "description": "Elegant clear resin bookmark embedded with deep burgundy rose petals and luxury gold foil flakes, finished with a red ribbon tassel"
+            },
+            {
+                "id": 41,
+                "name": "Ivory Blossom & Pink Sparkle Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-ivory-rose-pink.jpg",
+                "description": "Delicate clear resin bookmark with dried ivory petals and shimmering pink glitter, finished with a soft pink ribbon tassel"
+            },
+            {
+                "id": 42,
+                "name": "Black Dotted Flower Dangles",
+                "category": "Earrings",
+                "price": 120,
+                "image": "images/earrings-black-flowers.jpg",
+                "description": "Charming two-tier black flower resin dangles featuring central pearl beads and intricate white dotted patterns"
+            },
+            {
+                "id": 43,
+                "name": "Royal Blue Ganesha Pooja Thali",
+                "category": "Thali",
+                "price": 1200,
+                "image": "images/thali-blue-ganesha.jpg",
+                "description": "Exquisite royal blue scalloped resin Pooja Thali featuring a central gold Ganesha motif, pearl-studded diyas, and handcrafted floral embellishments"
+            },
+            {
+                "id": 44,
+                "name": "Blush Pink Swastik Pooja Thali",
+                "category": "Thali",
+                "price": 1800,
+                "image": "images/thali-pink-swastik.jpg",
+                "description": "Grand circular blush pink resin Pooja Thali with raised rim, central gold Swastik symbol, pearl clusters, floral charms, and 3 built-in pearl diyas"
+            },
+            {
+                "id": 45,
+                "name": "Purple Shimmer Ganesha Pooja Thali",
+                "category": "Thali",
+                "price": 1800,
+                "image": "images/thali-purple-ganesha.jpg",
+                "description": "Grand circular deep purple shimmer resin Pooja Thali with raised rim, central gold Ganesha symbol, pearl embellishments, floral charms, and 3 built-in pearl diyas"
+            },
+            {
+                "id": 46,
+                "name": "Pink Shrinathji Spiritual Stand",
+                "category": "Spiritual",
+                "price": 250,
+                "image": "images/shrinathji-pink-stand-1.jpg",
+                "images": [
+                    "images/shrinathji-pink-stand-1.jpg",
+                    "images/shrinathji-pink-stand-2.jpg"
+                ],
+                "description": "Sacred Shrinathji resin idol stand in vibrant pink shimmer with white floral accents (Dimensions: 9 cm Height x 8.5 cm Width)"
+            },
+            {
+                "id": 47,
+                "name": "White Pearl Shrinathji Beaded Stand",
+                "category": "Spiritual",
+                "price": 250,
+                "image": "images/shrinathji-white-beaded-stand.jpg",
+                "description": "Sacred Shrinathji resin idol stand on a white marble resin base with colorful beaded garland borders and delicate rose gem embellishments"
+            },
+            {
+                "id": 48,
+                "name": "Custom Name Aqua Waves Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-custom-name-aqua.jpg",
+                "customizable": true,
+                "description": "Personalized aqua turquoise resin bookmark with white ocean waves, custom golden name inscription (e.g. 'Ms. Mohona'), and green ribbon tassel with pearl beads"
+            },
+            {
+                "id": 49,
+                "name": "Namaste Ocean Waves Bookmark",
+                "category": "Bookmarks",
+                "price": 100,
+                "image": "images/bookmark-namaste-aqua.jpg",
+                "description": "Aqua turquoise resin bookmark with white ocean wave swirls, traditional black Namaste lady decal, and vibrant green ribbon tassel with pearl beads"
+            },
+            {
+                "id": 50,
+                "name": "Magenta Floral Butterfly Keychain",
+                "category": "Keychains",
+                "price": 180,
+                "image": "images/keychain-magenta-floral-butterfly.jpg",
+                "description": "Stunning butterfly resin keychain embedded with real dried magenta floral petals, yellow baby's breath, and purple rhinestone accents"
+            },
+            {
+                "id": 51,
+                "name": "Magenta Floral Pen & Cutlery Stand",
+                "category": "Decor",
+                "price": 1900,
+                "image": "images/decor-pen-cutlery-stand-1.jpg",
+                "images": [
+                    "images/decor-pen-cutlery-stand-1.jpg",
+                    "images/decor-pen-cutlery-stand-2.jpg"
+                ],
+                "description": "Versatile handcrafted resin pen & cutlery holder on a scalloped tray base, featuring white & magenta glitter shimmer and 3D floral pearl embellishments"
+            },
+            {
+                "id": 52,
+                "name": "Ocean Beach Shell Teardrops",
+                "category": "Earrings",
+                "price": 150,
+                "image": "images/earrings-ocean-beach-teardrops.jpg",
+                "description": "Stunning ocean-themed teardrop earrings featuring turquoise blue water, white foam waves, real beach sand, embedded white clam shells, and pearl accents"
+            },
+            {
+                "id": 53,
+                "name": "Purple Pearl Butterfly Keychain",
+                "category": "Keychains",
+                "price": 180,
+                "image": "images/keychain-purple-pearl-butterfly.jpg",
+                "description": "Elegant royal purple shimmer resin butterfly keychain embellished with silver rhinestone accents and pearl flower borders"
             }
         ];
+        allProducts.sort((a, b) => b.id - a.id);
     }
     
     // Always initialize UI elements even if products.json fetch failed
@@ -349,7 +488,10 @@ function displayProducts(products) {
         return;
     }
 
-    products.forEach((product, index) => {
+    // Always sort so newest products (higher IDs) appear first at top
+    const sortedProducts = [...products].sort((a, b) => b.id - a.id);
+
+    sortedProducts.forEach((product, index) => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.style.animationDelay = `${index * 0.05}s`;
@@ -364,12 +506,12 @@ function displayProducts(products) {
                 <p class="description">${product.description}</p>
                 <div class="product-footer">
                     <span class="price">₹${product.price}</span>
-                    <button onclick="addToCartById(${product.id})" class="add-cart-btn">
+                    <button onclick="${product.customizable ? `openQuickView(${product.id})` : `addToCartById(${product.id})`}" class="add-cart-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Add Basket
+                        ${product.customizable ? 'Customize ✨' : 'Add Basket'}
                     </button>
                 </div>
             </div>
@@ -423,7 +565,7 @@ function getCartTotalQuantity() {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-function addToCartById(productId, qty = 1) {
+function addToCartById(productId, qty = 1, customName = '') {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
     
@@ -434,7 +576,7 @@ function addToCartById(productId, qty = 1) {
         return;
     }
     
-    const existingItem = cart.find(item => item.product.id === productId && !item.isCustom);
+    const existingItem = cart.find(item => item.product.id === productId && !item.isCustom && (item.customName || '') === (customName || ''));
     if (existingItem) {
         existingItem.quantity += qty;
     } else {
@@ -442,12 +584,13 @@ function addToCartById(productId, qty = 1) {
             product: product,
             quantity: qty,
             isCustom: false,
+            customName: customName || null,
             customization: null
         });
     }
     
     saveCart();
-    showToast(`Added "${product.name}" to basket! 🌸`);
+    showToast(`Added "${product.name}"${customName ? ` (${customName})` : ''} to basket! 🌸`);
     triggerCartBounce();
 }
 
@@ -502,6 +645,12 @@ function updateCartUI() {
                     Tint: ${item.customization.color}<br>
                     Accents: ${item.customization.inclusion}
                     ${item.customization.text ? `<br>Sticker: "${item.customization.text}" (+₹90)` : ''}
+                </div>
+            `;
+        } else if (item.customName) {
+            customDetailsHtml = `
+                <div class="cart-item-customization">
+                    Custom Name: "${item.customName}"
                 </div>
             `;
         }
@@ -788,6 +937,16 @@ function getResinCareTips(category) {
             dimensions: 'Size: Approx 1.5 - 2 inches. Elegant and lightweight.',
             care: 'Keep in a soft pouch when not wearing. Avoid spraying perfumes or chemicals directly on the resin.'
         };
+    } else if (category === 'Thali') {
+        return {
+            dimensions: 'Size: Approx 8 - 10 inches scalloped handcrafted Pooja Thali.',
+            care: 'Wipe gently with a soft microfiber cloth. Do not place direct open flame directly on the resin surface.'
+        };
+    } else if (category === 'Spiritual') {
+        return {
+            dimensions: 'Size: 9 cm (Length) x 8.5 cm (Width) handcrafted resin stand idol.',
+            care: 'Dust gently with a dry or slightly damp microfiber cloth. Keep in a sacred, clean space.'
+        };
     } else {
         return {
             dimensions: 'Size: Handcrafted sizing details vary per creation.',
@@ -803,10 +962,44 @@ function openQuickView(productId) {
     const modalBody = document.getElementById('modalBodyContent');
     const careSpecs = getResinCareTips(product.category);
     
+    const imageList = (product.images && product.images.length > 0) ? product.images : [product.image];
+    
+    let imgContainerHtml = '';
+    if (imageList.length > 1) {
+        const slidesHtml = imageList.map((imgSrc, idx) => `
+            <div class="modal-slide">
+                <img src="${imgSrc}" alt="${product.name} - View ${idx + 1}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
+            </div>
+        `).join('');
+
+        const dotsHtml = imageList.map((_, idx) => `
+            <span class="slider-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>
+        `).join('');
+
+        imgContainerHtml = `
+            <div class="modal-img-container">
+                <div class="modal-slider" id="modalSlider">
+                    <div class="modal-slides" id="modalSlides">
+                        ${slidesHtml}
+                    </div>
+                    <button class="slider-arrow slider-prev" id="sliderPrevBtn" aria-label="Previous Image">‹</button>
+                    <button class="slider-arrow slider-next" id="sliderNextBtn" aria-label="Next Image">›</button>
+                    <div class="slider-dots" id="sliderDots">
+                        ${dotsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        imgContainerHtml = `
+            <div class="modal-img-container">
+                <img src="${product.image}" alt="${product.name}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
+            </div>
+        `;
+    }
+    
     modalBody.innerHTML = `
-        <div class="modal-img-container">
-            <img src="${product.image}" alt="${product.name}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
-        </div>
+        ${imgContainerHtml}
         <div class="modal-content-panel">
             <span class="modal-badge">${product.category}</span>
             <h2 class="modal-title">${product.name}</h2>
@@ -818,6 +1011,15 @@ function openQuickView(productId) {
                 <p class="care-text" style="margin-bottom: 4px;"><strong>Dimensions:</strong> ${careSpecs.dimensions}</p>
                 <p class="care-text"><strong>Care:</strong> ${careSpecs.care}</p>
             </div>
+            
+            ${product.customizable ? `
+                <div class="modal-custom-name-box" style="margin: 14px 0; padding: 12px; background: rgba(200, 154, 144, 0.12); border-radius: 14px; border: 1.5px dashed var(--color-accent);">
+                    <label for="modalCustomNameInput" style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: var(--color-text-dark);">
+                        ✍️ Personalize Name / Inscription (included):
+                    </label>
+                    <input type="text" id="modalCustomNameInput" placeholder="e.g. Ms. Mohona" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--color-primary-dark); border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; background: #ffffff;">
+                </div>
+            ` : ''}
             
             <div class="modal-action-row">
                 <div class="modal-qty-selector">
@@ -831,6 +1033,59 @@ function openQuickView(productId) {
             </div>
         </div>
     `;
+    
+    if (imageList.length > 1) {
+        let currentIndex = 0;
+        const slides = document.getElementById('modalSlides');
+        const dots = document.querySelectorAll('.slider-dot');
+
+        const goToSlide = (index) => {
+            if (index < 0) index = imageList.length - 1;
+            if (index >= imageList.length) index = 0;
+            currentIndex = index;
+            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        };
+
+        document.getElementById('sliderPrevBtn').onclick = (e) => {
+            e.stopPropagation();
+            goToSlide(currentIndex - 1);
+        };
+        document.getElementById('sliderNextBtn').onclick = (e) => {
+            e.stopPropagation();
+            goToSlide(currentIndex + 1);
+        };
+        dots.forEach(dot => {
+            dot.onclick = (e) => {
+                e.stopPropagation();
+                const idx = parseInt(dot.getAttribute('data-index'), 10);
+                goToSlide(idx);
+            };
+        });
+
+        // Touch Swipe Gesture Listener
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const sliderEl = document.getElementById('modalSlider');
+
+        sliderEl.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        sliderEl.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 35) {
+                if (diff > 0) {
+                    goToSlide(currentIndex + 1);
+                } else {
+                    goToSlide(currentIndex - 1);
+                }
+            }
+        }, { passive: true });
+    }
     
     let qty = 1;
     const qtyVal = document.getElementById('modalQtyVal');
@@ -848,7 +1103,14 @@ function openQuickView(productId) {
     };
     
     document.getElementById('modalAddBtn').onclick = () => {
-        addToCartById(product.id, qty);
+        let customName = '';
+        if (product.customizable) {
+            const nameInput = document.getElementById('modalCustomNameInput');
+            if (nameInput) {
+                customName = nameInput.value.trim();
+            }
+        }
+        addToCartById(product.id, qty, customName);
         closeQuickView();
     };
     
@@ -867,6 +1129,28 @@ function closeQuickView() {
 // CLIPBOARD CHECKOUT & ORDER COMPILING
 // ==========================================
 
+function copyTextToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+    } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        let successful = false;
+        try {
+            successful = document.execCommand('copy');
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+        }
+        document.body.removeChild(textArea);
+        return successful ? Promise.resolve() : Promise.reject('Fallback copy failed');
+    }
+}
+
 function handleCheckout() {
     if (cart.length === 0) return;
     
@@ -882,6 +1166,8 @@ function handleCheckout() {
             if (item.customization.sticker) {
                 message += `  - Metallic Name: "${item.customization.text}"\n`;
             }
+        } else if (item.customName) {
+            message += `  - Custom Name / Inscription: "${item.customName}"\n`;
         }
         message += "\n";
     });
@@ -904,7 +1190,7 @@ function handleCheckout() {
     message += "--------------------------------------\n\n";
     message += "Please verify availability and share payment details! ✨";
     
-    navigator.clipboard.writeText(message).then(() => {
+    copyTextToClipboard(message).then(() => {
         const codeBox = document.getElementById('checkoutCodeBox');
         codeBox.textContent = message;
         
@@ -914,7 +1200,15 @@ function handleCheckout() {
         popup.classList.add('open');
     }).catch(err => {
         console.error('Failed to copy text: ', err);
-        showToast('Clipboard copy failed. Please take a screenshot of your cart to order! 🌸', '⚠️');
+        // Force-open the popup anyway so they can see the details and try manual copy
+        const codeBox = document.getElementById('checkoutCodeBox');
+        codeBox.textContent = message;
+        
+        document.getElementById('cartDrawerOverlay').classList.remove('open');
+        
+        const popup = document.getElementById('checkoutPopupOverlay');
+        popup.classList.add('open');
+        showToast('Auto-copy failed. Please manually copy the order details below! 🌸', '⚠️');
     });
 }
 
@@ -952,7 +1246,7 @@ function initSearchAndProfile() {
             p.name.toLowerCase().includes(query) || 
             p.category.toLowerCase().includes(query) || 
             p.description.toLowerCase().includes(query)
-        );
+        ).sort((a, b) => b.id - a.id);
         
         if (matches.length === 0) {
             searchResultsList.innerHTML = '<p class="error" style="padding: 10px;">No matching creations found</p>';
@@ -1076,6 +1370,39 @@ function initUIHandlers() {
             cartDrawerOverlay.classList.remove('open');
         }
     };
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const mobileMenuClose = document.getElementById('mobileMenuClose');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    const toggleMobileMenu = () => {
+        mobileMenuOverlay.classList.toggle('open');
+        document.body.style.overflow = mobileMenuOverlay.classList.contains('open') ? 'hidden' : '';
+    };
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.onclick = toggleMobileMenu;
+    }
+
+    if (mobileMenuClose) {
+        mobileMenuClose.onclick = toggleMobileMenu;
+    }
+
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.onclick = (e) => {
+            if (e.target === mobileMenuOverlay) {
+                toggleMobileMenu();
+            }
+        };
+    }
+
+    mobileNavLinks.forEach(link => {
+        link.onclick = () => {
+            toggleMobileMenu();
+        };
+    });
     
     const modalOverlay = document.getElementById('quickViewOverlay');
     modalOverlay.onclick = (e) => {
@@ -1092,6 +1419,8 @@ function initUIHandlers() {
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
     document.getElementById('checkoutGoBtn').onclick = () => {
         popupOverlay.classList.remove('open');
+        const orderText = document.getElementById('checkoutCodeBox').textContent;
+        copyTextToClipboard(orderText);
         window.open('https://ig.me/m/aastha.thakker', '_blank');
     };
 

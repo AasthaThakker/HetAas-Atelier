@@ -23,6 +23,14 @@
                     <!-- <a href="#about" class="nav-link">About</a> -->
                     <a href="#faq" class="nav-link">Contact</a>
                 </nav>
+                <!-- Mobile Menu Toggle Button -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
                 <!-- Header Icons Menu (Search, Account, Cart) -->
                 <div class="nav-icons">
                     <!-- Search Icon Button -->
@@ -53,6 +61,23 @@
                 </div>
             </div>
         </header>
+    </div>
+
+    <!-- Mobile Navigation Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-content">
+            <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <nav class="mobile-nav">
+                <a href="#products" class="mobile-nav-link">Shop All</a>
+                <a href="#customizer" class="mobile-nav-link">Collections</a>
+                <a href="#faq" class="mobile-nav-link">Contact</a>
+            </nav>
+        </div>
     </div>
 
     <!-- Hero Section with organic double-bordered wavy glass panel (Bokeh backdrop) -->
@@ -114,7 +139,7 @@
                 <button class="filter-btn" data-filter="Pendants">Pendants</button>
                 <button class="filter-btn" data-filter="Decor">Decor</button>
                 <button class="filter-btn" data-filter="Spiritual">Spiritual</button>
-                <button class="filter-btn" data-filter="Bowls">Bowls</button>
+                <button class="filter-btn" data-filter="Thali">Thali</button>
             </div>
 
             <!-- Products Grid -->
