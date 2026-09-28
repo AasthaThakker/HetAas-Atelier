@@ -324,30 +324,6 @@ async function loadProducts() {
                 "description": "Elegant purple shimmer coaster featuring a wavy scalloped border, a golden butterfly decal, and custom 'HETAL' golden lettering"
             },
             {
-                "id": 36,
-                "name": "Emerald Shimmer Kite Pendant",
-                "category": "Pendants",
-                "price": 100,
-                "image": "images/pendant-green-kite.jpg",
-                "description": "Handcrafted kite-shaped resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
-            },
-            {
-                "id": 37,
-                "name": "Emerald Shimmer Oval Pendant",
-                "category": "Pendants",
-                "price": 100,
-                "image": "images/pendant-green-oval.jpg",
-                "description": "Handcrafted oval resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
-            },
-            {
-                "id": 38,
-                "name": "Emerald Shimmer Diamond Pendant",
-                "category": "Pendants",
-                "price": 100,
-                "image": "images/pendant-green-diamond.jpg",
-                "description": "Handcrafted diamond-shaped resin pendant with a vibrant emerald green shimmer, perfect for necklaces and accessories"
-            },
-            {
                 "id": 39,
                 "name": "Golden Poppy Stem Bookmark",
                 "category": "Bookmarks",
@@ -954,11 +930,6 @@ function getResinCareTips(category) {
         return {
             dimensions: 'Size: 5.5 x 1 inch. Includes decorative tassel.',
             care: 'Avoid bending or loading under heavy objects. Keep out of extreme heat.'
-        };
-    } else if (category === 'Pendants') {
-        return {
-            dimensions: 'Size: Approx 1.5 - 2 inches. Elegant and lightweight.',
-            care: 'Keep in a soft pouch when not wearing. Avoid spraying perfumes or chemicals directly on the resin.'
         };
     } else if (category === 'Thali') {
         return {
