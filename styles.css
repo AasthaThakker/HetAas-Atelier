@@ -4,6 +4,8 @@
 :root {
     --color-primary: #c89a90;          /* Warm peach-mauve */
     --color-primary-dark: #b08278;     /* Deeper peach-mauve */
+    --color-cta: #9e635c;              /* Deep rose — CTA buttons, ~4.8:1 on white text (WCAG AA) */
+    --color-cta-hover: #86504a;        /* Darker rose for CTA hover */
     --color-primary-light: #fdf0f0;    /* Soft padded pink frame background */
     --color-secondary: #a39594;        /* Muted taupe-brown */
     --color-accent: #f5e6d3;           /* Soft Cream */
@@ -429,8 +431,8 @@ h1, h2, h3, h4 {
 
 /* Wavy card shop button - gradient matching mockup */
 .hero-glass-panel .cta-button {
-    background: linear-gradient(135deg, #c7808c 0%, #dca492 100%);
-    box-shadow: 0 6px 18px rgba(199, 128, 140, 0.35);
+    background: linear-gradient(135deg, var(--color-cta) 0%, #b06f6a 100%);
+    box-shadow: 0 6px 18px rgba(158, 99, 92, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.4);
     padding: 0.85rem 2.4rem;
     font-size: 0.85rem;
@@ -440,9 +442,9 @@ h1, h2, h3, h4 {
 }
 
 .hero-glass-panel .cta-button:hover {
-    background: linear-gradient(135deg, #b0707c 0%, #c89080 100%);
+    background: linear-gradient(135deg, var(--color-cta-hover) 0%, #9e635c 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(199, 128, 140, 0.45);
+    box-shadow: 0 8px 22px rgba(134, 80, 74, 0.5);
 }
 
 /* Botanical illustrations growing from bottom borders */
@@ -709,7 +711,7 @@ h1, h2, h3, h4 {
 }
 
 .add-cart-btn {
-    background-color: var(--color-primary);
+    background-color: var(--color-cta);
     border: none;
     color: white;
     padding: 0.7rem 1.5rem;
@@ -728,7 +730,7 @@ h1, h2, h3, h4 {
 }
 
 .add-cart-btn:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-cta-hover);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(176, 130, 120, 0.35);
 }
@@ -2506,14 +2508,14 @@ h1, h2, h3, h4 {
     }
 
     .hero {
-        padding: 2.5rem 1rem 3.5rem;
+        padding: 1.75rem 1rem 2.5rem;
         border-radius: 0 0 35px 35px;
     }
 
     .hero-glass-panel {
-        padding: 2.5rem 1.5rem;
+        padding: 2rem 1.4rem;
         border-radius: 40px 25px 45px 30px;
-        gap: 1.2rem;
+        gap: 1rem;
     }
 
     .hero-glass-panel h2 {
@@ -2726,13 +2728,19 @@ h1, h2, h3, h4 {
     }
 
     .hero {
-        padding: 2rem 0.75rem 3rem;
+        padding: 1.25rem 0.75rem 2rem;
     }
 
     .hero-glass-panel {
-        padding: 1.8rem 1rem 2.2rem;
+        padding: 1.5rem 1rem 1.8rem;
         border-radius: 30px 20px 35px 25px;
-        gap: 0.9rem;
+        gap: 0.8rem;
+    }
+
+    /* Trim the decorative dictionary line on the smallest screens so the
+       heading, tagline, CTA and first products sit higher up the page. */
+    #heroBlurb {
+        display: none;
     }
 
     .hero-glass-panel h2 {

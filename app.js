@@ -158,7 +158,9 @@ function displayProducts(products) {
     sortedProducts.forEach((product, index) => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
-        productCard.style.animationDelay = `${index * 0.05}s`;
+        // Cap the stagger: only the first few cards ease in sequentially, the
+        // rest appear almost immediately so fast scrollers never hit a blank grid.
+        productCard.style.animationDelay = `${Math.min(index, 6) * 0.04}s`;
         
         let featureTagHtml = '';
         if (product.bestseller) {
