@@ -1,0 +1,124 @@
+{
+  "site": {
+    "title": "HetAas Atelier - Handmade Resin Treasures",
+    "shortName": "HetAas",
+    "tagline": "Resin Art",
+    "metaDescription": "HetAas Atelier crafts handmade resin treasures in Ahmedabad, Gujarat — botanical bookmarks, earrings, keychains, coasters, pooja thalis and custom name pieces. Real dried flowers preserved in high-clarity resin.",
+    "keywords": "handmade resin art, resin bookmarks, resin earrings, resin keychains, custom name keychain, pooja thali, resin coasters, Ahmedabad, Gujarat, botanical resin, dried flower jewellery, personalised gifts India",
+    "ogImage": "images/og-image.jpg",
+    "themeColor": "#c89a90",
+    "url": "https://aasthathakker.github.io/HetAas-Atelier/"
+  },
+  "business": {
+    "name": "HetAas Atelier",
+    "legalTagline": "Handcrafted Resin Art",
+    "street": "",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "since": 2022,
+    "priceRange": "₹₹",
+    "instagramHandle": "hetaas_atelier",
+    "instagramUrl": "https://www.instagram.com/hetaas_atelier",
+    "whatsappNumber": "",
+    "email": ""
+  },
+  "hero": {
+    "heading": "Handmade Resin Treasures",
+    "subtext": "Beauty in timeless resin art, crafted with love.",
+    "blurb": "<strong>Atelier</strong> /a·tel·ier/ (noun): An artist's workshop or studio. Step into our space where raw resin transforms into handcrafted treasures.",
+    "ctaLabel": "Shop the Collection"
+  },
+  "trustBar": {
+    "enabled": true,
+    "items": [
+      { "icon": "🔒", "text": "Pre-Paid & Secure Orders" },
+      { "icon": "🚚", "text": "Pan-India Shipping" },
+      { "icon": "⭐", "text": "Loved by Happy Patrons" },
+      { "icon": "📍", "text": "Handcrafted in Ahmedabad" }
+    ]
+  },
+  "howToOrder": {
+    "enabled": true,
+    "heading": "Order in 3 Easy Steps",
+    "steps": [
+      { "icon": "🛒", "title": "Pick Your Pieces", "text": "Browse the collection or design a custom treasure, then add to your Resin Basket." },
+      { "icon": "📋", "title": "Review Your Basket", "text": "Open the basket, adjust quantities, and add any special notes for your order." },
+      { "icon": "🌸", "title": "Send Your Order", "text": "Checkout copies a tidy receipt and opens Instagram DM — paste, send, and we confirm!" }
+    ]
+  },
+  "about": {
+    "badge": "✨ Handmade Story",
+    "heading": "Why HetAas Atelier?",
+    "subtitle": "Poured & polished with love in Ahmedabad, Gujarat since 2022",
+    "story": "Born out of a deep love for botanical art, <strong>HetAas Atelier</strong> transforms organic pressed flowers, foil accents, and high-clarity resin into timeless keepsakes. From personalized golden name keychains to sacred pooja thalis and home decor, every single creation is individually poured, cured over 4 to 6 days, and polished by hand in our studio.",
+    "features": [
+      { "icon": "🏡", "title": "Handcrafted in Ahmedabad", "text": "Locally made with individual attention to detail." },
+      { "icon": "🌸", "title": "Real Botanicals", "text": "100% genuine dried flowers preserved in gloss." },
+      { "icon": "✨", "title": "Custom Inscriptions", "text": "Golden name stickers & custom color palettes." }
+    ]
+  },
+  "categories": ["Earrings", "Coasters", "Bookmarks", "Keychains", "Decor", "Spiritual", "Thali"],
+  "faqs": [
+    {
+      "q": "How do I place an order?",
+      "a": "Add your desired items (either standard shop items or customized creations) to your <strong>Resin Basket</strong>. When ready, open the basket and click checkout. This copies a fully detailed order list to your clipboard and opens Instagram DM so you can paste and send it directly!"
+    },
+    {
+      "q": "What are the payment and refund rules?",
+      "a": "We accept <strong>pre-paid orders only</strong>. Since all items are handcrafted and customized specifically for you, <strong>no returns, refunds, or exchanges are accepted</strong>."
+    },
+    {
+      "q": "How long does it take to make customized items?",
+      "a": "Resin curing is a slow, artistic process. It takes around <strong>4 to 6 days</strong> to design, pour, bubble-pop, and fully cure a customized order before it can be collected or dispatched."
+    },
+    {
+      "q": "What is the shipping policy?",
+      "a": "We do not offer free shipping. Customers in Ahmedabad can arrange a self-pickup. If you want us to ship anywhere else across India, the <strong>delivery costs must be borne entirely by the buyer</strong>."
+    }
+  ],
+  "reviews": [],
+  "footer": {
+    "brand": "HetAas Atelier",
+    "tagline": "Handcrafted Resin Art",
+    "location": "Ahmedabad, Gujarat, India 🎨✨",
+    "contactHeading": "Direct Orders & Inquiries",
+    "policyNote": "🔒 100% Pre-paid Orders • Pan-India Courier Shipping • Crafting Time: 4-8 Days",
+    "copyright": "© 2026 HetAas Atelier. All rights reserved."
+  },
+  "customizer": {
+    "bases": [
+      { "id": "bookmark", "name": "Bookmark", "price": 100, "emoji": "🔖", "category": "Bookmarks" },
+      { "id": "coaster", "name": "Coaster", "price": 250, "emoji": "🍵", "category": "Coasters" },
+      { "id": "keychain", "name": "Butterfly Keychain", "price": 180, "emoji": "🦋", "category": "Keychains" },
+      { "id": "earrings", "name": "Earrings", "price": 120, "emoji": "💎", "category": "Earrings" },
+      { "id": "thali", "name": "Pooja Thali", "price": 1800, "emoji": "🪔", "category": "Thali" },
+      { "id": "decor-plate", "name": "Decor Plate (8-inch)", "price": 800, "emoji": "🏺", "category": "Decor" }
+    ],
+    "colors": [
+      { "id": "blue", "name": "Blue Tint", "emoji": "🔹" },
+      { "id": "white", "name": "White Swirl", "emoji": "🐚" },
+      { "id": "transparent", "name": "Transparent Clear", "emoji": "💧" },
+      { "id": "pink", "name": "Pink Tint", "emoji": "🌸" },
+      { "id": "green", "name": "Green Tint", "emoji": "🍃" },
+      { "id": "yellow", "name": "Yellow Tint", "emoji": "💛" },
+      { "id": "copper", "name": "Copper Sheen", "emoji": "🪵" },
+      { "id": "metal", "name": "Metal Shimmer", "emoji": "🪙" }
+    ],
+    "inclusions": [
+      { "id": "gold-foil", "name": "Gold Foil", "emoji": "✨" },
+      { "id": "silver-foil", "name": "Silver Foil", "emoji": "❄" },
+      { "id": "pink-foil", "name": "Pink Foil", "emoji": "💖" },
+      { "id": "rose", "name": "Dried Rose", "emoji": "🌹" },
+      { "id": "marigold", "name": "Dried Marigold", "emoji": "🌼" },
+      { "id": "sticker", "name": "Aesthetic Sticker", "emoji": "🏷️" },
+      { "id": "pressed-flower", "name": "Pressed Flower", "emoji": "🥀" },
+      { "id": "none", "name": "None", "emoji": "🚫" }
+    ]
+  },
+  "analytics": {
+    "enabled": false,
+    "provider": "goatcounter",
+    "code": ""
+  }
+}

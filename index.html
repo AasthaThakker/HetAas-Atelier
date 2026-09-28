@@ -1,10 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HetAas Atelier - Handmade Resin Treasures</title>
+
+    <!-- Content Security Policy (static-host enforceable; hardens against XSS/injection) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://*.goatcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'sha256-LU1qBNWjiFziC16Dj5HvB8jt5e+ZqEG7vYdZ9qhAv5o=' https://gc.zgo.at https://plausible.io; connect-src 'self' https://*.goatcounter.com https://plausible.io; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- Clickjacking guard (runs immediately; hashed in CSP). frame-ancestors needs a real header, unavailable on static hosts. -->
+    <script>if(window.top!==window.self){window.top.location=window.self.location;}</script>
+
+    <!-- Primary SEO -->
+    <title>HetAas Atelier - Handmade Resin Treasures | Ahmedabad</title>
+    <meta name="description" content="HetAas Atelier crafts handmade resin treasures in Ahmedabad, Gujarat — botanical bookmarks, earrings, keychains, coasters, pooja thalis and custom name pieces. Real dried flowers preserved in high-clarity resin.">
+    <meta name="keywords" content="handmade resin art, resin bookmarks, resin earrings, resin keychains, custom name keychain, pooja thali, resin coasters, Ahmedabad, Gujarat, botanical resin, dried flower jewellery, personalised gifts India">
+    <meta name="author" content="HetAas Atelier">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://aasthathakker.github.io/HetAas-Atelier/">
+
+    <!-- Theme & PWA -->
+    <meta name="theme-color" content="#c89a90">
+    <meta name="color-scheme" content="light">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="HetAas">
+
+    <!-- Icons -->
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="icons/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="HetAas Atelier">
+    <meta property="og:title" content="HetAas Atelier - Handmade Resin Treasures">
+    <meta property="og:description" content="Handmade botanical resin treasures crafted in Ahmedabad — bookmarks, earrings, keychains, coasters, pooja thalis and custom name pieces.">
+    <meta property="og:url" content="https://aasthathakker.github.io/HetAas-Atelier/">
+    <meta property="og:image" content="https://aasthathakker.github.io/HetAas-Atelier/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HetAas Atelier - Handmade Resin Treasures">
+    <meta name="twitter:description" content="Handmade botanical resin treasures crafted in Ahmedabad — bookmarks, earrings, keychains, coasters, pooja thalis & custom pieces.">
+    <meta name="twitter:image" content="https://aasthathakker.github.io/HetAas-Atelier/images/og-image.jpg">
+
+    <!-- Font performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Structured data: business (helps local SEO & rich results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "HetAas Atelier",
+      "description": "Handmade botanical resin treasures crafted in Ahmedabad, Gujarat.",
+      "image": "https://aasthathakker.github.io/HetAas-Atelier/images/og-image.jpg",
+      "url": "https://aasthathakker.github.io/HetAas-Atelier/",
+      "priceRange": "₹₹",
+      "foundingDate": "2022",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Ahmedabad",
+        "addressRegion": "Gujarat",
+        "addressCountry": "IN"
+      },
+      "sameAs": ["https://www.instagram.com/hetaas_atelier"]
+    }
+    </script>
 </head>
 <body>
     <!-- Floating Navigation Bar Wrapper -->
@@ -45,6 +117,14 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <!-- Install App Button (shown only when installable) -->
+                    <button class="nav-icon-btn pwa-install-btn" id="pwaInstallBtn" aria-label="Install app" title="Install app" hidden>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                     </button>
                     <!-- Cart Icon Button -->
@@ -89,16 +169,16 @@
         
         <!-- Organic Wavy Glass Card (Static - First Card Does Not Move) -->
         <div class="hero-glass-panel">
-            <h2>Handmade Resin Treasures</h2>
-            
-            <p class="subtext">Beauty in timeless resin art, crafted with love.</p>
-            
+            <h2 id="heroHeading">Handmade Resin Treasures</h2>
+
+            <p class="subtext" id="heroSubtext">Beauty in timeless resin art, crafted with love.</p>
+
             <!-- Atelier Dictionary Meaning Subtext -->
-            <p style="font-size: 0.78rem; color: var(--color-secondary); opacity: 0.9; max-width: 480px; font-style: italic; margin-top: -0.6rem; line-height: 1.45;">
+            <p id="heroBlurb" style="font-size: 0.78rem; color: var(--color-secondary); opacity: 0.9; max-width: 480px; font-style: italic; margin-top: -0.6rem; line-height: 1.45;">
                 <strong>Atelier</strong> /a·tel·ier/ (noun): An artist's workshop or studio. Step into our space where raw resin transforms into handcrafted treasures.
             </p>
-            
-            <a href="#products" class="cta-button">Shop the Collection</a>
+
+            <a href="#products" class="cta-button" id="heroCta">Shop the Collection</a>
 
             <!-- Pink Puddle Resin Drop on bottom-left -->
             <div class="hero-resin-blob"></div>
@@ -123,18 +203,10 @@
         </div>
     </section>
 
-    <!-- Thin Trust Bar -->
-    <!-- <div class="trust-bar">
-        <div class="container trust-bar-content">
-            <div class="trust-item"><span>🔒</span> Pre-Paid & Secure Orders</div>
-            <div class="trust-divider">•</div>
-            <div class="trust-item"><span>🚚</span> Gujarat Shipping</div>
-            <div class="trust-divider">•</div>
-            <div class="trust-item"><span>⭐</span> 50+ Happy Patrons</div>
-            <div class="trust-divider">•</div>
-            <div class="trust-item"><span>📍</span> Handcrafted in Ahmedabad</div>
-        </div>
-    </div> -->
+    <!-- Thin Trust Bar (populated from content.json) -->
+    <div class="trust-bar" id="trustBar" hidden>
+        <div class="container trust-bar-content" id="trustBarContent"></div>
+    </div>
 
     <!-- Products Section -->
     <section id="products" class="products-section">
@@ -142,8 +214,8 @@
             <h2 class="section-title">Our Collection</h2>
             <p class="section-subtitle">Pick from our pre-designed creations or open quick details for care guides</p>
             
-            <!-- Category Filter -->
-            <div class="filter-container">
+            <!-- Category Filter (rebuilt from content.json categories) -->
+            <div class="filter-container" id="filterContainer">
                 <button class="filter-btn active" data-filter="all">Shop All</button>
                 <button class="filter-btn" data-filter="Earrings">Earrings</button>
                 <button class="filter-btn" data-filter="Coasters">Coasters</button>
@@ -158,6 +230,14 @@
             <div class="products-grid" id="productsGrid">
                 <div class="loading">Loading products...</div>
             </div>
+        </div>
+    </section>
+
+    <!-- How To Order (populated from content.json) -->
+    <section class="how-to-order-section" id="howToOrder" hidden>
+        <div class="container">
+            <h2 class="section-title" id="howToOrderHeading">Order in 3 Easy Steps</h2>
+            <div class="how-to-order-grid" id="howToOrderGrid"></div>
         </div>
     </section>
 
@@ -239,15 +319,15 @@
     <section id="about" class="about-section">
         <div class="container">
             <div class="about-card">
-                <span class="about-badge">✨ Handmade Story</span>
-                <h2 class="section-title" style="margin-bottom: 0.4rem;">Why HetAas Atelier?</h2>
-                <p class="section-subtitle" style="margin-bottom: 1.8rem;">Poured & polished with love in Ahmedabad, Gujarat since 2022</p>
-                
-                <div class="about-story-text">
+                <span class="about-badge" id="aboutBadge">✨ Handmade Story</span>
+                <h2 class="section-title" id="aboutHeading" style="margin-bottom: 0.4rem;">Why HetAas Atelier?</h2>
+                <p class="section-subtitle" id="aboutSubtitle" style="margin-bottom: 1.8rem;">Poured & polished with love in Ahmedabad, Gujarat since 2022</p>
+
+                <div class="about-story-text" id="aboutStory">
                     Born out of a deep love for botanical art, <strong>HetAas Atelier</strong> transforms organic pressed flowers, foil accents, and high-clarity resin into timeless keepsakes. From personalized golden name keychains to sacred pooja thalis and home decor, every single creation is individually poured, cured over 4 to 6 days, and polished by hand in our studio.
                 </div>
-                
-                <div class="features">
+
+                <div class="features" id="aboutFeatures">
                     <div class="feature">
                         <span class="feature-icon">🏡</span>
                         <h3>Handcrafted in Ahmedabad</h3>
@@ -273,8 +353,8 @@
         <div class="container">
             <h2 class="section-title">Order Policies & FAQs</h2>
             <p class="section-subtitle">Please read our shipping, return, and creation guidelines below.</p>
-            
-            <div class="faq-container">
+
+            <div class="faq-container" id="faqContainer">
                 <!-- FAQ 1 -->
                 <div class="faq-card">
                     <div class="faq-question">
@@ -343,11 +423,13 @@
         <div class="container">
             <h2 class="section-title">Happy Customers</h2>
             <p class="section-subtitle">Hear what others say about their resin treasures!</p>
-            
-            <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.2) 100%); border: 1px solid rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); border-radius: 28px; padding: 3rem 2rem; max-width: 600px; margin: 0 auto; text-align: center; box-shadow: var(--box-shadow);">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 0.8rem;">✨✍️🌸</span>
-                <h3 style="font-family: var(--font-primary); font-size: 1.5rem; color: var(--color-primary-dark); margin-bottom: 0.5rem;">Reviews Coming Soon!</h3>
-                <p style="font-size: 0.85rem; color: var(--color-secondary); line-height: 1.5; margin: 0;">We are currently collecting feedback from our early Ahmedabad patrons. Check back soon to see what others love about our botanical resin creations!</p>
+
+            <div id="reviewsContainer">
+                <div class="reviews-empty">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 0.8rem;">✨✍️🌸</span>
+                    <h3>Reviews Coming Soon!</h3>
+                    <p>We are currently collecting feedback from our early Ahmedabad patrons. Check back soon to see what others love about our botanical resin creations!</p>
+                </div>
             </div>
         </div>
     </section>
@@ -357,21 +439,29 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <h3>HetAas Atelier</h3>
-                    <p>Handcrafted Resin Art</p>
-                    <p class="footer-est">• Ahmedabad, Gujarat, India 🎨✨</p>
+                    <h3 id="footerBrand">HetAas Atelier</h3>
+                    <p id="footerTagline">Handcrafted Resin Art</p>
+                    <p class="footer-est" id="footerLocation">• Ahmedabad, Gujarat, India 🎨✨</p>
                 </div>
                 <div class="footer-info">
-                    <h4>Direct Orders & Inquiries</h4>
-                    <p>Instagram: <a href="https://www.instagram.com/hetaas_atelier" target="_blank">@hetaas_atelier</a></p>
-                    <p class="footer-policy-note">🔒 100% Pre-paid Orders • Gujarat Courier Shipping • Crafting Time: 4-8 Days</p>
+                    <h4 id="footerContactHeading">Direct Orders & Inquiries</h4>
+                    <p>Instagram: <a href="https://www.instagram.com/hetaas_atelier" id="footerInstagram" target="_blank" rel="noopener noreferrer">@hetaas_atelier</a></p>
+                    <p class="footer-policy-note" id="footerPolicyNote">🔒 100% Pre-paid Orders • Pan-India Courier Shipping • Crafting Time: 4-8 Days</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 HetAas Atelier. All rights reserved.</p>
+                <p id="footerCopyright">&copy; 2026 HetAas Atelier. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Floating Contact / Order Button (direct chat to place an order) -->
+    <a class="floating-contact-fab" id="contactFab" href="https://ig.me/m/hetaas_atelier" aria-label="Chat to order" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+        </svg>
+        <span class="floating-contact-label">Chat to Order</span>
+    </a>
 
     <!-- Floating Basket Trigger Button -->
     <button class="floating-cart-trigger" id="floatingCartBtn" aria-label="Open Basket">
@@ -479,6 +569,13 @@
             </div>
             
             <div class="checkout-popup-buttons">
+                <!-- WhatsApp Button (shown only when a number is configured; order is pre-filled) -->
+                <button class="checkout-popup-btn checkout-whatsapp-btn" id="checkoutWhatsappBtn" style="display:none;">
+                    <span>Send Order via WhatsApp</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.14c-.24.68-1.42 1.32-1.95 1.36-.5.05-.5.42-3.16-.66-2.66-1.08-4.32-3.83-4.45-4-.13-.17-1.06-1.41-1.06-2.69 0-1.28.67-1.91.91-2.17.24-.26.52-.33.7-.33.17 0 .35 0 .5.01.16.01.38-.06.59.45.24.58.81 2 .88 2.14.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.17-.29.38-.42.51-.14.14-.28.29-.12.57.16.28.72 1.19 1.55 1.93 1.06.95 1.96 1.24 2.24 1.38.28.14.44.12.6-.07.17-.19.69-.81.87-1.09.18-.28.36-.23.61-.14.24.09 1.55.73 1.82.87.27.14.45.2.51.31.07.11.07.66-.17 1.34z"/>
+                    </svg>
+                </button>
                 <!-- Instagram DM Button -->
                 <button class="checkout-popup-btn" id="checkoutGoBtn">
                     <span>Send Order via Instagram</span>
@@ -497,6 +594,8 @@
         <span id="toastMessage">Added to your basket!</span>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Local-preview data fallback (used only when opened via file://; ignored on a real server) -->
+    <script src="data.js"></script>
+    <script src="app.js" defer></script>
 </body>
 </html>

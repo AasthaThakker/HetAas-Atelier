@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#c89a90">
+  <title>Page not found &mdash; HetAas Atelier</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: 'Quicksand', system-ui, -apple-system, Segoe UI, sans-serif;
+      background: #faf6f0; color: #4a3e3d; padding: 24px; text-align: center;
+    }
+    .card {
+      max-width: 440px; background: #fff; border: 1px solid rgba(200,154,144,0.25);
+      border-radius: 28px; padding: 40px 28px; box-shadow: 0 18px 50px rgba(176,130,120,0.18);
+    }
+    img { width: 110px; height: 110px; object-fit: contain; }
+    .code { font-family: 'Playfair Display', Georgia, serif; font-size: 3rem; color: #c89a90; margin: 4px 0 0; line-height: 1; }
+    h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; margin: 6px 0 10px; }
+    p { font-size: 0.95rem; line-height: 1.55; color: #a39594; margin: 0 0 24px; }
+    a.btn {
+      display: inline-block; text-decoration: none; font-weight: 600; border-radius: 999px;
+      background: #c89a90; color: #fff; padding: 12px 30px; font-size: 0.95rem;
+      transition: background .2s, transform .2s;
+    }
+    a.btn:hover { background: #b08278; transform: translateY(-1px); }
+  </style>
+  <script>
+    // GitHub Pages serves 404.html for unknown paths. Send visitors to the
+    // storefront home after a short beat so deep links still resolve.
+    setTimeout(function () {
+      var base = location.pathname.replace(/\/[^\/]*$/, '/');
+      location.replace(base);
+    }, 2600);
+  </script>
+</head>
+<body>
+  <div class="card">
+    <img src="icons/icon-192.png" alt="HetAas Atelier logo">
+    <p class="code">404</p>
+    <h1>This page wandered off</h1>
+    <p>The page you're looking for isn't here. Taking you back to the collection&hellip; 🌸</p>
+    <a class="btn" href="./">Back to Shop</a>
+  </div>
+</body>
+</html>

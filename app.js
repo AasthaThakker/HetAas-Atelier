@@ -1,9 +1,21 @@
 // Global variables
 let allProducts = [];
 let cart = [];
+let content = {};              // Loaded from content.json (single source of truth for copy)
 
-// Customizer Options Data
-const customizerData = {
+// Escape untrusted/dynamic values before injecting into innerHTML (XSS defense-in-depth)
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Customizer Options Data (defaults; overridden by content.json when present)
+let customizerData = {
     bases: [
         { id: 'bookmark', name: 'Bookmark', price: 100, emoji: '🔖', category: 'Bookmarks' },
         { id: 'coaster', name: 'Coaster', price: 250, emoji: '🍵', category: 'Coasters' },
@@ -79,393 +91,56 @@ function getSvgPlaceholder(productName, category) {
 
 // Global Image Error Handler
 window.handleImageError = function(imgElement, productName, category) {
-    imgElement.src = getSvgPlaceholder(productName, category);
-    imgElement.onerror = null; // Prevent infinite loops
+    const name = productName || imgElement.getAttribute('data-name') || '';
+    const cat = category || imgElement.getAttribute('data-category') || '';
+    imgElement.src = getSvgPlaceholder(name, cat);
+    imgElement.dataset.fallbackApplied = '1'; // Prevent infinite loops
+    imgElement.onerror = null;
 };
+
+// Delegated (capture-phase) image error handling so no inline onerror attributes are
+// needed (keeps a strict Content-Security-Policy possible). `error` does not bubble,
+// so we listen in the capture phase on the document.
+document.addEventListener('error', function (e) {
+    const el = e.target;
+    if (el && el.tagName === 'IMG' && el.dataset && el.dataset.fallback === 'product' && el.dataset.fallbackApplied !== '1') {
+        window.handleImageError(el, el.dataset.name || '', el.dataset.category || '');
+    }
+}, true);
 
 // ==========================================
 // LOAD & DISPLAY PRODUCTS
 // ==========================================
 
 async function loadProducts() {
+    await loadContent();
+
     try {
-        const response = await fetch('products.json');
+        const response = await fetch('products.json', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Fetch failed');
         const data = await response.json();
-        allProducts = data.products.sort((a, b) => b.id - a.id);
+        allProducts = (data.products || []).sort((a, b) => b.id - a.id);
     } catch (error) {
-        console.warn('Unable to load products.json via fetch (often due to local CORS block on double-clicking index.html). Using local fallback products list.', error);
-        
-        // Hardcoded fallback list so the site remains 100% interactive and functional offline
-        allProducts = [
-            {
-                "id": 9,
-                "name": "Handmade Studs Set",
-                "category": "Earrings",
-                "price": 180,
-                "image": "images/earrings-studs.jpg",
-                "description": "Charming studs: circular yellow floral & trapezoidal pink glitter designs"
-            },
-            {
-                "id": 10,
-                "name": "Yellow Oval Dangles",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-yellow-oval.jpg",
-                "description": "Delicate yellow botanical petals embedded in oval transparent resin loops"
-            },
-            {
-                "id": 11,
-                "name": "Sparkly Green Circles",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-green-circles.jpg",
-                "bestseller": true,
-                "description": "Three-tier cascading sparkly emerald green circles with gold dust accents"
-            },
-            {
-                "id": 12,
-                "name": "Emerald Monstera Leaves",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-green-leaves.jpg",
-                "bestseller": true,
-                "description": "Detailed tropical monstera leaf dangles with green sparkles and shine"
-            },
-            {
-                "id": 13,
-                "name": "Bubbly Flower Earrings",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-bubbly-flower.jpg",
-                "description": "Charming rectangular dangles with embedded green blossoms and tiny bubbles"
-            },
-            {
-                "id": 14,
-                "name": "Golden Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-gold-butterfly.jpg",
-                "description": "Delicate golden butterfly keychain embedded with dried blossoms and golden flakes"
-            },
-            {
-                "id": 15,
-                "name": "Amber Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-brown-butterfly.jpg",
-                "description": "Warm amber-brown butterfly keychain with a matching leaf inclusion"
-            },
-            {
-                "id": 16,
-                "name": "Citrus Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-green-butterfly.jpg",
-                "description": "Vibrant yellow-green butterfly keychain decorated with white baby's breath"
-            },
-            {
-                "id": 17,
-                "name": "Pink Shimmer Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-pink-butterfly.jpg",
-                "description": "Whimsical pink and lavender butterfly keychain accented with shiny diamantes"
-            },
-            {
-                "id": 18,
-                "name": "Teal Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-teal-butterfly.jpg",
-                "description": "Stunning teal and turquoise butterfly keychain with a deep blue body"
-            },
-            {
-                "id": 19,
-                "name": "Blue Flower Dangles",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-blue-flowers.jpg",
-                "bestseller": true,
-                "description": "Delightful two-tier blue flower resin dangles with white dots and pearls"
-            },
-            {
-                "id": 20,
-                "name": "Red Sparkle Twin Set",
-                "category": "Earrings",
-                "price": 220,
-                "image": "images/earrings-red-twins.jpg",
-                "description": "Double pair combo set: glittery red teardrops and matching oval loops (4 earrings total)"
-            },
-            {
-                "id": 21,
-                "name": "Red Sparkle Rectangle Frames",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-red-parent.jpg",
-                "description": "Bold rectangular frames filled with shimmering red glitter"
-            },
-            {
-                "id": 22,
-                "name": "Multicolor Petal Drops",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-multicolor-petal.jpg",
-                "bestseller": true,
-                "description": "Beautiful transparent teardrops embedded with colorful dried botanical leaves"
-            },
-            {
-                "id": 23,
-                "name": "Ocean Sea Coaster (Single)",
-                "category": "Coasters",
-                "price": 250,
-                "image": "images/coasters-sea.jpg",
-                "bestseller": true,
-                "description": "Single wavy-edged ocean-themed coaster with real seashells, sand, pearls, and resin waves"
-            },
-            {
-                "id": 24,
-                "name": "Ocean Sea Coasters (Pair)",
-                "category": "Coasters",
-                "price": 450,
-                "image": "images/coasters-sea.jpg",
-                "bestseller": true,
-                "description": "Set of 2 wavy-edged ocean-themed coasters with real seashells, sand, pearls, and resin waves"
-            },
-            {
-                "id": 25,
-                "name": "Turtle Ocean Decor Plate (8-inch)",
-                "category": "Decor",
-                "price": 700,
-                "image": "images/decor-turtle-plate.jpg",
-                "description": "Stunning 8-inch wavy-edged ocean-themed decor plate with sand, seashells, and swimming sea turtle"
-            },
-            {
-                "id": 26,
-                "name": "Purple Shimmer Coaster",
-                "category": "Coasters",
-                "price": 250,
-                "image": "images/coasters-purple-shimmer.jpg",
-                "description": "Beautiful wavy-edged coaster styled with deep pink and purple glitter swirls"
-            },
-            {
-                "id": 27,
-                "name": "Magenta Floral Teardrops",
-                "category": "Earrings",
-                "price": 150,
-                "image": "images/earrings-magenta-teardrops.jpg",
-                "bestseller": true,
-                "description": "Elegant gold-framed teardrop earrings with a shimmery magenta pink base, a band of gold foil, and dried orange blossoms in clear resin"
-            },
-            {
-                "id": 28,
-                "name": "Pastel Rainbow Sprinkles Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-rainbow.jpg",
-                "bestseller": true,
-                "description": "Playful clear resin bookmark containing colorful pastel sprinkles and a cute rainbow decal, complete with a white ribbon tassel"
-            },
-            {
-                "id": 29,
-                "name": "Crimson Marble Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-crimson-marble.jpg",
-                "description": "Stunning resin bookmark featuring elegant swirls of crimson red, soft pink, and white marble patterns, complete with a red ribbon tassel"
-            },
-            {
-                "id": 30,
-                "name": "Emerald & Gold Wave Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-green-gold.jpg",
-                "description": "Scenic resin bookmark with a mint green base transitioning into white waves and clear resin with gold foil, finished with a golden heart symbol and green ribbon tassel"
-            },
-            {
-                "id": 31,
-                "name": "Ocean Beach Shells Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-ocean-shells.jpg",
-                "bestseller": true,
-                "description": "Beautiful ocean-themed bookmark featuring a blue sky, teal sea, crashing white waves, and real sand with embedded seashells, complete with a teal ribbon tassel"
-            },
-            {
-                "id": 32,
-                "name": "Iridescent Butterfly Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-butterfly-custom.jpg",
-                "description": "Charming iridescent pink and white bookmark featuring a bold black butterfly design and 'crush' lettering, complete with a red ribbon tassel"
-            },
-            {
-                "id": 33,
-                "name": "Colorful Smiley Beads Coaster",
-                "category": "Coasters",
-                "price": 250,
-                "image": "images/coasters-beads-smiley.jpg",
-                "description": "Whimsical clear round resin coaster filled with vibrant colorful beads, patterned tubes, and a cheerful central smiley-face heart"
-            },
-            {
-                "id": 34,
-                "name": "Sparkly Mint Bunny Coaster",
-                "category": "Coasters",
-                "price": 250,
-                "image": "images/coasters-mint-sprinkles.jpg",
-                "description": "Delightful mint green sparkly resin coaster decorated with colorful confetti sprinkles and adorable little cartoon rabbit faces"
-            },
-            {
-                "id": 35,
-                "name": "Custom Purple Butterfly Coaster",
-                "category": "Coasters",
-                "price": 250,
-                "image": "images/coasters-purple-butterfly-hetal.jpg",
-                "description": "Elegant purple shimmer coaster featuring a wavy scalloped border, a golden butterfly decal, and custom 'HETAL' golden lettering"
-            },
-            {
-                "id": 39,
-                "name": "Golden Poppy Stem Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-yellow-flower-hook.jpg",
-                "description": "Handcrafted resin bookmark featuring a clear golden yellow flower clip mounted on a metal page stem"
-            },
-            {
-                "id": 40,
-                "name": "Burgundy Rose & Gold Leaf Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-burgundy-rose-gold.jpg",
-                "bestseller": true,
-                "description": "Elegant clear resin bookmark embedded with deep burgundy rose petals and luxury gold foil flakes, finished with a red ribbon tassel"
-            },
-            {
-                "id": 41,
-                "name": "Ivory Blossom & Pink Sparkle Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-ivory-rose-pink.jpg",
-                "bestseller": true,
-                "description": "Delicate clear resin bookmark with dried ivory petals and shimmering pink glitter, finished with a soft pink ribbon tassel"
-            },
-            {
-                "id": 42,
-                "name": "Black Dotted Flower Dangles",
-                "category": "Earrings",
-                "price": 120,
-                "image": "images/earrings-black-flowers.jpg",
-                "description": "Charming two-tier black flower resin dangles featuring central pearl beads and intricate white dotted patterns"
-            },
-            {
-                "id": 43,
-                "name": "Royal Blue Ganesha Pooja Thali",
-                "category": "Thali",
-                "price": 1200,
-                "image": "images/thali-blue-ganesha.jpg",
-                "description": "Exquisite royal blue scalloped resin Pooja Thali featuring a central gold Ganesha motif, pearl-studded diyas, and handcrafted floral embellishments"
-            },
-            {
-                "id": 44,
-                "name": "Blush Pink Swastik Pooja Thali",
-                "category": "Thali",
-                "price": 1800,
-                "image": "images/thali-pink-swastik.jpg",
-                "description": "Grand circular blush pink resin Pooja Thali with raised rim, central gold Swastik symbol, pearl clusters, floral charms, and 3 built-in pearl diyas"
-            },
-            {
-                "id": 45,
-                "name": "Purple Shimmer Ganesha Pooja Thali",
-                "category": "Thali",
-                "price": 1800,
-                "image": "images/thali-purple-ganesha.jpg",
-                "description": "Grand circular deep purple shimmer resin Pooja Thali with raised rim, central gold Ganesha symbol, pearl embellishments, floral charms, and 3 built-in pearl diyas"
-            },
-            {
-                "id": 46,
-                "name": "Pink Shrinathji Spiritual Stand",
-                "category": "Spiritual",
-                "price": 250,
-                "image": "images/shrinathji-pink-stand-1.jpg",
-                "images": [
-                    "images/shrinathji-pink-stand-1.jpg",
-                    "images/shrinathji-pink-stand-2.jpg"
-                ],
-                "description": "Sacred Shrinathji resin idol stand in vibrant pink shimmer with white floral accents (Dimensions: 9 cm Height x 8.5 cm Width)"
-            },
-            {
-                "id": 47,
-                "name": "White Pearl Shrinathji Beaded Stand",
-                "category": "Spiritual",
-                "price": 250,
-                "image": "images/shrinathji-white-beaded-stand.jpg",
-                "description": "Sacred Shrinathji resin idol stand on a white marble resin base with colorful beaded garland borders and delicate rose gem embellishments"
-            },
-            {
-                "id": 48,
-                "name": "Custom Name Aqua Waves Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-custom-name-aqua.jpg",
-                "customizable": true,
-                "bestseller": true,
-                "description": "Personalized aqua turquoise resin bookmark with white ocean waves, custom golden name inscription (e.g. 'Ms. Mohona'), and green ribbon tassel with pearl beads"
-            },
-            {
-                "id": 49,
-                "name": "Namaste Ocean Waves Bookmark",
-                "category": "Bookmarks",
-                "price": 100,
-                "image": "images/bookmark-namaste-aqua.jpg",
-                "bestseller": true,
-                "description": "Aqua turquoise resin bookmark with white ocean wave swirls, traditional black Namaste lady decal, and vibrant green ribbon tassel with pearl beads"
-            },
-            {
-                "id": 50,
-                "name": "Magenta Floral Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-magenta-floral-butterfly.jpg",
-                "description": "Stunning butterfly resin keychain embedded with real dried magenta floral petals, yellow baby's breath, and purple rhinestone accents"
-            },
-            {
-                "id": 51,
-                "name": "Magenta Floral Pen & Cutlery Stand",
-                "category": "Decor",
-                "price": 1900,
-                "image": "images/decor-pen-cutlery-stand-1.jpg",
-                "images": [
-                    "images/decor-pen-cutlery-stand-1.jpg",
-                    "images/decor-pen-cutlery-stand-2.jpg"
-                ],
-                "description": "Versatile handcrafted resin pen & cutlery holder on a scalloped tray base, featuring white & magenta glitter shimmer and 3D floral pearl embellishments"
-            },
-            {
-                "id": 52,
-                "name": "Ocean Beach Shell Teardrops",
-                "category": "Earrings",
-                "price": 150,
-                "image": "images/earrings-ocean-beach-teardrops.jpg",
-                "description": "Stunning ocean-themed teardrop earrings featuring turquoise blue water, white foam waves, real beach sand, embedded white clam shells, and pearl accents"
-            },
-            {
-                "id": 53,
-                "name": "Purple Pearl Butterfly Keychain",
-                "category": "Keychains",
-                "price": 180,
-                "image": "images/keychain-purple-pearl-butterfly.jpg",
-                "description": "Elegant royal purple shimmer resin butterfly keychain embellished with silver rhinestone accents and pearl flower borders"
-            }
-        ];
-        allProducts.sort((a, b) => b.id - a.id);
+        // fetch() is blocked over file:// (double-click). Fall back to the generated data.js.
+        if (window.__HETAAS_PRODUCTS__ && Array.isArray(window.__HETAAS_PRODUCTS__.products)) {
+            console.info('Using local data.js fallback for products (opened via file://).');
+            allProducts = window.__HETAAS_PRODUCTS__.products.slice().sort((a, b) => b.id - a.id);
+        } else {
+            console.warn('Unable to load products.json. Products will appear once you are back online.', error);
+            allProducts = [];
+        }
     }
-    
-    // Always initialize UI elements even if products.json fetch failed
+
+    applyContent();
+    buildCategoryFilters();
     displayProducts(allProducts);
     setupCategoryFilters();
     initCart();
     initCustomizer();
     initUIHandlers();
+    injectProductJsonLd();
+    initPwa();
+    initAnalytics();
 }
 
 function displayProducts(products) {
@@ -473,7 +148,7 @@ function displayProducts(products) {
     grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p class="error">No products found.</p>';
+        grid.innerHTML = '<p class="error">No creations to show right now. Please check back soon! 🌸</p>';
         return;
     }
 
@@ -494,18 +169,20 @@ function displayProducts(products) {
             featureTagHtml = `<div class="product-tag bestseller-tag">🔥 Bestseller</div>`;
         }
         
+        const safeName = escapeHtml(product.name);
+        const safeCat = escapeHtml(product.category);
         productCard.innerHTML = `
-            <div class="product-image" onclick="openQuickView(${product.id})">
+            <div class="product-image" data-action="quickview" data-id="${product.id}">
                 ${featureTagHtml}
-                <img src="${product.image}" alt="${product.name}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
-                <div class="category-badge">${product.category}</div>
+                <img src="${escapeHtml(product.image)}" alt="${safeName}" loading="lazy" decoding="async" width="400" height="400" data-fallback="product" data-name="${safeName}" data-category="${safeCat}">
+                <div class="category-badge">${safeCat}</div>
             </div>
             <div class="product-info">
-                <h3 onclick="openQuickView(${product.id})">${product.name}</h3>
-                <p class="description">${product.description}</p>
+                <h3 data-action="quickview" data-id="${product.id}">${safeName}</h3>
+                <p class="description">${escapeHtml(product.description)}</p>
                 <div class="product-footer">
-                    <span class="price">₹${product.price}</span>
-                    <button onclick="${product.customizable ? `openQuickView(${product.id})` : `addToCartById(${product.id})`}" class="add-cart-btn">
+                    <span class="price">₹${escapeHtml(product.price)}</span>
+                    <button data-action="${product.customizable ? 'quickview' : 'add'}" data-id="${product.id}" class="add-cart-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -517,6 +194,65 @@ function displayProducts(products) {
         `;
         grid.appendChild(productCard);
     });
+}
+
+// Event delegation for dynamically-rendered controls (CSP-safe: no inline handlers).
+function setupDelegation() {
+    const grid = document.getElementById('productsGrid');
+    if (grid && !grid.dataset.bound) {
+        grid.dataset.bound = '1';
+        grid.addEventListener('click', (e) => {
+            const el = e.target.closest('[data-action]');
+            if (!el || !grid.contains(el)) return;
+            const id = Number(el.dataset.id);
+            if (el.dataset.action === 'quickview') openQuickView(id);
+            else if (el.dataset.action === 'add') addToCartById(id);
+        });
+    }
+
+    const cartContainer = document.getElementById('cartItemsContainer');
+    if (cartContainer && !cartContainer.dataset.bound) {
+        cartContainer.dataset.bound = '1';
+        cartContainer.addEventListener('click', (e) => {
+            const el = e.target.closest('[data-action]');
+            if (!el || !cartContainer.contains(el)) return;
+            if (el.dataset.action === 'shop') {
+                const overlay = document.getElementById('cartDrawerOverlay');
+                if (overlay) overlay.classList.remove('open');
+                document.body.style.overflow = '';
+                const products = document.getElementById('products');
+                if (products) products.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            const index = Number(el.dataset.index);
+            if (el.dataset.action === 'qty') changeCartQty(index, Number(el.dataset.change));
+            else if (el.dataset.action === 'remove') removeCartItem(index);
+        });
+    }
+
+    const modalBody = document.getElementById('modalBodyContent');
+    if (modalBody && !modalBody.dataset.bound) {
+        modalBody.dataset.bound = '1';
+        modalBody.addEventListener('click', (e) => {
+            const el = e.target.closest('.related-card[data-action="quickview"]');
+            if (!el || !modalBody.contains(el)) return;
+            openQuickView(Number(el.dataset.id));
+            const modalContainer = modalBody.closest('.modal-container');
+            if (modalContainer) modalContainer.scrollTop = 0;
+        });
+    }
+
+    const searchList = document.getElementById('searchResultsList');
+    if (searchList && !searchList.dataset.bound) {
+        searchList.dataset.bound = '1';
+        searchList.addEventListener('click', (e) => {
+            const el = e.target.closest('[data-action="quickview"]');
+            if (!el || !searchList.contains(el)) return;
+            const searchOverlay = document.getElementById('searchOverlay');
+            if (searchOverlay) searchOverlay.classList.remove('open');
+            openQuickView(Number(el.dataset.id));
+        });
+    }
 }
 
 // Category filter button binds
@@ -612,7 +348,8 @@ function updateCartUI() {
             <div class="empty-cart-message">
                 <span>🧺</span>
                 <p>Your basket is empty!</p>
-                <p style="font-size: 0.8rem;">Browse Shop or Customizer to fill it.</p>
+                <p style="font-size: 0.8rem;">Discover handmade resin treasures &mdash; there's something for everyone. 🌸</p>
+                <button class="empty-cart-cta" data-action="shop">Shop the Collection</button>
             </div>
         `;
         cartTotalDisplay.textContent = '₹0';
@@ -631,25 +368,25 @@ function updateCartUI() {
         // Image setup
         let imageHtml = '';
         if (item.isCustom) {
-            imageHtml = `<img class="cart-item-img" src="${item.product.image}" alt="Customized item">`;
+            imageHtml = `<img class="cart-item-img" src="${escapeHtml(item.product.image)}" alt="Customized item">`;
         } else {
-            imageHtml = `<img class="cart-item-img" src="${item.product.image}" alt="${item.product.name}" onerror="handleImageError(this, '${item.product.name}', '${item.product.category}')">`;
+            imageHtml = `<img class="cart-item-img" src="${escapeHtml(item.product.image)}" alt="${escapeHtml(item.product.name)}" data-fallback="product" data-name="${escapeHtml(item.product.name)}" data-category="${escapeHtml(item.product.category)}">`;
         }
-        
+
         // Customization details text representation
         let customDetailsHtml = '';
         if (item.isCustom && item.customization) {
             customDetailsHtml = `
                 <div class="cart-item-customization">
-                    Tint: ${item.customization.color}<br>
-                    Accents: ${item.customization.inclusion}
-                    ${item.customization.text ? `<br>Sticker: "${item.customization.text}" (+₹90)` : ''}
+                    Tint: ${escapeHtml(item.customization.color)}<br>
+                    Accents: ${escapeHtml(item.customization.inclusion)}
+                    ${item.customization.text ? `<br>Sticker: "${escapeHtml(item.customization.text)}" (+₹90)` : ''}
                 </div>
             `;
         } else if (item.customName) {
             customDetailsHtml = `
                 <div class="cart-item-customization">
-                    Custom Name: "${item.customName}"
+                    Custom Name: "${escapeHtml(item.customName)}"
                 </div>
             `;
         }
@@ -657,16 +394,16 @@ function updateCartUI() {
         cartItemEl.innerHTML = `
             ${imageHtml}
             <div class="cart-item-details">
-                <h4>${item.product.name}</h4>
+                <h4>${escapeHtml(item.product.name)}</h4>
                 ${customDetailsHtml}
-                <div class="cart-item-price">₹${item.product.price}</div>
+                <div class="cart-item-price">₹${escapeHtml(item.product.price)}</div>
                 <div class="cart-item-qty">
-                    <button onclick="changeCartQty(${index}, -1)" aria-label="Decrease quantity">-</button>
+                    <button data-action="qty" data-index="${index}" data-change="-1" aria-label="Decrease quantity">-</button>
                     <span>${item.quantity}</span>
-                    <button onclick="changeCartQty(${index}, 1)" aria-label="Increase quantity">+</button>
+                    <button data-action="qty" data-index="${index}" data-change="1" aria-label="Increase quantity">+</button>
                 </div>
             </div>
-            <button class="remove-cart-item" onclick="removeCartItem(${index})" aria-label="Remove item">
+            <button class="remove-cart-item" data-action="remove" data-index="${index}" aria-label="Remove item">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -722,6 +459,10 @@ function triggerCartBounce() {
 // ==========================================
 
 function initCustomizer() {
+    // Re-sync default selections to the (possibly content-overridden) option lists
+    if (customizerData.bases && customizerData.bases[0]) customSelections.base = customizerData.bases[0];
+    if (customizerData.colors && customizerData.colors[0]) customSelections.color = customizerData.colors[0];
+    if (customizerData.inclusions && customizerData.inclusions[0]) customSelections.inclusion = customizerData.inclusions[0];
     renderCustomizerOptions();
     
     // Add sticker checkbox listener
@@ -843,8 +584,8 @@ function updateCustomizerPreview() {
         <div class="preview-item">
             <span class="preview-label">Name Sticker:</span>
             <span class="preview-val">
-                ${customSelections.addSticker 
-                    ? `Golden Metallic Lettering (+₹90) ${customSelections.text ? `"${customSelections.text}"` : ''}` 
+                ${customSelections.addSticker
+                    ? `Golden Metallic Lettering (+₹90) ${customSelections.text ? `"${escapeHtml(customSelections.text)}"` : ''}`
                     : 'None'}
             </span>
         </div>
@@ -962,7 +703,7 @@ function openQuickView(productId) {
     if (imageList.length > 1) {
         const slidesHtml = imageList.map((imgSrc, idx) => `
             <div class="modal-slide">
-                <img src="${imgSrc}" alt="${product.name} - View ${idx + 1}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
+                <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(product.name)} - View ${idx + 1}" loading="lazy" decoding="async" data-fallback="product" data-name="${escapeHtml(product.name)}" data-category="${escapeHtml(product.category)}">
             </div>
         `).join('');
 
@@ -987,19 +728,41 @@ function openQuickView(productId) {
     } else {
         imgContainerHtml = `
             <div class="modal-img-container">
-                <img src="${product.image}" alt="${product.name}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
+                <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" data-fallback="product" data-name="${escapeHtml(product.name)}" data-category="${escapeHtml(product.category)}">
             </div>
         `;
     }
-    
+
+    // Related products (same category, excluding this one)
+    const related = allProducts
+        .filter(p => p.category === product.category && p.id !== product.id && !String(p.id).startsWith('custom-'))
+        .slice(0, 4);
+    let relatedHtml = '';
+    if (related.length > 0) {
+        relatedHtml = `
+            <div class="modal-related">
+                <h4 class="related-title">You might also like 🌸</h4>
+                <div class="related-grid">
+                    ${related.map(r => `
+                        <div class="related-card" data-action="quickview" data-id="${r.id}">
+                            <img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" data-fallback="product" data-name="${escapeHtml(r.name)}" data-category="${escapeHtml(r.category)}">
+                            <span class="related-name">${escapeHtml(r.name)}</span>
+                            <span class="related-price">₹${escapeHtml(r.price)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
     modalBody.innerHTML = `
         ${imgContainerHtml}
         <div class="modal-content-panel">
-            <span class="modal-badge">${product.category}</span>
-            <h2 class="modal-title">${product.name}</h2>
-            <div class="modal-price">₹${product.price}</div>
-            <p class="modal-desc">${product.description}</p>
-            
+            <span class="modal-badge">${escapeHtml(product.category)}</span>
+            <h2 class="modal-title">${escapeHtml(product.name)}</h2>
+            <div class="modal-price">₹${escapeHtml(product.price)}</div>
+            <p class="modal-desc">${escapeHtml(product.description)}</p>
+
             <div class="modal-care-guide">
                 <h4 class="care-title">🌸 Dimensions & Care Guide</h4>
                 <p class="care-text" style="margin-bottom: 4px;"><strong>Dimensions:</strong> ${careSpecs.dimensions}</p>
@@ -1025,6 +788,7 @@ function openQuickView(productId) {
                     Add to Basket 🌸
                 </button>
             </div>
+            ${relatedHtml}
         </div>
     `;
     
@@ -1250,15 +1014,13 @@ function initSearchAndProfile() {
         matches.forEach(product => {
             const item = document.createElement('div');
             item.className = 'search-result-item';
-            item.onclick = () => {
-                closeSearch();
-                openQuickView(product.id);
-            };
+            item.setAttribute('data-action', 'quickview');
+            item.setAttribute('data-id', product.id);
             item.innerHTML = `
-                <img src="${product.image}" onerror="handleImageError(this, '${product.name}', '${product.category}')">
+                <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy" data-fallback="product" data-name="${escapeHtml(product.name)}" data-category="${escapeHtml(product.category)}">
                 <div class="search-result-details">
-                    <h5>${product.name}</h5>
-                    <span>₹${product.price} - in ${product.category}</span>
+                    <h5>${escapeHtml(product.name)}</h5>
+                    <span>₹${escapeHtml(product.price)} - in ${escapeHtml(product.category)}</span>
                 </div>
             `;
             searchResultsList.appendChild(item);
@@ -1290,52 +1052,56 @@ function setupAccordions() {
 
 let currentReviewIndex = 0;
 let reviewSlides = [];
+let reviewsTimer = null;
 
 function setupReviews() {
     reviewSlides = document.querySelectorAll('.review-slide');
-    const dotsContainer = document.getElementById('sliderDots');
-    const prevBtn = document.getElementById('sliderPrevBtn');
-    const nextBtn = document.getElementById('sliderNextBtn');
-    
-    // Safety check: Exit if reviews slider elements do not exist
+    const dotsContainer = document.getElementById('reviewsDots');
+    const prevBtn = document.getElementById('reviewsPrev');
+    const nextBtn = document.getElementById('reviewsNext');
+
+    if (reviewsTimer) { clearInterval(reviewsTimer); reviewsTimer = null; }
+
+    // Nothing to rotate (no reviews yet, or controls hidden for a single review)
     if (reviewSlides.length === 0 || !dotsContainer || !prevBtn || !nextBtn) {
         return;
     }
-    
+
     dotsContainer.innerHTML = '';
-    
     reviewSlides.forEach((slide, idx) => {
         const dot = document.createElement('span');
-        dot.className = `slider-dot ${idx === 0 ? 'active' : ''}`;
+        dot.className = `reviews-dot ${idx === 0 ? 'active' : ''}`;
         dot.onclick = () => showReview(idx);
         dotsContainer.appendChild(dot);
     });
-    
+
     prevBtn.onclick = () => {
         let index = currentReviewIndex - 1;
         if (index < 0) index = reviewSlides.length - 1;
         showReview(index);
     };
-    
+
     nextBtn.onclick = () => {
         let index = currentReviewIndex + 1;
         if (index >= reviewSlides.length) index = 0;
         showReview(index);
     };
-    
-    setInterval(() => {
-        let index = currentReviewIndex + 1;
-        if (index >= reviewSlides.length) index = 0;
-        showReview(index);
-    }, 8000);
+
+    if (reviewSlides.length > 1) {
+        reviewsTimer = setInterval(() => {
+            let index = currentReviewIndex + 1;
+            if (index >= reviewSlides.length) index = 0;
+            showReview(index);
+        }, 8000);
+    }
 }
 
 function showReview(index) {
     if (reviewSlides.length === 0) return;
     reviewSlides.forEach(slide => slide.classList.remove('active'));
-    const dots = document.querySelectorAll('.slider-dot');
+    const dots = document.querySelectorAll('.reviews-dot');
     dots.forEach(dot => dot.classList.remove('active'));
-    
+
     if (reviewSlides[index]) reviewSlides[index].classList.add('active');
     if (dots[index]) dots[index].classList.add('active');
     currentReviewIndex = index;
@@ -1411,23 +1177,55 @@ function initUIHandlers() {
     document.getElementById('checkoutBtn').onclick = handleCheckout;
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
-    document.getElementById('checkoutGoBtn').onclick = () => {
-        popupOverlay.classList.remove('open');
-        const orderText = document.getElementById('checkoutCodeBox').textContent;
-        copyTextToClipboard(orderText);
-        window.open('https://ig.me/m/hetaas_atelier', '_blank');
-    };
+    const igGoBtn = document.getElementById('checkoutGoBtn');
+    if (igGoBtn) {
+        igGoBtn.onclick = () => {
+            popupOverlay.classList.remove('open');
+            const orderText = document.getElementById('checkoutCodeBox').textContent;
+            copyTextToClipboard(orderText);
+            window.open(getInstagramDmUrl(), '_blank', 'noopener,noreferrer');
+        };
+    }
 
-    
+    // WhatsApp checkout (only wired/shown when a number is configured in content.json)
+    const waGoBtn = document.getElementById('checkoutWhatsappBtn');
+    if (waGoBtn) {
+        const waNumber = getWhatsappNumber();
+        if (waNumber) {
+            waGoBtn.style.display = '';
+            waGoBtn.onclick = () => {
+                popupOverlay.classList.remove('open');
+                const orderText = document.getElementById('checkoutCodeBox').textContent;
+                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(orderText)}`, '_blank', 'noopener,noreferrer');
+            };
+        } else {
+            waGoBtn.style.display = 'none';
+        }
+    }
+
     popupOverlay.onclick = (e) => {
         if (e.target === popupOverlay) {
             popupOverlay.classList.remove('open');
         }
     };
-    
+
+    setupDelegation();
+    setupStickyOrderBar();
     initSearchAndProfile();
     setupAccordions();
     setupReviews();
+}
+
+// Instagram DM deep link derived from the configured handle.
+function getInstagramDmUrl() {
+    const handle = (content.business && content.business.instagramHandle) || 'hetaas_atelier';
+    return `https://ig.me/m/${handle}`;
+}
+
+// Normalise the WhatsApp number to digits only (country code + number), or '' if unset.
+function getWhatsappNumber() {
+    const raw = (content.business && content.business.whatsappNumber) || '';
+    return String(raw).replace(/[^0-9]/g, '');
 }
 
 function showToast(message, icon = '🌸') {
@@ -1445,6 +1243,324 @@ function showToast(message, icon = '🌸') {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
+}
+
+// ==========================================
+// CONTENT (content.json) LOADING & RENDERING
+// ==========================================
+
+async function loadContent() {
+    try {
+        const res = await fetch('content.json', { cache: 'no-cache' });
+        if (res.ok) content = await res.json();
+    } catch (e) {
+        // fetch() is blocked over file:// (double-click). Fall back to the generated data.js.
+        if (window.__HETAAS_CONTENT__) {
+            console.info('Using local data.js fallback for content (opened via file://).');
+            content = window.__HETAAS_CONTENT__;
+        } else {
+            console.warn('content.json not loaded; using built-in page defaults.', e);
+            content = content || {};
+        }
+    }
+    // Override customizer option lists when provided by content.json
+    if (content.customizer) {
+        if (Array.isArray(content.customizer.bases) && content.customizer.bases.length) customizerData.bases = content.customizer.bases;
+        if (Array.isArray(content.customizer.colors) && content.customizer.colors.length) customizerData.colors = content.customizer.colors;
+        if (Array.isArray(content.customizer.inclusions) && content.customizer.inclusions.length) customizerData.inclusions = content.customizer.inclusions;
+    }
+}
+
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== undefined && value !== null && value !== '') el.textContent = value;
+}
+// Owner-authored HTML from content.json (trusted, committed to the repo) — allows <strong> etc.
+function setTrustedHtml(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== undefined && value !== null && value !== '') el.innerHTML = value;
+}
+function setMeta(attr, key, value) {
+    if (value === undefined || value === null || value === '') return;
+    const el = document.querySelector(`meta[${attr}="${key}"]`);
+    if (el) el.setAttribute('content', value);
+}
+
+function applyContent() {
+    if (!content || Object.keys(content).length === 0) return;
+
+    // SEO / meta reflect admin edits at runtime
+    if (content.site) {
+        if (content.site.title) document.title = content.site.title;
+        setMeta('name', 'description', content.site.metaDescription);
+        setMeta('property', 'og:title', content.site.title);
+        setMeta('property', 'og:description', content.site.metaDescription);
+        setMeta('name', 'twitter:title', content.site.title);
+        setMeta('name', 'twitter:description', content.site.metaDescription);
+        setMeta('name', 'theme-color', content.site.themeColor);
+    }
+
+    if (content.hero) {
+        setText('heroHeading', content.hero.heading);
+        setText('heroSubtext', content.hero.subtext);
+        setTrustedHtml('heroBlurb', content.hero.blurb);
+        setText('heroCta', content.hero.ctaLabel);
+    }
+
+    renderTrustBar();
+    renderHowToOrder();
+    renderAbout();
+    renderFaqs();
+    renderReviews();
+    renderFooter();
+}
+
+function renderTrustBar() {
+    const bar = document.getElementById('trustBar');
+    const wrap = document.getElementById('trustBarContent');
+    if (!bar || !wrap) return;
+    const tb = content.trustBar;
+    if (!tb || tb.enabled === false || !Array.isArray(tb.items) || tb.items.length === 0) { bar.hidden = true; return; }
+    wrap.innerHTML = tb.items.map((item, i) => `
+        ${i > 0 ? '<div class="trust-divider">•</div>' : ''}
+        <div class="trust-item"><span>${escapeHtml(item.icon || '')}</span> ${escapeHtml(item.text || '')}</div>
+    `).join('');
+    bar.hidden = false;
+}
+
+function renderHowToOrder() {
+    const sec = document.getElementById('howToOrder');
+    const grid = document.getElementById('howToOrderGrid');
+    if (!sec || !grid) return;
+    const h = content.howToOrder;
+    if (!h || h.enabled === false || !Array.isArray(h.steps) || h.steps.length === 0) { sec.hidden = true; return; }
+    setText('howToOrderHeading', h.heading);
+    grid.innerHTML = h.steps.map((s, i) => `
+        <div class="hto-step">
+            <div class="hto-num">${i + 1}</div>
+            <div class="hto-emoji">${escapeHtml(s.icon || '')}</div>
+            <h3>${escapeHtml(s.title || '')}</h3>
+            <p>${escapeHtml(s.text || '')}</p>
+        </div>
+    `).join('');
+    sec.hidden = false;
+}
+
+function renderAbout() {
+    if (!content.about) return;
+    setText('aboutBadge', content.about.badge);
+    setText('aboutHeading', content.about.heading);
+    setText('aboutSubtitle', content.about.subtitle);
+    setTrustedHtml('aboutStory', content.about.story);
+    const grid = document.getElementById('aboutFeatures');
+    if (grid && Array.isArray(content.about.features) && content.about.features.length) {
+        grid.innerHTML = content.about.features.map(f => `
+            <div class="feature">
+                <span class="feature-icon">${escapeHtml(f.icon || '')}</span>
+                <h3>${escapeHtml(f.title || '')}</h3>
+                <p>${escapeHtml(f.text || '')}</p>
+            </div>
+        `).join('');
+    }
+}
+
+function renderFaqs() {
+    const container = document.getElementById('faqContainer');
+    if (!container || !Array.isArray(content.faqs) || content.faqs.length === 0) return;
+    container.innerHTML = content.faqs.map(f => `
+        <div class="faq-card">
+            <div class="faq-question">
+                <span>${escapeHtml(f.q || '')}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">${f.a || ''}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderReviews() {
+    const container = document.getElementById('reviewsContainer');
+    if (!container) return;
+    const reviews = Array.isArray(content.reviews) ? content.reviews : [];
+    if (reviews.length === 0) return; // keep default "coming soon" markup
+    const clamp = (n) => Math.max(0, Math.min(5, Number(n) || 5));
+    const slides = reviews.map((r, i) => {
+        const stars = clamp(r.rating);
+        return `
+        <div class="review-slide ${i === 0 ? 'active' : ''}">
+            <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
+            <p class="review-text">"${escapeHtml(r.text || '')}"</p>
+            <p class="review-author">— ${escapeHtml(r.name || 'Happy Customer')}${r.location ? ', ' + escapeHtml(r.location) : ''}</p>
+        </div>`;
+    }).join('');
+    const controls = reviews.length > 1 ? `
+        <button class="slider-btn prev" id="reviewsPrev" aria-label="Previous review">‹</button>
+        <button class="slider-btn next" id="reviewsNext" aria-label="Next review">›</button>
+        <div class="slider-dots" id="reviewsDots"></div>
+    ` : '';
+    container.innerHTML = `
+        <div class="reviews-slider-wrapper">
+            <div class="reviews-container">${slides}</div>
+            ${controls}
+        </div>`;
+}
+
+function renderFooter() {
+    if (content.footer) {
+        setText('footerBrand', content.footer.brand);
+        setText('footerTagline', content.footer.tagline);
+        setText('footerLocation', content.footer.location);
+        setText('footerContactHeading', content.footer.contactHeading);
+        setText('footerPolicyNote', content.footer.policyNote);
+        setText('footerCopyright', content.footer.copyright);
+    }
+    const ig = document.getElementById('footerInstagram');
+    if (ig && content.business) {
+        if (content.business.instagramUrl) ig.href = content.business.instagramUrl;
+        if (content.business.instagramHandle) ig.textContent = '@' + content.business.instagramHandle;
+    }
+}
+
+// Rebuild category filter buttons from content.json (so new categories appear automatically)
+function buildCategoryFilters() {
+    const container = document.getElementById('filterContainer');
+    if (!container) return;
+    const cats = (Array.isArray(content.categories) && content.categories.length)
+        ? content.categories
+        : [...new Set(allProducts.map(p => p.category))];
+    let html = '<button class="filter-btn active" data-filter="all">Shop All</button>';
+    cats.forEach(cat => {
+        html += `<button class="filter-btn" data-filter="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`;
+    });
+    container.innerHTML = html;
+}
+
+// ==========================================
+// STRUCTURED DATA (Product ItemList JSON-LD)
+// ==========================================
+
+function absoluteUrl(path, base) {
+    try { return new URL(path, base).href; } catch (e) { return path; }
+}
+
+function injectProductJsonLd() {
+    try {
+        const existing = document.getElementById('product-jsonld');
+        if (existing) existing.remove();
+        if (!allProducts.length) return;
+        const base = (content.site && content.site.url) || (location.origin + location.pathname);
+        const itemList = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": allProducts.slice(0, 40).map((p, i) => ({
+                "@type": "ListItem",
+                "position": i + 1,
+                "item": {
+                    "@type": "Product",
+                    "name": p.name,
+                    "image": absoluteUrl(p.image, base),
+                    "description": p.description,
+                    "category": p.category,
+                    "offers": {
+                        "@type": "Offer",
+                        "price": p.price,
+                        "priceCurrency": "INR",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            }))
+        };
+        const s = document.createElement('script');
+        s.type = 'application/ld+json';
+        s.id = 'product-jsonld';
+        s.textContent = JSON.stringify(itemList);
+        document.head.appendChild(s);
+    } catch (e) { /* non-fatal */ }
+}
+
+// ==========================================
+// PWA: SERVICE WORKER, INSTALL PROMPT, UPDATES
+// ==========================================
+
+function initPwa() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then((reg) => {
+                reg.addEventListener('updatefound', () => {
+                    const nw = reg.installing;
+                    if (!nw) return;
+                    nw.addEventListener('statechange', () => {
+                        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                            showToast('Fresh updates available — refresh to see them! 🌸', '🔄');
+                        }
+                    });
+                });
+            }).catch((err) => console.warn('Service worker registration failed', err));
+        });
+    }
+
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('pwaInstallBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) installBtn.hidden = false;
+    });
+    if (installBtn) {
+        installBtn.onclick = async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            try { await deferredPrompt.userChoice; } catch (e) {}
+            deferredPrompt = null;
+            installBtn.hidden = true;
+        };
+    }
+    window.addEventListener('appinstalled', () => {
+        if (installBtn) installBtn.hidden = true;
+        showToast('App installed! Find HetAas on your home screen 🌸');
+    });
+}
+
+// ==========================================
+// PRIVACY-FRIENDLY ANALYTICS (opt-in via content.json)
+// ==========================================
+
+function initAnalytics() {
+    const a = content.analytics;
+    if (!a || !a.enabled || !a.code) return;
+    if (a.provider === 'plausible') {
+        const s = document.createElement('script');
+        s.defer = true;
+        s.setAttribute('data-domain', a.code);
+        s.src = 'https://plausible.io/js/script.js';
+        document.head.appendChild(s);
+    } else {
+        // GoatCounter (default). `code` is the site subdomain, e.g. "hetaas".
+        const s = document.createElement('script');
+        s.async = true;
+        s.setAttribute('data-goatcounter', `https://${a.code}.goatcounter.com/count`);
+        s.src = 'https://gc.zgo.at/count.js';
+        document.body.appendChild(s);
+    }
+}
+
+// Direct-contact floating button → WhatsApp when configured, else Instagram DM.
+function setupStickyOrderBar() {
+    const fab = document.getElementById('contactFab');
+    if (!fab) return;
+    const wa = getWhatsappNumber();
+    const label = fab.querySelector('.floating-contact-label');
+    if (wa) {
+        fab.href = `https://wa.me/${wa}`;
+        if (label) label.textContent = 'Chat on WhatsApp';
+    } else {
+        fab.href = getInstagramDmUrl();
+        if (label) label.textContent = 'Chat to Order';
+    }
 }
 
 // Load products when page loads

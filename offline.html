@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#c89a90">
+  <title>Offline &mdash; HetAas Atelier</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: 'Quicksand', system-ui, -apple-system, Segoe UI, sans-serif;
+      background: #faf6f0; color: #4a3e3d; padding: 24px; text-align: center;
+    }
+    .card {
+      max-width: 420px; background: #fff; border: 1px solid rgba(200,154,144,0.25);
+      border-radius: 28px; padding: 40px 28px; box-shadow: 0 18px 50px rgba(176,130,120,0.18);
+    }
+    img { width: 120px; height: 120px; object-fit: contain; margin-bottom: 8px; }
+    h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.6rem; margin: 8px 0; color: #4a3e3d; }
+    p { font-size: 0.95rem; line-height: 1.55; color: #a39594; margin: 0 0 22px; }
+    button {
+      font: inherit; font-weight: 600; cursor: pointer; border: none; border-radius: 999px;
+      background: #c89a90; color: #fff; padding: 12px 28px; font-size: 0.95rem;
+      transition: background .2s, transform .2s;
+    }
+    button:hover { background: #b08278; transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="icons/icon-192.png" alt="HetAas Atelier logo">
+    <h1>You're offline</h1>
+    <p>It looks like your internet connection dropped. Your basket is saved &mdash; reconnect and try again to keep browsing our resin treasures. 🌸</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+</body>
+</html>

@@ -14,6 +14,10 @@ node_modules
 .next/
 .DS_Store
 
+# Admin console — local-only management tool, intentionally kept out of the public repo.
+# Run it locally: `python -m http.server` then open /admin/. (Remove this line to version it.)
+admin/
+
 # Terraform
 **/.terraform/*
 *.tfstate

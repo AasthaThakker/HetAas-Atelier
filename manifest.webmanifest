@@ -1,0 +1,36 @@
+{
+  "name": "HetAas Atelier - Handmade Resin Treasures",
+  "short_name": "HetAas",
+  "description": "Handmade botanical resin treasures crafted in Ahmedabad — bookmarks, earrings, keychains, coasters, pooja thalis and custom name pieces.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "id": "/HetAas-Atelier/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf6f0",
+  "theme_color": "#c89a90",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "icons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop the Collection",
+      "short_name": "Shop",
+      "url": "./?source=pwa#products",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Custom Design Studio",
+      "short_name": "Customize",
+      "url": "./?source=pwa#customizer",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

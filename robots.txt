@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /terraform/
+
+Sitemap: https://aasthathakker.github.io/HetAas-Atelier/sitemap.xml
