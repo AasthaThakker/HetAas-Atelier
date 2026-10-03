@@ -1,12 +1,13 @@
 /* HetAas Atelier - Service Worker
  * Strategy:
- *   - App shell (html/css/js/icons/manifest): precached, cache-first.
- *   - Data (products.json, content.json): stale-while-revalidate (fast + fresh).
+ *   - App shell (html/css/js/icons/manifest): precached.
+ *   - Data (products.json, content.json) + app.js/styles.css: stale-while-revalidate
+ *     (instant from cache, refreshed in the background for the next load).
  *   - Images: cache-first, runtime-cached (offline browsing after first view).
  *   - Navigations: network-first, fall back to cached page, then offline.html.
- * Bump CACHE_VERSION on every release so old caches are purged.
+ * Bump CACHE_VERSION on a release when you want to force-purge all old caches.
  */
-const CACHE_VERSION = 'hetaas-v1';
+const CACHE_VERSION = 'hetaas-v2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 const IMG_CACHE = `${CACHE_VERSION}-img`;
@@ -119,14 +120,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Everything else same-origin: cache-first, then network
+  // Everything else same-origin (app.js, styles.css, etc.): stale-while-revalidate
+  // so a returning visitor gets an instant cached response AND the newest version
+  // is fetched in the background for the next load — no manual cache bump needed.
   event.respondWith(
-    caches.match(request).then((cached) => cached || fetch(request).then((resp) => {
-      if (resp && resp.ok && resp.type === 'basic') {
-        const copy = resp.clone();
-        caches.open(SHELL_CACHE).then((cache) => cache.put(request, copy)).catch(() => {});
-      }
-      return resp;
-    }).catch(() => cached))
+    caches.open(SHELL_CACHE).then(async (cache) => {
+      const cached = await cache.match(request);
+      const network = fetch(request).then((resp) => {
+        if (resp && resp.ok && resp.type === 'basic') cache.put(request, resp.clone());
+        return resp;
+      }).catch(() => cached);
+      return cached || network;
+    })
   );
 });
