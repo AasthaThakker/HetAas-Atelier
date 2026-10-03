@@ -1404,11 +1404,14 @@ function renderReviews() {
         <button class="slider-btn next" id="reviewsNext" aria-label="Next review">›</button>
         <div class="slider-dots" id="reviewsDots"></div>
     ` : '';
+    const igUrl = (content.business && content.business.instagramUrl) || 'https://www.instagram.com/hetaas_atelier';
+    const igHandle = (content.business && content.business.instagramHandle) || 'hetaas_atelier';
     container.innerHTML = `
         <div class="reviews-slider-wrapper">
             <div class="reviews-container">${slides}</div>
             ${controls}
-        </div>`;
+        </div>
+        <p class="reviews-more-note">🌸 More happy reviews coming soon — tag <a href="${escapeHtml(igUrl)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(igHandle)}</a> to be featured!</p>`;
 }
 
 function renderFooter() {

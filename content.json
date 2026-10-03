@@ -77,7 +77,26 @@
       "a": "We do not offer free shipping. Customers in Ahmedabad can arrange a self-pickup. If you want us to ship anywhere else across India, the <strong>delivery costs must be borne entirely by the buyer</strong>."
     }
   ],
-  "reviews": [],
+  "reviews": [
+    {
+      "name": "Cherished Patron",
+      "rating": 5,
+      "location": "via Instagram",
+      "text": "Thank you SO much for creating something so beautiful for me! I can genuinely see the effort and love that went into making them. Everything is so beautifully detailed and personalised. You're incredibly talented, and I'm definitely going to cherish these! ❤️🌻"
+    },
+    {
+      "name": "Gifted Customer",
+      "rating": 5,
+      "location": "via Instagram",
+      "text": "One of my besties gifted me your earrings and a keychain — they are super cute and pretty! Thank you so much! 🥺💕"
+    },
+    {
+      "name": "Happy Patron",
+      "rating": 5,
+      "location": "via Instagram",
+      "text": "Sab kuch bohot accha hai — loved the finishing! ❤️😍"
+    }
+  ],
   "footer": {
     "brand": "HetAas Atelier",
     "tagline": "Handcrafted Resin Art",

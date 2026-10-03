@@ -3167,6 +3167,19 @@ h1, h2, h3, h4 {
     transition: var(--transition);
 }
 .reviews-dot.active { background-color: var(--color-primary); width: 16px; border-radius: 4px; }
+.reviews-more-note {
+    text-align: center;
+    margin: 1.6rem auto 0;
+    max-width: 520px;
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+    background: var(--color-primary-light);
+    border: 1px dashed var(--color-border);
+    border-radius: 999px;
+    padding: 0.7rem 1.2rem;
+}
+.reviews-more-note a { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
+.reviews-more-note a:hover { text-decoration: underline; }
 
 /* Floating direct-contact button (bottom-left; complements the basket FAB) */
 .floating-contact-fab {
