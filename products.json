@@ -1,6 +1,33 @@
 {
   "products": [
     {
+      "id": 56,
+      "name": "Sunburst Yellow Oxidised Jhumkas",
+      "category": "Earrings",
+      "price": 130,
+      "image": "images/earrings-oxidised-yellow-jhumka.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised circular Jhumka dangles with ghungroo bells, featuring a vibrant yellow pressed flower on a black resin base"
+    },
+    {
+      "id": 55,
+      "name": "Aqua Blue Oxidised Petal Jhumkas",
+      "category": "Earrings",
+      "price": 130,
+      "image": "images/earrings-oxidised-aqua-jhumka.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised square Jhumka dangles with ghungroo bells, featuring a 4-petal white pressed flower on a turquoise blue shimmer resin base"
+    },
+    {
+      "id": 54,
+      "name": "Royal Purple Oxidised Floral Jhumkas",
+      "category": "Earrings",
+      "price": 130,
+      "image": "images/earrings-oxidised-purple-jhumka.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised oval Jhumka dangles with ghungroo bells, featuring a pressed white flower petal & gold foil flakes on a deep purple resin base"
+    },
+    {
       "id": 53,
       "name": "Purple Pearl Butterfly Keychain",
       "category": "Keychains",
