@@ -1390,22 +1390,25 @@ function renderReviews() {
     const reviews = Array.isArray(content.reviews) ? content.reviews : [];
     if (reviews.length === 0) return; // keep default "coming soon" markup
     const clamp = (n) => Math.max(0, Math.min(5, Number(n) || 5));
-    const cards = reviews.map((r) => {
+    const bubble = (r) => {
         if (r.image) {
-            // Screenshot review — shown as-is in a readable card
-            return `<figure class="review-shot">
+            return `<figure class="review-bubble review-bubble-img">
                 <img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.alt || 'Customer review')}" loading="lazy" decoding="async">
             </figure>`;
         }
         const stars = clamp(r.rating);
-        return `<figure class="review-shot review-text-card">
+        return `<figure class="review-bubble">
             <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
-            <p class="review-text">"${escapeHtml(r.text || '')}"</p>
+            <p class="review-text">${escapeHtml(r.text || '')}</p>
             ${r.name ? `<figcaption class="review-author">— ${escapeHtml(r.name)}</figcaption>` : ''}
         </figure>`;
-    }).join('');
+    };
+    // Duplicate the set so the right-to-left loop is seamless
+    const cards = reviews.map(bubble).join('');
     container.innerHTML = `
-        <div class="reviews-gallery">${cards}</div>
+        <div class="reviews-marquee" aria-label="Customer reviews">
+            <div class="reviews-track">${cards}${cards}</div>
+        </div>
         <p class="reviews-more-note">🌸 More happy reviews coming soon!</p>`;
 }
 

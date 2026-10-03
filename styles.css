@@ -3181,28 +3181,54 @@ h1, h2, h3, h4 {
 .reviews-more-note a { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
 .reviews-more-note a:hover { text-decoration: underline; }
 
-/* Screenshot review gallery */
-.reviews-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.3rem;
-    max-width: 840px;
-    margin: 0 auto;
-    align-items: start;
+/* Right-to-left auto-scrolling review bubbles */
+.reviews-marquee {
+    overflow: hidden;
+    width: 100%;
+    padding: 0.6rem 0 0.4rem;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
-.review-shot {
+.reviews-track {
+    display: flex;
+    gap: 1.2rem;
+    width: max-content;
+    animation: reviewScroll 48s linear infinite;
+}
+.reviews-marquee:hover .reviews-track { animation-play-state: paused; }
+@keyframes reviewScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.review-bubble {
+    flex: 0 0 300px;
+    width: 300px;
     margin: 0;
     background: var(--color-white);
     border: 1px solid rgba(200, 154, 144, 0.18);
-    border-radius: 20px;
-    padding: 12px;
+    border-radius: 22px 22px 22px 6px;   /* chat-bubble shape (tail bottom-left) */
+    padding: 1.2rem 1.3rem;
     box-shadow: var(--box-shadow);
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-self: stretch;
 }
-.review-shot img { width: 100%; height: auto; display: block; border-radius: 12px; }
-.review-text-card { padding: 1.6rem; text-align: center; }
-@media (max-width: 680px) {
-    .reviews-gallery { grid-template-columns: 1fr; max-width: 420px; }
+.review-bubble .review-stars { color: #f7d070; font-size: 1rem; letter-spacing: 1px; margin: 0; }
+.review-bubble .review-text {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--color-dark);
+    font-style: normal;
+    margin: 0;
+}
+.review-bubble .review-author { font-family: var(--font-primary); font-size: 0.9rem; color: var(--color-primary-dark); margin: 0; }
+.review-bubble-img { padding: 10px; }
+.review-bubble-img img { width: 100%; height: auto; display: block; border-radius: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .reviews-track { animation: none; flex-wrap: wrap; justify-content: center; width: auto; }
+    .reviews-marquee { -webkit-mask-image: none; mask-image: none; }
 }
 
 /* Floating direct-contact button (bottom-left; complements the basket FAB) */
