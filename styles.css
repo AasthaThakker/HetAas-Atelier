@@ -3169,8 +3169,8 @@ h1, h2, h3, h4 {
 .reviews-dot.active { background-color: var(--color-primary); width: 16px; border-radius: 4px; }
 .reviews-more-note {
     text-align: center;
-    margin: 1.6rem auto 0;
-    max-width: 520px;
+    margin: 1.8rem auto 0;
+    max-width: 420px;
     font-size: 0.85rem;
     color: var(--color-secondary);
     background: var(--color-primary-light);
@@ -3180,6 +3180,30 @@ h1, h2, h3, h4 {
 }
 .reviews-more-note a { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
 .reviews-more-note a:hover { text-decoration: underline; }
+
+/* Screenshot review gallery */
+.reviews-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.3rem;
+    max-width: 840px;
+    margin: 0 auto;
+    align-items: start;
+}
+.review-shot {
+    margin: 0;
+    background: var(--color-white);
+    border: 1px solid rgba(200, 154, 144, 0.18);
+    border-radius: 20px;
+    padding: 12px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+.review-shot img { width: 100%; height: auto; display: block; border-radius: 12px; }
+.review-text-card { padding: 1.6rem; text-align: center; }
+@media (max-width: 680px) {
+    .reviews-gallery { grid-template-columns: 1fr; max-width: 420px; }
+}
 
 /* Floating direct-contact button (bottom-left; complements the basket FAB) */
 .floating-contact-fab {

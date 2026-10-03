@@ -1390,28 +1390,23 @@ function renderReviews() {
     const reviews = Array.isArray(content.reviews) ? content.reviews : [];
     if (reviews.length === 0) return; // keep default "coming soon" markup
     const clamp = (n) => Math.max(0, Math.min(5, Number(n) || 5));
-    const slides = reviews.map((r, i) => {
+    const cards = reviews.map((r) => {
+        if (r.image) {
+            // Screenshot review — shown as-is in a readable card
+            return `<figure class="review-shot">
+                <img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.alt || 'Customer review')}" loading="lazy" decoding="async">
+            </figure>`;
+        }
         const stars = clamp(r.rating);
-        return `
-        <div class="review-slide ${i === 0 ? 'active' : ''}">
+        return `<figure class="review-shot review-text-card">
             <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
             <p class="review-text">"${escapeHtml(r.text || '')}"</p>
-            <p class="review-author">— ${escapeHtml(r.name || 'Happy Customer')}${r.location ? ', ' + escapeHtml(r.location) : ''}</p>
-        </div>`;
+            ${r.name ? `<figcaption class="review-author">— ${escapeHtml(r.name)}</figcaption>` : ''}
+        </figure>`;
     }).join('');
-    const controls = reviews.length > 1 ? `
-        <button class="slider-btn prev" id="reviewsPrev" aria-label="Previous review">‹</button>
-        <button class="slider-btn next" id="reviewsNext" aria-label="Next review">›</button>
-        <div class="slider-dots" id="reviewsDots"></div>
-    ` : '';
-    const igUrl = (content.business && content.business.instagramUrl) || 'https://www.instagram.com/hetaas_atelier';
-    const igHandle = (content.business && content.business.instagramHandle) || 'hetaas_atelier';
     container.innerHTML = `
-        <div class="reviews-slider-wrapper">
-            <div class="reviews-container">${slides}</div>
-            ${controls}
-        </div>
-        <p class="reviews-more-note">🌸 More happy reviews coming soon — tag <a href="${escapeHtml(igUrl)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(igHandle)}</a> to be featured!</p>`;
+        <div class="reviews-gallery">${cards}</div>
+        <p class="reviews-more-note">🌸 More happy reviews coming soon!</p>`;
 }
 
 function renderFooter() {
