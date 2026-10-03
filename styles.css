@@ -4,7 +4,7 @@
 :root {
     --color-primary: #c89a90;          /* Warm peach-mauve */
     --color-primary-dark: #b08278;     /* Deeper peach-mauve */
-    --color-cta: #9e635c;              /* Deep rose — CTA buttons, ~4.8:1 on white text (WCAG AA) */
+    --color-cta: #9e635c;              /* Deep rose - CTA buttons, ~4.8:1 on white text (WCAG AA) */
     --color-cta-hover: #86504a;        /* Darker rose for CTA hover */
     --color-primary-light: #fdf0f0;    /* Soft padded pink frame background */
     --color-secondary: #a39594;        /* Muted taupe-brown */

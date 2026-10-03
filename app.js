@@ -350,7 +350,7 @@ function updateCartUI() {
             <div class="empty-cart-message">
                 <span>🧺</span>
                 <p>Your basket is empty!</p>
-                <p style="font-size: 0.8rem;">Discover handmade resin treasures &mdash; there's something for everyone. 🌸</p>
+                <p style="font-size: 0.8rem;">Discover handmade resin treasures - there's something for everyone. 🌸</p>
                 <button class="empty-cart-cta" data-action="shop">Shop the Collection</button>
             </div>
         `;
@@ -1277,7 +1277,7 @@ function setText(id, value) {
     const el = document.getElementById(id);
     if (el && value !== undefined && value !== null && value !== '') el.textContent = value;
 }
-// Owner-authored HTML from content.json (trusted, committed to the repo) — allows <strong> etc.
+// Owner-authored HTML from content.json (trusted, committed to the repo) - allows <strong> etc.
 function setTrustedHtml(id, value) {
     const el = document.getElementById(id);
     if (el && value !== undefined && value !== null && value !== '') el.innerHTML = value;
@@ -1400,7 +1400,7 @@ function renderReviews() {
         return `<figure class="review-bubble">
             <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
             <p class="review-text">${escapeHtml(r.text || '')}</p>
-            ${r.name ? `<figcaption class="review-author">— ${escapeHtml(r.name)}</figcaption>` : ''}
+            ${r.name ? `<figcaption class="review-author">- ${escapeHtml(r.name)}</figcaption>` : ''}
         </figure>`;
     };
     // Duplicate the set so the right-to-left loop is seamless
@@ -1498,7 +1498,7 @@ function initPwa() {
                     if (!nw) return;
                     nw.addEventListener('statechange', () => {
                         if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                            showToast('Fresh updates available — refresh to see them! 🌸', '🔄');
+                            showToast('Fresh updates available - refresh to see them! 🌸', '🔄');
                         }
                     });
                 });
