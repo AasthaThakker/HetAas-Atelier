@@ -1,6 +1,21 @@
 {
   "products": [
     {
+      "id": 57,
+      "name": "Golden Swastik Floral Pooja Thali",
+      "category": "Thali",
+      "price": 1200,
+      "image": "images/thali-golden-swastik-3.jpg",
+      "images": [
+        "images/thali-golden-swastik-3.jpg",
+        "images/thali-golden-swastik-1.jpg",
+        "images/thali-golden-swastik-2.jpg",
+        "images/thali-golden-swastik-4.jpg"
+      ],
+      "bestseller": true,
+      "description": "Exquisite golden ivory marble resin Pooja Thali featuring a central gold Swastik motif, 3D layered golden flower embellishment with pearl cluster, brass lotus diya stand, and gold leaf accents"
+    },
+    {
       "id": 56,
       "name": "Sunburst Yellow Oxidised Jhumkas",
       "category": "Earrings",

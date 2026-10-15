@@ -799,14 +799,22 @@ function openQuickView(productId) {
         const slides = document.getElementById('modalSlides');
         const dots = document.querySelectorAll('.slider-dot');
 
+        const updateDots = (idx) => {
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === idx);
+            });
+        };
+
         const goToSlide = (index) => {
             if (index < 0) index = imageList.length - 1;
             if (index >= imageList.length) index = 0;
             currentIndex = index;
-            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentIndex);
+            const slideWidth = slides.clientWidth;
+            slides.scrollTo({
+                left: currentIndex * slideWidth,
+                behavior: 'smooth'
             });
+            updateDots(currentIndex);
         };
 
         document.getElementById('sliderPrevBtn').onclick = (e) => {
@@ -825,25 +833,19 @@ function openQuickView(productId) {
             };
         });
 
-        // Touch Swipe Gesture Listener
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const sliderEl = document.getElementById('modalSlider');
-
-        sliderEl.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        sliderEl.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 35) {
-                if (diff > 0) {
-                    goToSlide(currentIndex + 1);
-                } else {
-                    goToSlide(currentIndex - 1);
+        let isScrolling;
+        slides.addEventListener('scroll', () => {
+            window.clearTimeout(isScrolling);
+            isScrolling = setTimeout(() => {
+                const slideWidth = slides.clientWidth;
+                if (slideWidth > 0) {
+                    const newIdx = Math.round(slides.scrollLeft / slideWidth);
+                    if (newIdx >= 0 && newIdx < imageList.length && newIdx !== currentIndex) {
+                        currentIndex = newIdx;
+                        updateDots(currentIndex);
+                    }
                 }
-            }
+            }, 60);
         }, { passive: true });
     }
     
