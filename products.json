@@ -1,6 +1,99 @@
 {
   "products": [
     {
+      "id": 66,
+      "name": "Celestial Blue Krishna & Mor Pankh Car Hanging",
+      "category": "Decor",
+      "price": 280,
+      "image": "images/decor-blue-krishna-car-hanging-1.jpg",
+      "images": [
+        "images/decor-blue-krishna-car-hanging-1.jpg",
+        "images/decor-blue-krishna-car-hanging-2.jpg"
+      ],
+      "bestseller": true,
+      "description": "Double-sided handcrafted resin car hanging featuring Lord Krishna playing the flute amidst blooming pink lotuses on a glittering celestial blue base with rhinestone borders, and a sacred peacock feather with dual evil eye protection charms on a pure white reverse, finished with pearl string and turquoise bead tassels"
+    },
+    {
+      "id": 65,
+      "name": "Shimmering Magenta Krishna & Mor Pankh Car Hanging",
+      "category": "Decor",
+      "price": 280,
+      "image": "images/decor-magenta-krishna-car-hanging-1.jpg",
+      "images": [
+        "images/decor-magenta-krishna-car-hanging-1.jpg",
+        "images/decor-magenta-krishna-car-hanging-2.jpg"
+      ],
+      "bestseller": true,
+      "description": "Double-sided handcrafted resin car hanging framed with sparkling rhinestone crystal borders on a glittering magenta base, featuring Lord Krishna with his flute on one side and a sacred peacock feather on the reverse, adorned with pearl bead string and jewel drop tassels"
+    },
+    {
+      "id": 64,
+      "name": "Divine Krishna & Mor Pankh Car Hanging",
+      "category": "Decor",
+      "price": 280,
+      "image": "images/decor-krishna-car-hanging-1.jpg",
+      "images": [
+        "images/decor-krishna-car-hanging-1.jpg",
+        "images/decor-krishna-car-hanging-2.jpg"
+      ],
+      "bestseller": true,
+      "description": "Double-sided handcrafted resin car hanging featuring Lord Krishna playing flute with 'Radhe Radhe' on one side, and a sacred peacock feather with an evil eye protection charm on the other, finished with pearl beaded hangings and droplet tassels"
+    },
+    {
+      "id": 63,
+      "name": "Lotus Crescent Loop Earrings",
+      "category": "Earrings",
+      "price": 180,
+      "image": "images/earrings-lotus-crescent-loop.jpg",
+      "bestseller": true,
+      "description": "Exquisite crescent loop earrings with gold foil flakes on a deep royal blue frame, featuring a blooming pink lotus floating in crystal-clear resin"
+    },
+    {
+      "id": 62,
+      "name": "Lotus Bloom Oxidised Dangles",
+      "category": "Earrings",
+      "price": 120,
+      "image": "images/earrings-oxidised-pink-lotus.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised circular dangles with ghungroo bells, featuring a blooming pink lotus motif floating on a tranquil blue water resin base"
+    },
+    {
+      "id": 61,
+      "name": "Azure Butterfly Oxidised Dangles",
+      "category": "Earrings",
+      "price": 100,
+      "image": "images/earrings-oxidised-blue-butterfly.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised trapezoid dangles with delicate ghungroo bells, featuring fluttering white butterfly motifs on a shimmering blue resin base"
+    },
+    {
+      "id": 60,
+      "name": "Crimson Triangle Oxidised Dangles",
+      "category": "Earrings",
+      "price": 90,
+      "image": "images/earrings-oxidised-crimson-triangle.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised triangular dangles with delicate ghungroo bells, featuring a pressed white flower on a rich crimson red resin base"
+    },
+    {
+      "id": 59,
+      "name": "Crimson Hexagon Oxidised Dangles",
+      "category": "Earrings",
+      "price": 90,
+      "image": "images/earrings-oxidised-crimson-hexagon.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised hexagonal dangles with delicate ghungroo bells, featuring a pressed white flower on a rich crimson red resin base"
+    },
+    {
+      "id": 58,
+      "name": "Ruby Heart Oxidised Shimmer Dangles",
+      "category": "Earrings",
+      "price": 90,
+      "image": "images/earrings-oxidised-ruby-heart.jpg",
+      "bestseller": true,
+      "description": "Handcrafted silver oxidised heart-shaped dangles with delicate ghungroo bells, featuring sparkling silver flakes embedded in a radiant ruby red resin base"
+    },
+    {
       "id": 57,
       "name": "Golden Swastik Floral Pooja Thali",
       "category": "Thali",
