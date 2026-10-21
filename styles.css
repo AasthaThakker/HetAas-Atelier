@@ -3273,3 +3273,213 @@ h1, h2, h3, h4 {
     .floating-contact-fab .floating-contact-label { display: none; }
 }
 
+/* ==========================================
+   COLLABORATION POLICY PAGE STYLING
+   ========================================== */
+.collab-page {
+    padding-top: 100px;
+    padding-bottom: 80px;
+    background: linear-gradient(180deg, rgba(250, 246, 240, 0.8) 0%, rgba(255, 255, 255, 1) 100%);
+    min-height: 85vh;
+}
+
+.collab-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.collab-hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.collab-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: rgba(200, 154, 144, 0.15);
+    border: 1px solid rgba(200, 154, 144, 0.35);
+    border-radius: 999px;
+    color: var(--color-primary-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+}
+
+.collab-title {
+    font-family: var(--font-primary);
+    font-size: 2.3rem;
+    color: var(--color-dark);
+    margin: 0 0 12px;
+    line-height: 1.25;
+}
+
+.collab-subtitle {
+    font-size: 1.05rem;
+    color: #7a6e6d;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.collab-card {
+    background: var(--color-white);
+    border: 1px solid rgba(200, 154, 144, 0.25);
+    border-radius: 24px;
+    padding: 32px 34px;
+    margin-bottom: 26px;
+    box-shadow: 0 10px 30px rgba(176, 130, 120, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.collab-card:hover {
+    box-shadow: 0 14px 40px rgba(176, 130, 120, 0.12);
+}
+
+.collab-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px dashed rgba(200, 154, 144, 0.3);
+    padding-bottom: 14px;
+}
+
+.collab-card-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.collab-card-header h3 {
+    font-family: var(--font-primary);
+    font-size: 1.35rem;
+    color: var(--color-dark);
+    margin: 0;
+}
+
+.collab-card p {
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: var(--color-dark);
+    margin: 0 0 16px;
+}
+
+.collab-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+}
+
+.collab-list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4a3e3d;
+}
+
+.collab-list li::before {
+    content: "🌸";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-size: 0.85rem;
+}
+
+.collab-note-box {
+    background: rgba(200, 154, 144, 0.1);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-dark);
+}
+
+.collab-proposal-box {
+    background: #faf6f0;
+    border: 1px solid rgba(200, 154, 144, 0.3);
+    border-radius: 16px;
+    padding: 18px 22px;
+    font-family: monospace;
+    font-size: 0.88rem;
+    color: #4a3e3d;
+    line-height: 1.7;
+    margin: 16px 0;
+    user-select: all;
+}
+
+.collab-cta-card {
+    background: linear-gradient(135deg, #fffaf6 0%, #fff 100%);
+    border: 2px solid var(--color-primary);
+    text-align: center;
+    padding: 40px 30px;
+    border-radius: 28px;
+    box-shadow: 0 16px 45px rgba(176, 130, 120, 0.15);
+}
+
+.collab-cta-card h3 {
+    font-family: var(--font-primary);
+    font-size: 1.7rem;
+    color: var(--color-dark);
+    margin: 0 0 10px;
+}
+
+.collab-cta-card p {
+    font-size: 1rem;
+    color: #7a6e6d;
+    max-width: 580px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+}
+
+.collab-dm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #c89a90 0%, #b08278 100%);
+    color: #fff;
+    padding: 14px 34px;
+    border-radius: 999px;
+    font-family: var(--font-secondary);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 8px 25px rgba(176, 130, 120, 0.35);
+    transition: all 0.25s ease;
+}
+
+.collab-dm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(176, 130, 120, 0.45);
+    color: #fff;
+}
+
+.collab-dm-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+@media (max-width: 768px) {
+    .collab-page {
+        padding-top: 85px;
+        padding-bottom: 50px;
+    }
+    .collab-title {
+        font-size: 1.75rem;
+    }
+    .collab-card {
+        padding: 22px 20px;
+    }
+    .collab-card-header h3 {
+        font-size: 1.15rem;
+    }
+}
+

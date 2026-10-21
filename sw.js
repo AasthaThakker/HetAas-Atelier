@@ -19,6 +19,7 @@ const APP_SHELL = [
   './app.js',
   './data.js',
   './styles.css',
+  './collab.html',
   './offline.html',
   './manifest.webmanifest',
   './icons/favicon.svg',
