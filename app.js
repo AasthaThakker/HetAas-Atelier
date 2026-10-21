@@ -1398,11 +1398,13 @@ function renderReviews() {
                 <img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.alt || 'Customer review')}" loading="lazy" decoding="async">
             </figure>`;
         }
-        const stars = clamp(r.rating);
         return `<figure class="review-bubble">
-            <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
-            <p class="review-text">${escapeHtml(r.text || '')}</p>
-            ${r.name ? `<figcaption class="review-author">- ${escapeHtml(r.name)}</figcaption>` : ''}
+            ${r.location ? `<div class="review-location">📍 ${escapeHtml(r.location)}</div>` : ''}
+            ${r.item ? `<div class="review-item-tag">🌸 ${escapeHtml(r.item)}</div>` : ''}
+            <p class="review-text">"${escapeHtml(r.text || '')}"</p>
+            <!-- Name intentionally commented out for privacy per policy:
+            ${r.name ? `<figcaption class="review-author">— ${escapeHtml(r.name)}</figcaption>` : ''}
+            -->
         </figure>`;
     };
     // Duplicate the set so the right-to-left loop is seamless

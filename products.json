@@ -1,6 +1,15 @@
 {
   "products": [
     {
+      "id": 67,
+      "name": "Real Seashell Earrings & Pendant Set",
+      "category": "Earrings",
+      "price": 300,
+      "image": "images/earrings-seashell-pendant-set.jpg",
+      "bestseller": true,
+      "description": "Handcrafted 3-piece ocean jewellery set featuring genuine white clam seashells filled with tranquil ocean blue resin waves, real beach sand, and lustrous embedded pearls (includes 1 pair of dangle earrings & 1 matching statement pendant)"
+    },
+    {
       "id": 66,
       "name": "Celestial Blue Krishna & Mor Pankh Car Hanging",
       "category": "Decor",

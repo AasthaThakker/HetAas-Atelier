@@ -3227,6 +3227,42 @@ h1, h2, h3, h4 {
     align-self: stretch;
 }
 .review-bubble .review-stars { color: #f7d070; font-size: 1rem; letter-spacing: 1px; margin: 0; }
+.review-bubble-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.review-badge-verified {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #3b8256;
+    background: rgba(59, 130, 86, 0.12);
+    border: 1px solid rgba(59, 130, 86, 0.25);
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+.review-location {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.review-item-tag {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    background: rgba(200, 154, 144, 0.15);
+    padding: 3px 9px;
+    border-radius: 8px;
+    display: inline-block;
+    align-self: flex-start;
+    line-height: 1.35;
+}
 .review-bubble .review-text {
     font-size: 0.88rem;
     line-height: 1.5;

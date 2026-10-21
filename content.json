@@ -78,10 +78,30 @@
     }
   ],
   "reviews": [
-    { "rating": 5, "text": "Thank you SO much for creating something so beautiful for me! Absolutely loved it - I can genuinely see the effort and love that went into making them. Everything is so beautifully detailed and personalised. You're incredibly talented, and I'm definitely going to cherish these!!! ❤️🌻" },
-    { "rating": 5, "text": "So one of my besties gifted me your earrings and a keychain - they are super cutee n pretty man! 🥺💕 Thank you so muchh!" },
-    { "rating": 5, "text": "Sab kuch bohot accha hai - loved the finishing! ❤️🙏😍" },
-    { "rating": 5, "text": "I loved it honestly! Keep it up! 🥰❤️" }
+    {
+      "rating": 5,
+      "location": "Mumbai, Maharashtra",
+      "item": "Sea Bookmark & Coffee Coaster",
+      "text": "Thank you SO much for creating something so beautiful for me! Absolutely loved it - I can genuinely see the effort and love that went into making them. Everything is so beautifully detailed and personalised. You're incredibly talented, and I'm definitely going to cherish these!!! ❤️🌻"
+    },
+    {
+      "rating": 5,
+      "location": "Mumbai, Maharashtra",
+      "item": "Resin Earrings & Butterfly Keychain",
+      "text": "So one of my besties gifted me your earrings and a keychain - they are super cutee n pretty man! 🥺💕 Thank you so muchh!"
+    },
+    {
+      "rating": 5,
+      "location": "Ahmedabad, Gujarat",
+      "item": "Red Pooja Thali, Rose Bookmark & Magenta Teardrops",
+      "text": "Sab kuch bohot accha hai - loved the finishing! ❤️🙏😍"
+    },
+    {
+      "rating": 5,
+      "location": "Ahmedabad, Gujarat",
+      "item": "Butterfly Keychain",
+      "text": "I loved it honestly! Keep it up! 🥰❤️"
+    }
   ],
   "footer": {
     "brand": "HetAas Atelier",
