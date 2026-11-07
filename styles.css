@@ -3602,6 +3602,7 @@ h1, h2, h3, h4 {
 .order-option-text strong { font-size: .97rem; color: #5a3b35; }
 .order-option-text small { font-size: .8rem; color: #777; line-height: 1.35; }
 .order-option-tag { flex-shrink: 0; font-size: .7rem; font-weight: 700; color: #5a3b35; background: #f6e8e3; border-radius: 999px; padding: 3px 9px; }
+.order-option[hidden] { display: none !important; } /* the card style would otherwise override the hidden attribute */
 .order-options-back { margin-top: 12px; width: 100%; background: none; border: 0; color: #8a5a50; font-weight: 600; cursor: pointer; padding: 8px; }
 .order-options-back:hover { text-decoration: underline; }
 
