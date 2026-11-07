@@ -2,7 +2,7 @@
 
 Storefront for **HetAas Atelier** — handmade resin treasures crafted in Ahmedabad, Gujarat (bookmarks, earrings, keychains, coasters, pooja thalis & custom pieces).
 
-🔗 **Live site:** https://aasthathakker.github.io/HetAas-Atelier/
+🔗 **Live site:** https://hetaas-atelier.aasthathakker.com/
 📩 **Orders:** via Instagram DM [@hetaas_atelier](https://www.instagram.com/hetaas_atelier)
 
 ## What it is
@@ -34,7 +34,7 @@ Customers add items to the **Resin Basket** → checkout copies a tidy order sum
 ## PayPal + AI hackathon demo
 
 🧪 **Demo (PayPal sandbox, every feature):** https://hetaas-demo.pages.dev
-🛍️ **Real shop (no PayPal):** https://aasthathakker.github.io/HetAas-Atelier/
+🛍️ **Real shop (no PayPal):** https://hetaas-atelier.aasthathakker.com/
 
 The same code runs both sites; `config.js` picks the mode from the address:
 
