@@ -1,0 +1,33 @@
+name = "hetaas-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Public, non-secret settings. Secrets go in the dashboard or `wrangler secret put` (never in git).
+[vars]
+SITE_URL = "https://aasthathakker.github.io/HetAas-Atelier"
+# Sites allowed to call the API: the live shop and the PayPal hackathon demo.
+ALLOWED_ORIGIN = "https://aasthathakker.github.io,https://hetaas-demo.pages.dev"
+# Hackathon demo (Cloudflare Pages): PayPal sandbox checkout returns buyers here.
+DEMO_SITE_URL = "https://hetaas-demo.pages.dev"
+PAYPAL_ENV = "sandbox"
+CURRENCY = "USD"
+# Shop prices are in INR. PayPal sandbox does not accept INR, so prices are converted at this fixed rate.
+INR_PER_UNIT = "85"
+# First model with free quota left is used (each model has its own daily free limit).
+GEMINI_MODEL = "gemini-3.1-flash-lite,gemini-2.5-flash"
+# Used when every Gemini model fails (needs the GROQ_API_KEY secret).
+GROQ_MODEL = "openai/gpt-oss-120b"
+# Delivery (Shiprocket): cheapest courier from the pickup PIN code, plus a fixed markup in rupees.
+PICKUP_PINCODE = "380052"
+SHIPPING_MARKUP_INR = "10"
+# Packed weight per piece (kg). Heavy = pooja thalis and decor plates.
+WEIGHT_STANDARD_KG = "0.5"
+WEIGHT_HEAVY_KG = "2"
+
+# Shiprocket courier IDs to skip (comma-separated), e.g. couriers disabled in your Shiprocket panel.
+EXCLUDED_COURIER_IDS = ""
+
+# KV storage: order-email dedupe and the cached Shiprocket login token.
+[[kv_namespaces]]
+binding = "ORDERS"
+id = "bab027d35e1d42ff8bb5efaa784ce726"

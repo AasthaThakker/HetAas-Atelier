@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Payment received · HetAas Atelier</title>
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-wrap { max-width: 620px; margin: 40px auto; padding: 0 18px; }
+        .success-card { background: #fff; border-radius: 18px; padding: 26px; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+        .success-card h1 { font-size: 1.5rem; margin: 0 0 6px; }
+        .success-card p { color: #555; line-height: 1.5; }
+        .receipt-box { white-space: pre-wrap; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85rem; background: #faf6f4; border: 1px dashed #c89a90; border-radius: 12px; padding: 14px; margin: 14px 0; max-height: 380px; overflow: auto; }
+        .success-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .success-actions button, .success-actions a { flex: 1 1 200px; text-align: center; padding: 12px 14px; border-radius: 999px; border: 0; cursor: pointer; text-decoration: none; font-weight: 600; font-size: .95rem; }
+        .btn-primary { background: #c89a90; color: #fff; }
+        .btn-ghost { background: #f1e6e2; color: #5a3b35; }
+        .muted-note { font-size: .85rem; color: #777; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="success-wrap">
+    <div class="success-card" id="card">
+        <h1 id="title">Confirming your payment… 🌸</h1>
+        <p id="intro">Please keep this tab open for a moment.</p>
+
+        <div id="receiptArea" hidden>
+            <p>Thank you! Your payment is complete and the shop has been notified. Send this receipt to us on Instagram so we can start your order.</p>
+            <div class="receipt-box" id="receipt"></div>
+            <div class="success-actions">
+                <button class="btn-primary" id="copyBtn" type="button">Copy receipt</button>
+                <a class="btn-ghost" id="igBtn" href="#" target="_blank" rel="noopener noreferrer">Open Instagram DM</a>
+            </div>
+            <p class="muted-note">Instagram can't be filled in automatically, so tap Copy, then paste into the DM.</p>
+        </div>
+
+        <div id="errorArea" hidden>
+            <p id="errorText"></p>
+            <a class="btn-ghost" href="index.html" style="display:inline-block;padding:10px 16px;border-radius:999px;text-decoration:none;">Back to the shop</a>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+    var params = new URLSearchParams(location.search);
+    var orderId = params.get('token'); // PayPal returns the order id as "token"
+    var api = window.HETAAS_API;
+    var igHandle = 'hetaas_atelier';
+    var receiptText = '';
+
+    function fail(msg) {
+        document.getElementById('title').textContent = 'Something went wrong';
+        document.getElementById('intro').hidden = true;
+        document.getElementById('errorText').textContent = msg;
+        document.getElementById('errorArea').hidden = false;
+    }
+
+    if (!api) return fail('Online payments are not configured yet. Please order via Instagram DM.');
+    if (!orderId) return fail('No payment was found in this link.');
+
+    var receiptKey = '';
+    try {
+        var saved = JSON.parse(localStorage.getItem('hetaas_receipt_key') || '{}');
+        if (saved.orderId === orderId) receiptKey = saved.key || '';
+    } catch (e) { /* ignore */ }
+
+    fetch(api + '/api/capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: orderId, key: receiptKey })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error || 'Payment could not be confirmed.');
+        receiptText = res.d.receipt || '';
+        // The cart is cleared only after PayPal confirms the payment.
+        localStorage.removeItem('hetaas_cart');
+        document.getElementById('title').textContent = 'Payment received! 🎉';
+        if (!receiptText) {
+            // Opened on another device/browser: no receipt key, so no buyer details are shown.
+            document.getElementById('intro').textContent = 'Thank you! Your payment is complete and the artist has been notified with your order details.';
+            return;
+        }
+        document.getElementById('intro').hidden = true;
+        document.getElementById('receipt').textContent = receiptText;
+        document.getElementById('receiptArea').hidden = false;
+        document.getElementById('igBtn').href = 'https://www.instagram.com/' + igHandle + '/';
+      })
+      .catch(function (err) { fail(err.message); });
+
+    document.getElementById('copyBtn').addEventListener('click', function () {
+        navigator.clipboard.writeText(receiptText).then(function () {
+            document.getElementById('copyBtn').textContent = 'Copied ✓';
+        }).catch(function () {
+            alert('Copy failed. Select the receipt text and copy it manually.');
+        });
+    });
+    document.getElementById('igBtn').addEventListener('click', function () {
+        if (navigator.clipboard && receiptText) navigator.clipboard.writeText(receiptText).catch(function () {});
+    });
+})();
+</script>
+</body>
+</html>

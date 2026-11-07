@@ -1,0 +1,20 @@
+# HetAas Atelier
+
+> Handmade resin art from Ahmedabad, Gujarat, India: bookmarks, earrings, keychains, coasters, pooja thalis, car hangings and custom name pieces. Every piece is made to order (curing 4-6 days). Payment is pre-paid through PayPal.
+
+## Agent access
+
+- Product catalogue (JSON): https://aasthathakker.github.io/HetAas-Atelier/products.json
+- Shop info and FAQs (JSON): https://aasthathakker.github.io/HetAas-Atelier/content.json
+- Agent endpoint (MCP-style JSON-RPC over HTTP POST): https://hetaas-api.automated-aesthetix.workers.dev/mcp
+  - tools: search_products, get_product, create_checkout (returns a PayPal approveUrl for the buyer)
+
+## Policies
+
+- Pre-paid orders only, via PayPal.
+- No returns, refunds or exchanges on customized items.
+- Delivery cost is paid by the buyer. Self pickup in Ahmedabad is free.
+
+## Contact
+
+- Instagram: https://www.instagram.com/hetaas_atelier

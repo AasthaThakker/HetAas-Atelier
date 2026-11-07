@@ -41,6 +41,7 @@ jobs:
             --exclude='.github' \
             --exclude='admin' \
             --exclude='terraform' \
+            --exclude='worker' \
             --exclude='node_modules' \
             --exclude='_site' \
             --exclude='.gitignore' \

@@ -29,3 +29,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+# Worker secrets and local dev
+worker/.dev.vars
+worker/.wrangler/
+worker/node_modules/

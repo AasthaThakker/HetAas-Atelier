@@ -627,6 +627,7 @@ function addCustomItemToCart() {
         quantity: 1,
         isCustom: true,
         customization: {
+            baseId: customSelections.base.id,
             color: customSelections.color.name,
             inclusion: customSelections.inclusion.name,
             sticker: customSelections.addSticker,
@@ -913,12 +914,266 @@ function copyTextToClipboard(text) {
     }
 }
 
+// PayPal checkout via the API Worker (see worker/). The server prices the basket itself.
+// Step 1: the basket's checkout button opens the Delivery Details popup.
+// Step 2: submitting the details creates the PayPal order and redirects to PayPal.
+const CUSTOMER_KEY = 'hetaas_customer';
+
+// Where the delivery form sends the order: 'paypal' (demo) or 'instagram' (live shop).
+let deliveryTarget = 'paypal';
+
+function openDeliveryDetails(target = 'paypal') {
+    if (cart.length === 0) return;
+    deliveryTarget = target;
+    document.getElementById('deliveryPayBtn').textContent =
+        target === 'instagram' ? 'Send Order on Instagram 💬' : 'Pay with PayPal 🌸';
+    const form = document.getElementById('deliveryForm');
+    // Prefill from the last order on this device.
+    try {
+        const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || '{}');
+        Object.keys(saved).forEach(k => { if (form.elements[k] && !form.elements[k].value) form.elements[k].value = saved[k]; });
+    } catch (e) { /* ignore bad saved data */ }
+    document.getElementById('deliveryError').textContent = '';
+    document.getElementById('cartDrawerOverlay').classList.remove('open');
+    document.getElementById('deliveryPopupOverlay').classList.add('open');
+    refreshDeliveryQuote();
+    form.elements.name.focus();
+}
+
+function closeDeliveryDetails(goBack) {
+    document.getElementById('deliveryPopupOverlay').classList.remove('open');
+    if (goBack) openOrderOptions();
+}
+
+// Hackathon demo only: make it obvious that PayPal runs in sandbox (test money).
+function showDemoBanner() {
+    if (document.getElementById('demoBanner')) return;
+    const bar = document.createElement('div');
+    bar.id = 'demoBanner';
+    bar.className = 'demo-banner';
+    bar.textContent = '🧪 PayPal + AI hackathon demo · PayPal sandbox: use a PayPal sandbox test account, no real money is charged';
+    document.body.prepend(bar);
+}
+
+// ---- Order options: PayPal + delivery, self pickup, or confirm first ----
+function openOrderOptions() {
+    if (cart.length === 0) return;
+    document.getElementById('cartDrawerOverlay').classList.remove('open');
+    document.getElementById('orderOptionsOverlay').classList.add('open');
+}
+
+function initOrderOptions() {
+    const overlay = document.getElementById('orderOptionsOverlay');
+    if (!overlay) return;
+    // Show only the cards for this site: PayPal + confirm-first on the demo, delivery-on-Instagram on the live shop.
+    overlay.querySelectorAll('[data-only]').forEach(card => {
+        card.hidden = card.dataset.only !== (window.HETAAS_MODE || 'live');
+    });
+    overlay.querySelectorAll('.order-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            overlay.classList.remove('open');
+            const mode = btn.dataset.mode;
+            if (mode === 'paypal') openDeliveryDetails('paypal');
+            else if (mode === 'deliver') openDeliveryDetails('instagram');
+            else sendOrderViaInstagram(mode);
+        });
+    });
+    document.getElementById('orderOptionsBackBtn').onclick = () => {
+        overlay.classList.remove('open');
+        document.getElementById('cartDrawerOverlay').classList.add('open');
+    };
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove('open'); };
+}
+
+function initDeliveryForm() {
+    const form = document.getElementById('deliveryForm');
+    if (!form) return;
+    document.getElementById('deliveryBackBtn').onclick = () => closeDeliveryDetails(true);
+    form.addEventListener('input', (e) => {
+        document.getElementById('deliveryError').textContent = '';
+        if (e.target.name === 'pincode') refreshDeliveryQuote();
+    });
+    document.getElementById('deliveryPopupOverlay').onclick = (e) => {
+        if (e.target.id === 'deliveryPopupOverlay') closeDeliveryDetails(false);
+    };
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const errorEl = document.getElementById('deliveryError');
+        if (!form.checkValidity()) {
+            const bad = form.querySelector(':invalid');
+            const label = bad.closest('label').firstChild.textContent.trim();
+            errorEl.textContent = `Please enter a valid ${label.toLowerCase()}.`;
+            bad.focus();
+            return;
+        }
+        if (!deliveryQuote) {
+            errorEl.textContent = 'Please wait for the delivery charge, or check your PIN code.';
+            return;
+        }
+        const customer = {};
+        ['name', 'email', 'phone', 'address', 'city', 'state', 'pincode'].forEach(k => { customer[k] = form.elements[k].value.trim(); });
+        localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
+        if (deliveryTarget === 'instagram') {
+            closeDeliveryDetails(false);
+            sendOrderViaInstagram('deliver', customer, deliveryQuote);
+        } else {
+            startPayPalCheckout(customer);
+        }
+    });
+}
+
+// Basket as the API expects it (ids + choices only; the server sets the prices).
+function cartItemsForApi() {
+    return cart.map(item => ({
+        id: item.isCustom ? undefined : item.product.id,
+        qty: item.quantity,
+        customName: item.customName || undefined,
+        custom: item.isCustom && item.customization ? {
+            baseId: item.customization.baseId,
+            color: item.customization.color,
+            inclusion: item.customization.inclusion,
+            sticker: item.customization.sticker,
+            text: item.customization.text
+        } : undefined
+    }));
+}
+
+// Live delivery charge (Shiprocket cheapest courier + shop markup), fetched when the PIN code is valid.
+let deliveryQuote = null;
+let quoteSeq = 0;
+
+function setPayEnabled(enabled) {
+    const btn = document.getElementById('deliveryPayBtn');
+    if (btn && btn.textContent !== 'Opening PayPal…') btn.disabled = !enabled;
+}
+
+async function refreshDeliveryQuote() {
+    const form = document.getElementById('deliveryForm');
+    const pin = form.elements.pincode.value.trim();
+    const itemsTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    document.getElementById('sumItems').textContent = `₹${itemsTotal}`;
+    deliveryQuote = null;
+    setPayEnabled(false);
+    const label = document.getElementById('sumDeliveryLabel');
+    const value = document.getElementById('sumDelivery');
+    const total = document.getElementById('sumTotal');
+    label.textContent = 'Delivery';
+    total.textContent = '-';
+    if (!/^[1-9][0-9]{5}$/.test(pin)) {
+        value.textContent = 'Enter PIN code';
+        return;
+    }
+    value.textContent = 'Checking…';
+    const seq = ++quoteSeq;
+    try {
+        const res = await fetch(`${window.HETAAS_API}/api/shipping-quote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: cartItemsForApi(), pincode: pin })
+        });
+        const data = await res.json();
+        if (seq !== quoteSeq) return; // a newer PIN code was typed meanwhile
+        if (!res.ok) throw new Error(data.error || 'Could not get a delivery charge');
+        deliveryQuote = data;
+        label.textContent = `Delivery (${data.courier}${data.days ? `, ~${data.days} days` : ''})`;
+        value.textContent = `₹${data.delivery}`;
+        total.textContent = `₹${data.total}`;
+        setPayEnabled(true);
+    } catch (err) {
+        if (seq !== quoteSeq) return;
+        value.textContent = 'Unavailable';
+        document.getElementById('deliveryError').textContent = err.message;
+    }
+}
+
+async function startPayPalCheckout(customer) {
+    if (cart.length === 0) return;
+    const btn = document.getElementById('deliveryPayBtn');
+    const errorEl = document.getElementById('deliveryError');
+    btn.disabled = true;
+    btn.textContent = 'Opening PayPal…';
+    errorEl.textContent = '';
+    const items = cartItemsForApi();
+    const notes = document.getElementById('cartNotes').value.trim();
+    try {
+        const res = await fetch(`${window.HETAAS_API}/api/checkout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items, notes, customer })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Checkout failed');
+        // Lets order-success.html show this buyer's receipt (and nobody else's).
+        localStorage.setItem('hetaas_receipt_key', JSON.stringify({ orderId: data.orderId, key: data.receiptKey }));
+        window.location.href = data.approveUrl;
+    } catch (err) {
+        errorEl.textContent = err.message || 'Checkout failed. Please try again.';
+        btn.textContent = 'Pay with PayPal 🌸';
+        btn.disabled = !deliveryQuote;
+    }
+}
+
 function handleCheckout() {
     if (cart.length === 0) return;
-    
-    let message = "Hi HetAas Atelier! 🌸 I would love to place a pre-paid order:\n\n";
+    if (window.HETAAS_API) return openOrderOptions();
+    sendOrderViaInstagram('confirm');
+}
+
+// Wording for the two Instagram routes. 'pickup' = free self pickup in Ahmedabad,
+// 'confirm' = the artist confirms the order first and then shares payment details.
+const INSTAGRAM_ORDER_MODES = {
+    pickup: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order for SELF PICKUP in Ahmedabad:",
+        policies: [
+            "• Self pickup in Ahmedabad (free).",
+            "• Custom curing takes 4 to 6 days before pickup.",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please share a convenient pickup time and payment details! ✨",
+        icon: "🏠✨",
+        title: "Pickup Order Ready!",
+        text: "Your order is copied. Tap below, paste it in the Instagram chat, and the artist will fix a pickup time with you. 🌸",
+        badge: "SELF PICKUP",
+        footer: "🏠 Free Self Pickup • Ahmedabad • Hand-cured in 4-6 Days"
+    },
+    deliver: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order for DELIVERY. Please confirm it and share payment details:",
+        policies: [
+            "• I'll pay once you confirm the order.",
+            "• Custom curing takes 4 to 6 days before shipping.",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please confirm availability and share payment details! ✨",
+        icon: "🚚✨",
+        title: "Order Ready to Send!",
+        text: "Your order and delivery details are copied. Tap below and paste them in the Instagram chat. The artist will confirm and share payment details. 🌸",
+        badge: "DELIVERY ORDER",
+        footer: "🚚 Pay after confirmation • Hand-cured in 4-6 Days • Pan-India Shipping"
+    },
+    confirm: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order. Please confirm it and share payment details:",
+        policies: [
+            "• I'll pay once you confirm the order.",
+            "• Custom curing takes 4 to 6 days before shipping.",
+            "• Delivery cost is paid by the buyer (self pickup in Ahmedabad is free).",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please confirm availability and share payment details! ✨",
+        icon: "💬✨",
+        title: "Order Ready to Send!",
+        text: "Your order is copied. Tap below and paste it in the Instagram chat. The artist will confirm it and share payment details. 🌸",
+        badge: "ORDER REQUEST",
+        footer: "💬 Pay after confirmation • Hand-cured in 4-6 Days • Pan-India Shipping"
+    }
+};
+
+function sendOrderViaInstagram(mode, customer, quote) {
+    if (cart.length === 0) return;
+    const m = INSTAGRAM_ORDER_MODES[mode] || INSTAGRAM_ORDER_MODES.confirm;
+
+    let message = m.greeting + "\n\n";
     message += "--------------------------------------\n";
-    
+
     cart.forEach(item => {
         message += `• ${item.quantity}x ${item.product.name} (₹${item.product.price} each)\n`;
         if (item.isCustom && item.customization) {
@@ -933,43 +1188,51 @@ function handleCheckout() {
         }
         message += "\n";
     });
-    
+
     message += "--------------------------------------\n";
-    
+
     const notes = document.getElementById('cartNotes').value.trim();
     if (notes) {
         message += `Special Instructions:\n"${notes}"\n\n`;
     }
-    
+
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     message += `Basket Subtotal: ₹${subtotal}\n`;
+    if (quote) {
+        message += `Delivery Charge: ₹${quote.delivery} (${quote.courier}${quote.days ? `, ~${quote.days} days` : ''})\n`;
+        message += `Total: ₹${subtotal + quote.delivery}\n`;
+    }
     message += "--------------------------------------\n";
+    if (customer) {
+        message += "📦 DELIVERY DETAILS:\n";
+        message += `Name: ${customer.name}\n`;
+        message += `Phone: ${customer.phone}\n`;
+        message += `Email: ${customer.email}\n`;
+        message += `Address: ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n`;
+        message += "--------------------------------------\n";
+    }
     message += "⚠️ ORDER AGREEMENT & POLICIES:\n";
-    message += "• Pre-paid orders accepted only.\n";
-    message += "• Custom curing takes 3 to 4 days before shipping.\n";
-    message += "• Delivery cost is borne entirely by the buyer (self-pickup in Ahmedabad is free).\n";
-    message += "• Customized items - no returns/refunds/exchanges.\n";
+    message += m.policies.join("\n") + "\n";
     message += "--------------------------------------\n\n";
-    message += "Please verify availability and share payment details! ✨";
-    
-    copyTextToClipboard(message).then(() => {
-        const codeBox = document.getElementById('checkoutCodeBox');
-        codeBox.textContent = message;
-        
+    message += m.closing;
+
+    // Popup wording matches the chosen route
+    document.getElementById('igPopupIcon').textContent = m.icon;
+    document.getElementById('igPopupTitle').textContent = m.title;
+    document.getElementById('igPopupText').textContent = m.text;
+    document.getElementById('igPopupBadge').textContent = m.badge;
+    document.getElementById('igPopupFooter').textContent = m.footer;
+
+    const showPopup = () => {
+        document.getElementById('checkoutCodeBox').textContent = message;
         document.getElementById('cartDrawerOverlay').classList.remove('open');
-        
-        const popup = document.getElementById('checkoutPopupOverlay');
-        popup.classList.add('open');
-    }).catch(err => {
+        document.getElementById('checkoutPopupOverlay').classList.add('open');
+    };
+
+    copyTextToClipboard(message).then(showPopup).catch(err => {
         console.error('Failed to copy text: ', err);
-        // Force-open the popup anyway so they can see the details and try manual copy
-        const codeBox = document.getElementById('checkoutCodeBox');
-        codeBox.textContent = message;
-        
-        document.getElementById('cartDrawerOverlay').classList.remove('open');
-        
-        const popup = document.getElementById('checkoutPopupOverlay');
-        popup.classList.add('open');
+        // Open the popup anyway so they can see the details and copy manually
+        showPopup();
         showToast('Auto-copy failed. Please manually copy the order details below! 🌸', '⚠️');
     });
 }
@@ -1179,6 +1442,12 @@ function initUIHandlers() {
     }
     
     document.getElementById('checkoutBtn').onclick = handleCheckout;
+    if (window.HETAAS_API) {
+        document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
+        initOrderOptions();
+        initDeliveryForm();
+        if (window.HETAAS_MODE === 'demo') showDemoBanner();
+    }
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
     const igGoBtn = document.getElementById('checkoutGoBtn');
@@ -1563,10 +1832,11 @@ function setupStickyOrderBar() {
     const label = fab.querySelector('.floating-contact-label');
     if (wa) {
         fab.href = `https://wa.me/${wa}`;
-        if (label) label.textContent = 'Chat on WhatsApp';
+        if (label) label.textContent = 'WhatsApp the Artist';
+        fab.setAttribute('aria-label', 'WhatsApp the artist');
     } else {
         fab.href = getInstagramDmUrl();
-        if (label) label.textContent = 'Chat to Order';
+        if (label) label.textContent = 'DM the Artist';
     }
 }
 
