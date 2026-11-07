@@ -1077,6 +1077,8 @@ async function startPayPalCheckout(customer) {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Checkout failed');
+        // Lets order-success.html show this buyer's receipt (and nobody else's).
+        localStorage.setItem('hetaas_receipt_key', JSON.stringify({ orderId: data.orderId, key: data.receiptKey }));
         window.location.href = data.approveUrl;
     } catch (err) {
         errorEl.textContent = err.message || 'Checkout failed. Please try again.';

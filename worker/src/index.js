@@ -486,7 +486,8 @@ function validateCustomer(c) {
   const state = clean(c.state, 40);
   const pincode = String(c.pincode || '').trim();
   if (name.length < 2) throw new HttpError(400, 'Please enter your full name');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw new HttpError(400, 'Please enter a valid email');
+  // "|" is rejected because the PayPal custom_id joins buyer fields with it.
+  if (!/^[^\s@|]+@[^\s@|]+\.[^\s@|]{2,}$/.test(email)) throw new HttpError(400, 'Please enter a valid email');
   if (!/^[6-9]\d{9}$/.test(digits)) throw new HttpError(400, 'Please enter a valid 10-digit mobile number');
   if (address.length < 5) throw new HttpError(400, 'Please enter your full address');
   if (city.length < 2) throw new HttpError(400, 'Please enter your city');
@@ -579,7 +580,7 @@ async function handleCheckout(request, env) {
   const site = await loadSite(env);
   const customer = validateCustomer(body.customer);
   const result = await createOrderFromBasket(env, site, body.items, body.notes, customer);
-  return respond(env, { orderId: result.orderId, approveUrl: result.approveUrl });
+  return respond(env, { orderId: result.orderId, approveUrl: result.approveUrl, receiptKey: await receiptKey(env, result.orderId) });
 }
 
 // Receipt text the buyer copies to Instagram and the owner gets by email.
@@ -663,8 +664,25 @@ async function notifyOwnerOnce(env, order) {
   }
 }
 
+// Receipt key: an HMAC of the PayPal order id, given only to the browser that created the
+// checkout. /api/capture returns the receipt (with the buyer's name, email, phone and address)
+// only when this key matches, so knowing an order id alone does not reveal anyone's details.
+async function receiptKey(env, orderId) {
+  const secret = env.RECEIPT_SECRET || env.PAYPAL_CLIENT_SECRET;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(`receipt:${secret}`), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(orderId));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function sameString(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 async function handleCapture(request, env) {
-  const { orderId } = await request.json().catch(() => ({}));
+  const { orderId, key } = await request.json().catch(() => ({}));
   if (!/^[A-Z0-9]{10,30}$/i.test(orderId || '')) throw new HttpError(400, 'Invalid order id');
 
   let order = await paypal(env, `/v2/checkout/orders/${orderId}`);
@@ -675,7 +693,9 @@ async function handleCapture(request, env) {
   if (order.status !== 'COMPLETED') throw new HttpError(402, 'Payment is not completed yet');
 
   await notifyOwnerOnce(env, order);
-  return respond(env, { status: 'COMPLETED', orderId: order.id, receipt: buildReceipt(order) });
+  // Payment and the owner email happen either way; the receipt (buyer details) only with the key.
+  const allowed = sameString(String(key || ''), await receiptKey(env, order.id));
+  return respond(env, { status: 'COMPLETED', orderId: order.id, receipt: allowed ? buildReceipt(order) : null });
 }
 
 async function handleWebhook(request, env) {

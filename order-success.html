@@ -62,17 +62,28 @@
     if (!api) return fail('Online payments are not configured yet. Please order via Instagram DM.');
     if (!orderId) return fail('No payment was found in this link.');
 
+    var receiptKey = '';
+    try {
+        var saved = JSON.parse(localStorage.getItem('hetaas_receipt_key') || '{}');
+        if (saved.orderId === orderId) receiptKey = saved.key || '';
+    } catch (e) { /* ignore */ }
+
     fetch(api + '/api/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: orderId })
+        body: JSON.stringify({ orderId: orderId, key: receiptKey })
     }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error(res.d.error || 'Payment could not be confirmed.');
-        receiptText = res.d.receipt;
+        receiptText = res.d.receipt || '';
         // The cart is cleared only after PayPal confirms the payment.
         localStorage.removeItem('hetaas_cart');
         document.getElementById('title').textContent = 'Payment received! 🎉';
+        if (!receiptText) {
+            // Opened on another device/browser: no receipt key, so no buyer details are shown.
+            document.getElementById('intro').textContent = 'Thank you! Your payment is complete and the artist has been notified with your order details.';
+            return;
+        }
         document.getElementById('intro').hidden = true;
         document.getElementById('receipt').textContent = receiptText;
         document.getElementById('receiptArea').hidden = false;
