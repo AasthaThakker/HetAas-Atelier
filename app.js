@@ -145,6 +145,7 @@ async function loadProducts() {
 
 function displayProducts(products) {
     const grid = document.getElementById('productsGrid');
+    if (!grid) return; // the Custom Design Studio page has no product grid
     grid.innerHTML = '';
 
     if (products.length === 0) {
@@ -461,6 +462,7 @@ function triggerCartBounce() {
 // ==========================================
 
 function initCustomizer() {
+    if (!document.getElementById('baseItemGrid')) return; // studio lives on custom.html only
     // Re-sync default selections to the (possibly content-overridden) option lists
     if (customizerData.bases && customizerData.bases[0]) customSelections.base = customizerData.bases[0];
     if (customizerData.colors && customizerData.colors[0]) customSelections.color = customizerData.colors[0];
@@ -647,6 +649,10 @@ function addCustomItemToCart() {
     
     customSelections.addSticker = false;
     customSelections.text = '';
+    // Reset the choices too, so the summary matches the cards highlighted after re-rendering
+    customSelections.base = customizerData.bases[0];
+    customSelections.color = customizerData.colors[0];
+    customSelections.inclusion = customizerData.inclusions[0];
     
     const siblingCards = document.querySelectorAll('.customizer-steps .option-card');
     siblingCards.forEach(card => card.classList.remove('selected'));
@@ -1562,8 +1568,8 @@ function setMeta(attr, key, value) {
 function applyContent() {
     if (!content || Object.keys(content).length === 0) return;
 
-    // SEO / meta reflect admin edits at runtime
-    if (content.site) {
+    // SEO / meta reflect admin edits at runtime (the studio page keeps its own title and description)
+    if (content.site && document.body.dataset.page !== 'custom') {
         if (content.site.title) document.title = content.site.title;
         setMeta('name', 'description', content.site.metaDescription);
         setMeta('property', 'og:title', content.site.title);
