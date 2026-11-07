@@ -2,7 +2,7 @@
 // Holds every secret (Gemini, PayPal, Resend). The static site calls these routes.
 //
 // Routes
-//   POST /api/chat             scoped sales assistant + gift finder (Gemini)
+//   POST /api/chat             scoped sales assistant + gift finder (Gemini, Groq as fallback)
 //   POST /api/shipping-quote   live Shiprocket delivery charge for a PIN code (cheapest + markup)
 //   POST /api/checkout         price the basket + delivery server-side, create a PayPal order
 //   POST /api/capture          capture an approved order, email the owner the receipt
@@ -73,7 +73,14 @@ function clean(value, max = 60) {
 }
 
 const stripHtml = (s) =>
-  String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  String(s || '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
 
 // ---------- Catalogue (read from the live site, so products.json stays the only source) ----------
 
@@ -205,6 +212,37 @@ async function callGeminiModel(env, model, system, messages) {
   return text;
 }
 
+// Gemini first (all configured models); if that fails for any reason, Groq. Returns parsed JSON.
+async function askModels(env, system, history) {
+  try {
+    return parseModelJson(await callGemini(env, system, history));
+  } catch (geminiErr) {
+    if (!env.GROQ_API_KEY) throw geminiErr;
+    console.warn('Gemini failed, using Groq:', geminiErr.message.slice(0, 120));
+    return parseModelJson(await callGroq(env, system, history));
+  }
+}
+
+// Groq (OpenAI-compatible API, free tier). Used only when Gemini fails.
+async function callGroq(env, system, messages) {
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      messages: [{ role: 'system', content: system }, ...messages.map((m) => ({ role: m.role, content: m.content }))],
+      temperature: 0.4,
+      max_tokens: 600,
+      response_format: { type: 'json_object' },
+    }),
+  });
+  if (!r.ok) throw new Error(`Groq ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const data = await r.json();
+  const text = data.choices?.[0]?.message?.content || '';
+  if (!text) throw new Error('Groq empty reply');
+  return text;
+}
+
 function parseModelJson(raw) {
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
@@ -239,8 +277,7 @@ async function handleChat(request, env) {
   const faqs = retrieveFaqs(site.content.faqs || [], query);
 
   try {
-    const raw = await callGemini(env, buildSystemPrompt(site.content, picks, faqs), history);
-    const parsed = parseModelJson(raw);
+    const parsed = await askModels(env, buildSystemPrompt(site.content, picks, faqs), history);
     if (parsed.off_topic) return respond(env, { reply: OFF_TOPIC_REPLY, products: [] });
 
     const wanted = new Set((parsed.product_ids || []).map(Number));
