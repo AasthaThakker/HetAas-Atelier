@@ -128,7 +128,8 @@
                 </div>
                 <nav class="nav">
                     <a href="#products" class="nav-link">Shop All</a>
-                    <a href="#customizer" class="nav-link">Collections</a>
+                    <a href="#products" class="nav-link">Collections</a>
+                    <a href="custom.html" class="nav-link">Customization</a>
                     <!-- <a href="#about" class="nav-link">About</a> -->
                     <a href="collab.html" class="nav-link">Collab</a>
                     <a href="#faq" class="nav-link">Contact</a>
@@ -192,7 +193,8 @@
             </button>
             <nav class="mobile-nav">
                 <a href="#products" class="mobile-nav-link">Shop All</a>
-                <a href="#customizer" class="mobile-nav-link">Collections</a>
+                <a href="#products" class="mobile-nav-link">Collections</a>
+                <a href="custom.html" class="mobile-nav-link">Customization</a>
                 <a href="collab.html" class="mobile-nav-link">Collab</a>
                 <a href="#faq" class="mobile-nav-link">Contact</a>
             </nav>
@@ -280,77 +282,17 @@
         </div>
     </section>
 
-    <!-- Interactive Customizer Section -->
-    <section id="customizer" class="customizer-section">
+    <!-- Invite to the Custom Design Studio (its own page: custom.html) -->
+    <section class="studio-invite-section">
         <div class="container">
-            <h2 class="section-title">Custom Design Studio</h2>
-            <p class="section-subtitle">Choose your options below to design your bespoke resin treasure!</p>
-            
-            <div class="customizer-container">
-                <div class="customizer-steps">
-                    <!-- Step 1: Base Shape -->
-                    <div class="step-group">
-                        <h3 class="step-title"><span>1</span> Choose Base Resin Item</h3>
-                        <div class="options-grid" id="baseItemGrid">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Background Color (Free Selection) -->
-                    <div class="step-group">
-                        <h3 class="step-title"><span>2</span> Choose Resin Tint / Color</h3>
-                        <div class="options-grid" id="bgStyleGrid">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Botanical Inclusions & Foils -->
-                    <div class="step-group">
-                        <h3 class="step-title"><span>3</span> Add Florals & Foils</h3>
-                        <div class="options-grid" id="inclusionsGrid">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Metallic Name Sticker Toggle (+₹90) -->
-                    <div class="step-group">
-                        <h3 class="step-title"><span>4</span> Add Name Customization</h3>
-                        <div class="sticker-checkbox-container" id="stickerCheckboxContainer">
-                            <input type="checkbox" id="addStickerCheckbox">
-                            <div class="sticker-checkbox-text">
-                                <h4>Add Metallic Name Sticker (+₹90)</h4>
-                                <p>We embed shiny golden custom letters inside the cured resin</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 5: Input Text for name -->
-                    <div class="step-group">
-                        <h3 class="step-title"><span>5</span> Type Personalization Name</h3>
-                        <input type="text" id="customText" class="custom-input-text" placeholder="Check Step 4 to type initials or name..." maxlength="15" disabled>
-                    </div>
-                </div>
-
-                <!-- Customizer Live Preview panel -->
-                <div class="customizer-preview">
-                    <div>
-                        <h3 class="preview-title">Design Summary 🌸</h3>
-                        <div class="preview-detail-list" id="previewDetailList">
-                            <!-- Dynamic preview elements -->
-                        </div>
-                    </div>
-                    
-                    <div class="customizer-price-footer">
-                        <div class="custom-price-row">
-                            <span class="custom-price-label">Item Total:</span>
-                            <span class="custom-price-val" id="customPrice">₹249</span>
-                        </div>
-                        <button class="add-custom-btn" id="addCustomBtn">
-                            Add Custom Item to Basket
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <a href="custom.html" class="studio-invite-card">
+                <span class="studio-invite-icon">✨</span>
+                <span class="studio-invite-text">
+                    <strong>Design your own piece</strong>
+                    <small>Pick a shape, colours, florals and a metallic name, and see the price live.</small>
+                </span>
+                <span class="studio-invite-cta">Open the Custom Design Studio →</span>
+            </a>
         </div>
     </section>
 
