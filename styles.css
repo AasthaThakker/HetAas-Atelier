@@ -3588,3 +3588,19 @@ h1, h2, h3, h4 {
 .delivery-summary-row { display: flex; justify-content: space-between; gap: 10px; }
 .delivery-summary-total { font-weight: 700; border-top: 1px solid #ecdcd6; padding-top: 6px; margin-top: 2px; }
 #deliveryPayBtn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Order options (PayPal + delivery / self pickup / confirm first) */
+.order-options { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.order-option {
+    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+    background: #fff; border: 1.5px solid #ecdcd6; border-radius: 14px; padding: 14px;
+    cursor: pointer; font: inherit; color: #333; transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.order-option:hover, .order-option:focus-visible { border-color: #c89a90; box-shadow: 0 6px 18px rgba(200,154,144,.25); transform: translateY(-1px); outline: none; }
+.order-option-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+.order-option-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.order-option-text strong { font-size: .97rem; color: #5a3b35; }
+.order-option-text small { font-size: .8rem; color: #777; line-height: 1.35; }
+.order-option-tag { flex-shrink: 0; font-size: .7rem; font-weight: 700; color: #5a3b35; background: #f6e8e3; border-radius: 999px; padding: 3px 9px; }
+.order-options-back { margin-top: 12px; width: 100%; background: none; border: 0; color: #8a5a50; font-weight: 600; cursor: pointer; padding: 8px; }
+.order-options-back:hover { text-decoration: underline; }

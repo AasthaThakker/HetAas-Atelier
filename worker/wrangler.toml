@@ -10,7 +10,8 @@ PAYPAL_ENV = "sandbox"
 CURRENCY = "USD"
 # Shop prices are in INR. PayPal sandbox does not accept INR, so prices are converted at this fixed rate.
 INR_PER_UNIT = "85"
-GEMINI_MODEL = "gemini-2.5-flash"
+# First model with free quota left is used (each model has its own daily free limit).
+GEMINI_MODEL = "gemini-3.1-flash-lite,gemini-2.5-flash"
 # Delivery (Shiprocket): cheapest courier from the pickup PIN code, plus a fixed markup in rupees.
 PICKUP_PINCODE = "380052"
 SHIPPING_MARKUP_INR = "10"

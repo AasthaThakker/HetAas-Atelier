@@ -934,9 +934,34 @@ function openDeliveryDetails() {
     form.elements.name.focus();
 }
 
-function closeDeliveryDetails(reopenBasket) {
+function closeDeliveryDetails(goBack) {
     document.getElementById('deliveryPopupOverlay').classList.remove('open');
-    if (reopenBasket) document.getElementById('cartDrawerOverlay').classList.add('open');
+    if (goBack) openOrderOptions();
+}
+
+// ---- Order options: PayPal + delivery, self pickup, or confirm first ----
+function openOrderOptions() {
+    if (cart.length === 0) return;
+    document.getElementById('cartDrawerOverlay').classList.remove('open');
+    document.getElementById('orderOptionsOverlay').classList.add('open');
+}
+
+function initOrderOptions() {
+    const overlay = document.getElementById('orderOptionsOverlay');
+    if (!overlay) return;
+    overlay.querySelectorAll('.order-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            overlay.classList.remove('open');
+            const mode = btn.dataset.mode;
+            if (mode === 'paypal') openDeliveryDetails();
+            else sendOrderViaInstagram(mode);
+        });
+    });
+    document.getElementById('orderOptionsBackBtn').onclick = () => {
+        overlay.classList.remove('open');
+        document.getElementById('cartDrawerOverlay').classList.add('open');
+    };
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove('open'); };
 }
 
 function initDeliveryForm() {
@@ -1062,11 +1087,51 @@ async function startPayPalCheckout(customer) {
 
 function handleCheckout() {
     if (cart.length === 0) return;
-    if (window.HETAAS_API) return openDeliveryDetails();
+    if (window.HETAAS_API) return openOrderOptions();
+    sendOrderViaInstagram('confirm');
+}
 
-    let message = "Hi HetAas Atelier! 🌸 I would love to place a pre-paid order:\n\n";
+// Wording for the two Instagram routes. 'pickup' = free self pickup in Ahmedabad,
+// 'confirm' = the artist confirms the order first and then shares payment details.
+const INSTAGRAM_ORDER_MODES = {
+    pickup: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order for SELF PICKUP in Ahmedabad:",
+        policies: [
+            "• Self pickup in Ahmedabad (free).",
+            "• Custom curing takes 4 to 6 days before pickup.",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please share a convenient pickup time and payment details! ✨",
+        icon: "🏠✨",
+        title: "Pickup Order Ready!",
+        text: "Your order is copied. Tap below, paste it in the Instagram chat, and the artist will fix a pickup time with you. 🌸",
+        badge: "SELF PICKUP",
+        footer: "🏠 Free Self Pickup • Ahmedabad • Hand-cured in 4-6 Days"
+    },
+    confirm: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order. Please confirm it and share payment details:",
+        policies: [
+            "• I'll pay once you confirm the order.",
+            "• Custom curing takes 4 to 6 days before shipping.",
+            "• Delivery cost is paid by the buyer (self pickup in Ahmedabad is free).",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please confirm availability and share payment details! ✨",
+        icon: "💬✨",
+        title: "Order Ready to Send!",
+        text: "Your order is copied. Tap below and paste it in the Instagram chat. The artist will confirm it and share payment details. 🌸",
+        badge: "ORDER REQUEST",
+        footer: "💬 Pay after confirmation • Hand-cured in 4-6 Days • Pan-India Shipping"
+    }
+};
+
+function sendOrderViaInstagram(mode) {
+    if (cart.length === 0) return;
+    const m = INSTAGRAM_ORDER_MODES[mode] || INSTAGRAM_ORDER_MODES.confirm;
+
+    let message = m.greeting + "\n\n";
     message += "--------------------------------------\n";
-    
+
     cart.forEach(item => {
         message += `• ${item.quantity}x ${item.product.name} (₹${item.product.price} each)\n`;
         if (item.isCustom && item.customization) {
@@ -1081,43 +1146,39 @@ function handleCheckout() {
         }
         message += "\n";
     });
-    
+
     message += "--------------------------------------\n";
-    
+
     const notes = document.getElementById('cartNotes').value.trim();
     if (notes) {
         message += `Special Instructions:\n"${notes}"\n\n`;
     }
-    
+
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     message += `Basket Subtotal: ₹${subtotal}\n`;
     message += "--------------------------------------\n";
     message += "⚠️ ORDER AGREEMENT & POLICIES:\n";
-    message += "• Pre-paid orders accepted only.\n";
-    message += "• Custom curing takes 3 to 4 days before shipping.\n";
-    message += "• Delivery cost is borne entirely by the buyer (self-pickup in Ahmedabad is free).\n";
-    message += "• Customized items - no returns/refunds/exchanges.\n";
+    message += m.policies.join("\n") + "\n";
     message += "--------------------------------------\n\n";
-    message += "Please verify availability and share payment details! ✨";
-    
-    copyTextToClipboard(message).then(() => {
-        const codeBox = document.getElementById('checkoutCodeBox');
-        codeBox.textContent = message;
-        
+    message += m.closing;
+
+    // Popup wording matches the chosen route
+    document.getElementById('igPopupIcon').textContent = m.icon;
+    document.getElementById('igPopupTitle').textContent = m.title;
+    document.getElementById('igPopupText').textContent = m.text;
+    document.getElementById('igPopupBadge').textContent = m.badge;
+    document.getElementById('igPopupFooter').textContent = m.footer;
+
+    const showPopup = () => {
+        document.getElementById('checkoutCodeBox').textContent = message;
         document.getElementById('cartDrawerOverlay').classList.remove('open');
-        
-        const popup = document.getElementById('checkoutPopupOverlay');
-        popup.classList.add('open');
-    }).catch(err => {
+        document.getElementById('checkoutPopupOverlay').classList.add('open');
+    };
+
+    copyTextToClipboard(message).then(showPopup).catch(err => {
         console.error('Failed to copy text: ', err);
-        // Force-open the popup anyway so they can see the details and try manual copy
-        const codeBox = document.getElementById('checkoutCodeBox');
-        codeBox.textContent = message;
-        
-        document.getElementById('cartDrawerOverlay').classList.remove('open');
-        
-        const popup = document.getElementById('checkoutPopupOverlay');
-        popup.classList.add('open');
+        // Open the popup anyway so they can see the details and copy manually
+        showPopup();
         showToast('Auto-copy failed. Please manually copy the order details below! 🌸', '⚠️');
     });
 }
@@ -1329,8 +1390,7 @@ function initUIHandlers() {
     document.getElementById('checkoutBtn').onclick = handleCheckout;
     if (window.HETAAS_API) {
         document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
-        const totalLabel = document.querySelector('.cart-total-label');
-        if (totalLabel) totalLabel.textContent = 'Items Total (delivery added at checkout):';
+        initOrderOptions();
         initDeliveryForm();
     }
     

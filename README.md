@@ -39,6 +39,7 @@ The site works without a backend (orders go via Instagram DM). To turn on PayPal
 - **HetAas Concierge chat:** answers questions from `products.json` and the FAQs, recommends gifts within a budget (gift finder is inside the chat only), and suggests one add-on. It refuses anything unrelated to the shop before calling the model.
 - **PayPal checkout (sandbox):** the basket is priced on the server, so the browser cannot change prices. PayPal collects the delivery address.
 - **After payment:** the buyer gets a receipt to copy into Instagram. The owner gets the same receipt by email.
+- **Three ways to order:** at checkout the buyer picks *Pay now & get it delivered* (PayPal), *Self pickup in Ahmedabad* (free, arranged on Instagram), or *Confirm first, pay later* (order sent on Instagram, paid after the artist confirms).
 - **Delivery charges (Shiprocket):** when the buyer enters their PIN code, the API asks Shiprocket for the cheapest courier from the pickup PIN code and adds a fixed markup (`SHIPPING_MARKUP_INR`, default ₹10). The charge is a separate shipping line on the PayPal bill and appears in the receipt and owner email. Weights per piece are set in `worker/wrangler.toml`.
 - **Agent endpoint:** `POST /mcp` (MCP-style tools: `search_products`, `get_product`, `create_checkout`). See [`llms.txt`](llms.txt).
 

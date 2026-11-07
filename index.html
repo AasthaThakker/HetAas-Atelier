@@ -556,6 +556,42 @@
         </div>
     </div>
 
+    <!-- Order options: shown when checking out (PayPal + delivery, self pickup, or confirm first) -->
+    <div class="checkout-popup-overlay" id="orderOptionsOverlay">
+        <div class="checkout-popup order-options-popup">
+            <div class="checkout-popup-header">
+                <h3>How would you like to order?</h3>
+                <p>Pick what suits you best 🌸</p>
+            </div>
+            <div class="order-options">
+                <button type="button" class="order-option" data-mode="paypal">
+                    <span class="order-option-icon">💳</span>
+                    <span class="order-option-text">
+                        <strong>Pay now &amp; get it delivered</strong>
+                        <small>Secure PayPal checkout. Delivery charge added from your PIN code.</small>
+                    </span>
+                    <span class="order-option-tag">Fastest</span>
+                </button>
+                <button type="button" class="order-option" data-mode="pickup">
+                    <span class="order-option-icon">🏠</span>
+                    <span class="order-option-text">
+                        <strong>Self pickup in Ahmedabad</strong>
+                        <small>Chat with the artist on Instagram to fix a pickup time.</small>
+                    </span>
+                    <span class="order-option-tag">Free</span>
+                </button>
+                <button type="button" class="order-option" data-mode="confirm">
+                    <span class="order-option-icon">💬</span>
+                    <span class="order-option-text">
+                        <strong>Confirm first, pay later</strong>
+                        <small>Send your order on Instagram. Pay once the artist confirms.</small>
+                    </span>
+                </button>
+            </div>
+            <button type="button" class="order-options-back" id="orderOptionsBackBtn">Back to basket</button>
+        </div>
+    </div>
+
     <!-- Delivery Details (asked before PayPal; sent with the order and in the owner's email) -->
     <div class="checkout-popup-overlay" id="deliveryPopupOverlay">
         <div class="checkout-popup delivery-popup">
@@ -624,20 +660,20 @@
     <div class="checkout-popup-overlay" id="checkoutPopupOverlay">
         <div class="checkout-popup">
             <div class="checkout-popup-header">
-                <span class="checkout-popup-icon">📋✨</span>
-                <h3>Order Receipt Ready!</h3>
-                <p>Your itemized order receipt has been copied to your clipboard. Click below to paste & send via Instagram DM! 🌸</p>
+                <span class="checkout-popup-icon" id="igPopupIcon">📋✨</span>
+                <h3 id="igPopupTitle">Order Receipt Ready!</h3>
+                <p id="igPopupText">Your itemized order receipt has been copied to your clipboard. Click below to paste & send via Instagram DM! 🌸</p>
             </div>
             
             <div class="receipt-card">
                 <div class="receipt-top-bar">
                     <span class="receipt-brand-title">HetAas Atelier</span>
-                    <span class="receipt-badge-tag">OFFICIAL RECEIPT</span>
+                    <span class="receipt-badge-tag" id="igPopupBadge">ORDER REQUEST</span>
                 </div>
                 <div class="checkout-code-box" id="checkoutCodeBox">
                     <!-- Formatted order text here -->
                 </div>
-                <div class="receipt-footer-note">
+                <div class="receipt-footer-note" id="igPopupFooter">
                     🔒 100% Pre-Paid Order • Hand-cured in 4-6 Days • Pan-India Shipping
                 </div>
             </div>
@@ -652,7 +688,7 @@
                 </button>
                 <!-- Instagram DM Button -->
                 <button class="checkout-popup-btn" id="checkoutGoBtn">
-                    <span>Send Order via Instagram</span>
+                    <span>Send to the Artist on Instagram</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>

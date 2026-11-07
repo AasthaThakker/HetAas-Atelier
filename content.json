@@ -44,7 +44,7 @@
     "steps": [
       { "icon": "🛒", "title": "Pick Your Pieces", "text": "Browse the collection or design a custom treasure, then add to your Resin Basket." },
       { "icon": "📋", "title": "Review Your Basket", "text": "Open the basket, adjust quantities, and add any special notes for your order." },
-      { "icon": "🌸", "title": "Send Your Order", "text": "Checkout copies a tidy receipt and opens Instagram DM - paste, send, and we confirm!" }
+      { "icon": "🌸", "title": "Send Your Order", "text": "Pay now with PayPal for delivery, pick up free in Ahmedabad, or send your order on Instagram and pay after we confirm." }
     ]
   },
   "about": {
@@ -62,7 +62,7 @@
   "faqs": [
     {
       "q": "How do I place an order?",
-      "a": "Add your desired items (either standard shop items or customized creations) to your <strong>Resin Basket</strong>. When ready, open the basket and click checkout. This copies a fully detailed order list to your clipboard and opens Instagram DM so you can paste and send it directly!"
+      "a": "Add your items (shop pieces or custom creations) to your <strong>Resin Basket</strong> and tap checkout. Then choose: <strong>Pay now &amp; get it delivered</strong> (PayPal, delivery charge added from your PIN code), <strong>Self pickup in Ahmedabad</strong> (free, we fix a pickup time on Instagram), or <strong>Confirm first, pay later</strong> (send your order on Instagram and pay once we confirm)."
     },
     {
       "q": "What are the payment and refund rules?",
