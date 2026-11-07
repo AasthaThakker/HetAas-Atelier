@@ -18,8 +18,10 @@ SHIPPING_MARKUP_INR = "10"
 WEIGHT_STANDARD_KG = "0.5"
 WEIGHT_HEAVY_KG = "2"
 
-# Optional: dedupe order emails across restarts. Create with `wrangler kv namespace create ORDERS`
-# and uncomment:
-# [[kv_namespaces]]
-# binding = "ORDERS"
-# id = "REPLACE_WITH_KV_ID"
+# Shiprocket courier IDs to skip (comma-separated), e.g. couriers disabled in your Shiprocket panel.
+EXCLUDED_COURIER_IDS = ""
+
+# KV storage: order-email dedupe and the cached Shiprocket login token.
+[[kv_namespaces]]
+binding = "ORDERS"
+id = "bab027d35e1d42ff8bb5efaa784ce726"

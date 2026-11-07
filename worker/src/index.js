@@ -321,18 +321,42 @@ function weightFor(category, name, env) {
   return Number(heavy ? env.WEIGHT_HEAVY_KG || 2 : env.WEIGHT_STANDARD_KG || 0.5);
 }
 
+// Shiprocket blocks an API user after repeated logins, so the token is kept in KV (shared by
+// every Worker instance) and reused for 9 days. After a failed login, wait 15 minutes before
+// trying again instead of retrying on every request.
+const SR_TOKEN_KEY = 'shiprocket:token';
+const SR_COOLDOWN_KEY = 'shiprocket:cooldown';
+
 async function shiprocketToken(env, force = false) {
   if (!force && shiprocketTokenCache.token && Date.now() < shiprocketTokenCache.exp) return shiprocketTokenCache.token;
+  if (!force && env.ORDERS) {
+    const saved = await env.ORDERS.get(SR_TOKEN_KEY, 'json');
+    if (saved && saved.token && Date.now() < saved.exp) {
+      shiprocketTokenCache = saved;
+      return saved.token;
+    }
+  }
   if (!env.SHIPROCKET_EMAIL || !env.SHIPROCKET_PASSWORD) throw new HttpError(503, 'Delivery charges are not configured yet');
+  if (env.ORDERS && (await env.ORDERS.get(SR_COOLDOWN_KEY))) {
+    throw new HttpError(503, 'Delivery charges are temporarily unavailable. Please try again in a few minutes.');
+  }
+
   const r = await fetch('https://apiv2.shiprocket.in/v1/external/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: env.SHIPROCKET_EMAIL, password: env.SHIPROCKET_PASSWORD }),
   });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok || !d.token) throw new HttpError(502, 'Could not reach the delivery partner. Please try again.');
+  const raw = await r.text();
+  let d = {};
+  try { d = JSON.parse(raw); } catch { /* non-JSON error page */ }
+  if (!r.ok || !d.token) {
+    console.error('Shiprocket login failed', r.status, raw.slice(0, 300));
+    if (env.ORDERS) await env.ORDERS.put(SR_COOLDOWN_KEY, '1', { expirationTtl: 15 * 60 });
+    throw new HttpError(502, 'Could not reach the delivery partner. Please try again.');
+  }
   // Shiprocket tokens last 10 days; refresh after 9.
   shiprocketTokenCache = { token: d.token, exp: Date.now() + 9 * 24 * 60 * 60 * 1000 };
+  if (env.ORDERS) await env.ORDERS.put(SR_TOKEN_KEY, JSON.stringify(shiprocketTokenCache), { expirationTtl: 9 * 24 * 60 * 60 });
   return d.token;
 }
 
@@ -352,11 +376,23 @@ async function quoteShipping(env, pincode, weightKg) {
     r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   }
   const d = await r.json().catch(() => ({}));
-  const couriers = (d.data?.available_courier_companies || []).filter((c) => Number(c.rate) > 0);
+  const excluded = new Set(String(env.EXCLUDED_COURIER_IDS || '').split(',').map((x) => x.trim()).filter(Boolean));
+  const couriers = (d.data?.available_courier_companies || []).filter(
+    (c) => Number(c.rate) > 0 && !excluded.has(String(c.courier_company_id))
+  );
   if (!couriers.length) throw new HttpError(400, "Sorry, we can't deliver to this PIN code yet. Please DM the artist on Instagram.");
 
-  const best = couriers.reduce((a, b) => (Number(b.rate) < Number(a.rate) ? b : a));
-  const cost = Math.ceil(Number(best.rate));
+  // The Shiprocket panel's price = freight `rate` + extra charges the API lists separately
+  // (WhatsApp delivery updates, usually ₹5; plus other/coverage/entry tax when present).
+  // COD charges are left out because every order is prepaid.
+  const fullPrice = (c) =>
+    Number(c.rate) +
+    Number(c.whatsapp_charges || 0) +
+    Number(c.other_charges || 0) +
+    Number(c.coverage_charges || 0) +
+    Number(c.entry_tax || 0);
+  const best = couriers.reduce((a, b) => (fullPrice(b) < fullPrice(a) ? b : a));
+  const cost = Math.ceil(Math.round(fullPrice(best) * 100) / 100);
   const quote = {
     charge: cost + Number(env.SHIPPING_MARKUP_INR || 10), // what the buyer pays
     cost, // what Shiprocket charges the shop (owner email only)
