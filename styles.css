@@ -916,12 +916,11 @@ h1, h2, h3, h4 {
     background-color: var(--color-white);
     border-radius: 26px;
     border: 1px solid rgba(200, 154, 144, 0.2);
-    padding: 2.2rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    position: sticky;
+    align-self: start; /* only as tall as its content, so no empty gap above the total */
+    position: sticky;  /* stays in view while choosing options */
     top: 110px;
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.01);
 }
@@ -940,7 +939,7 @@ h1, h2, h3, h4 {
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.4rem;
 }
 
 .preview-item {
@@ -964,8 +963,7 @@ h1, h2, h3, h4 {
 .customizer-price-footer {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
-    margin-top: auto;
+    gap: 1rem;
 }
 
 .custom-price-row {
@@ -3627,3 +3625,5 @@ h1, h2, h3, h4 {
 .studio-back-link { color: #8a5a50; font-weight: 600; text-decoration: none; font-size: .9rem; }
 .studio-back-link:hover { text-decoration: underline; }
 .nav-link.active { color: var(--color-primary-dark, #8a5a50); }
+
+.custom-note { margin: 0; text-align: center; font-size: .78rem; color: var(--color-secondary, #8a7b76); }
