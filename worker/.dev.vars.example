@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local testing. Never commit .dev.vars.
+GEMINI_API_KEY=
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
+PAYPAL_WEBHOOK_ID=
+RESEND_API_KEY=
+OWNER_EMAIL=

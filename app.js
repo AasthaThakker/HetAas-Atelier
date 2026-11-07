@@ -627,6 +627,7 @@ function addCustomItemToCart() {
         quantity: 1,
         isCustom: true,
         customization: {
+            baseId: customSelections.base.id,
             color: customSelections.color.name,
             inclusion: customSelections.inclusion.name,
             sticker: customSelections.addSticker,
@@ -913,9 +914,45 @@ function copyTextToClipboard(text) {
     }
 }
 
+// PayPal checkout via the API Worker (see worker/). The server prices the basket itself.
+async function startPayPalCheckout() {
+    if (cart.length === 0) return;
+    const btn = document.getElementById('checkoutBtn');
+    btn.disabled = true;
+    btn.textContent = 'Opening PayPal…';
+    const items = cart.map(item => ({
+        id: item.isCustom ? undefined : item.product.id,
+        qty: item.quantity,
+        customName: item.customName || undefined,
+        custom: item.isCustom && item.customization ? {
+            baseId: item.customization.baseId,
+            color: item.customization.color,
+            inclusion: item.customization.inclusion,
+            sticker: item.customization.sticker,
+            text: item.customization.text
+        } : undefined
+    }));
+    const notes = document.getElementById('cartNotes').value.trim();
+    try {
+        const res = await fetch(`${window.HETAAS_API}/api/checkout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items, notes })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Checkout failed');
+        window.location.href = data.approveUrl;
+    } catch (err) {
+        showToast(err.message || 'Checkout failed. Please try again.', '⚠️');
+        btn.disabled = false;
+        btn.textContent = 'Pay with PayPal 🌸';
+    }
+}
+
 function handleCheckout() {
     if (cart.length === 0) return;
-    
+    if (window.HETAAS_API) return startPayPalCheckout();
+
     let message = "Hi HetAas Atelier! 🌸 I would love to place a pre-paid order:\n\n";
     message += "--------------------------------------\n";
     
@@ -1179,6 +1216,7 @@ function initUIHandlers() {
     }
     
     document.getElementById('checkoutBtn').onclick = handleCheckout;
+    if (window.HETAAS_API) document.getElementById('checkoutBtn').textContent = 'Pay with PayPal 🌸';
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
     const igGoBtn = document.getElementById('checkoutGoBtn');
@@ -1563,10 +1601,11 @@ function setupStickyOrderBar() {
     const label = fab.querySelector('.floating-contact-label');
     if (wa) {
         fab.href = `https://wa.me/${wa}`;
-        if (label) label.textContent = 'Chat on WhatsApp';
+        if (label) label.textContent = 'WhatsApp the Artist';
+        fab.setAttribute('aria-label', 'WhatsApp the artist');
     } else {
         fab.href = getInstagramDmUrl();
-        if (label) label.textContent = 'Chat to Order';
+        if (label) label.textContent = 'DM the Artist';
     }
 }
 

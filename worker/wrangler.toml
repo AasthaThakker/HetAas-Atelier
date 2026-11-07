@@ -1,0 +1,19 @@
+name = "hetaas-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Public, non-secret settings. Secrets go in the dashboard or `wrangler secret put` (never in git).
+[vars]
+SITE_URL = "https://aasthathakker.github.io/HetAas-Atelier"
+ALLOWED_ORIGIN = "https://aasthathakker.github.io"
+PAYPAL_ENV = "sandbox"
+CURRENCY = "USD"
+# Shop prices are in INR. PayPal sandbox does not accept INR, so prices are converted at this fixed rate.
+INR_PER_UNIT = "85"
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# Optional: dedupe order emails across restarts. Create with `wrangler kv namespace create ORDERS`
+# and uncomment:
+# [[kv_namespaces]]
+# binding = "ORDERS"
+# id = "REPLACE_WITH_KV_ID"

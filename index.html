@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Content Security Policy (static-host enforceable; hardens against XSS/injection) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://*.goatcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'sha256-LU1qBNWjiFziC16Dj5HvB8jt5e+ZqEG7vYdZ9qhAv5o=' https://gc.zgo.at https://plausible.io; connect-src 'self' https://*.goatcounter.com https://plausible.io; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://*.goatcounter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'sha256-LU1qBNWjiFziC16Dj5HvB8jt5e+ZqEG7vYdZ9qhAv5o=' https://gc.zgo.at https://plausible.io; connect-src 'self' https://*.goatcounter.com https://plausible.io https://hetaas-api.automated-aesthetix.workers.dev http://127.0.0.1:8787; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <!-- Clickjacking guard (runs immediately; hashed in CSP). frame-ancestors needs a real header, unavailable on static hosts. -->
@@ -495,12 +495,14 @@
         </div>
     </footer>
 
-    <!-- Floating Contact / Order Button (direct chat to place an order) -->
-    <a class="floating-contact-fab" id="contactFab" href="https://ig.me/m/hetaas_atelier" aria-label="Chat to order" target="_blank" rel="noopener noreferrer">
+    <!-- Floating Contact Button: a real person (the artist) on Instagram DM. The AI assistant "Resi" sits above it. -->
+    <a class="floating-contact-fab" id="contactFab" href="https://ig.me/m/hetaas_atelier" aria-label="DM the artist on Instagram" target="_blank" rel="noopener noreferrer">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"></circle>
         </svg>
-        <span class="floating-contact-label">Chat to Order</span>
+        <span class="floating-contact-label">DM the Artist</span>
     </a>
 
     <!-- Floating Basket Trigger Button -->
@@ -636,6 +638,8 @@
 
     <!-- Local-preview data fallback (used only when opened via file://; ignored on a real server) -->
     <script src="data.js"></script>
+    <script src="config.js"></script>
     <script src="app.js" defer></script>
+    <script src="chat.js" defer></script>
 </body>
 </html>
