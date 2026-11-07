@@ -470,12 +470,19 @@ async function handleWebhook(request, env) {
   if (verify.verification_status !== 'SUCCESS') return new Response('Invalid signature', { status: 401 });
 
   const evt = JSON.parse(raw);
-  if (evt.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-    const orderId = evt.resource?.supplementary_data?.related_ids?.order_id;
-    if (orderId) {
-      const order = await paypal(env, `/v2/checkout/orders/${orderId}`);
-      await notifyOwnerOnce(env, order);
+  let orderId = null;
+  if (evt.event_type === 'CHECKOUT.ORDER.APPROVED') orderId = evt.resource?.id;
+  if (evt.event_type === 'PAYMENT.CAPTURE.COMPLETED') orderId = evt.resource?.supplementary_data?.related_ids?.order_id;
+
+  if (orderId) {
+    let order = await paypal(env, `/v2/checkout/orders/${orderId}`);
+    // Buyer approved but closed the tab before returning to the site: take the payment here,
+    // so the order is not lost.
+    if (order.status === 'APPROVED') {
+      await paypal(env, `/v2/checkout/orders/${orderId}/capture`, { method: 'POST', body: {} }).catch((e) => console.error('webhook capture', e.message));
+      order = await paypal(env, `/v2/checkout/orders/${orderId}`);
     }
+    if (order.status === 'COMPLETED') await notifyOwnerOnce(env, order);
   }
   return new Response('ok', { status: 200 });
 }
