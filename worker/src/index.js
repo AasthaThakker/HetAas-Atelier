@@ -309,7 +309,27 @@ function priceBasket(items, site) {
   });
 }
 
-async function createOrderFromBasket(env, site, items, notes) {
+// Buyer's contact + delivery details. Required for website orders (they go in the owner's email).
+function validateCustomer(c) {
+  if (!c || typeof c !== 'object') throw new HttpError(400, 'Please fill in your delivery details');
+  const name = clean(c.name, 60);
+  const email = clean(c.email, 80).toLowerCase();
+  const digits = String(c.phone || '').replace(/\D/g, '').replace(/^(91)(?=\d{10}$)/, '');
+  const address = clean(c.address, 120);
+  const city = clean(c.city, 40);
+  const state = clean(c.state, 40);
+  const pincode = String(c.pincode || '').trim();
+  if (name.length < 2) throw new HttpError(400, 'Please enter your full name');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw new HttpError(400, 'Please enter a valid email');
+  if (!/^[6-9]\d{9}$/.test(digits)) throw new HttpError(400, 'Please enter a valid 10-digit mobile number');
+  if (address.length < 5) throw new HttpError(400, 'Please enter your full address');
+  if (city.length < 2) throw new HttpError(400, 'Please enter your city');
+  if (state.length < 2) throw new HttpError(400, 'Please enter your state');
+  if (!/^[1-9]\d{5}$/.test(pincode)) throw new HttpError(400, 'Please enter a valid 6-digit PIN code');
+  return { name, email, phone: '+91' + digits, address, city, state, pincode };
+}
+
+async function createOrderFromBasket(env, site, items, notes, customer) {
   const cur = env.CURRENCY || 'INR';
   // Shop prices are in ₹. If PayPal charges in another currency (sandbox does not support INR),
   // convert at the fixed INR_PER_UNIT rate from wrangler.toml.
@@ -327,6 +347,22 @@ async function createOrderFromBasket(env, site, items, notes) {
           reference_id: 'HA-' + Date.now().toString(36),
           // PayPal allows 127 chars here. Notes travel with the order, so the receipt can be rebuilt from PayPal alone.
           description: clean(notes, 127) || 'HetAas Atelier order',
+          // Buyer email + phone travel with the order (PayPal custom_id, max 127 chars).
+          ...(customer ? { custom_id: `${customer.email}|${customer.phone}`.slice(0, 127) } : {}),
+          ...(customer
+            ? {
+                shipping: {
+                  name: { full_name: customer.name },
+                  address: {
+                    address_line_1: customer.address.slice(0, 100),
+                    admin_area_2: customer.city,
+                    admin_area_1: customer.state,
+                    postal_code: customer.pincode,
+                    country_code: 'IN',
+                  },
+                },
+              }
+            : {}),
           amount: {
             currency_code: cur,
             value: total.toFixed(2),
@@ -347,7 +383,8 @@ async function createOrderFromBasket(env, site, items, notes) {
             brand_name: 'HetAas Atelier',
             landing_page: 'NO_PREFERENCE',
             user_action: 'PAY_NOW',
-            shipping_preference: 'GET_FROM_FILE', // PayPal collects the delivery address
+            // Website orders: use the address the buyer typed. Agent orders without details: PayPal asks.
+            shipping_preference: customer ? 'SET_PROVIDED_ADDRESS' : 'GET_FROM_FILE',
             return_url: `${origin}/order-success.html`,
             cancel_url: `${origin}/?checkout=cancelled`,
           },
@@ -363,7 +400,8 @@ async function createOrderFromBasket(env, site, items, notes) {
 async function handleCheckout(request, env) {
   const body = await request.json().catch(() => ({}));
   const site = await loadSite(env);
-  const result = await createOrderFromBasket(env, site, body.items, body.notes);
+  const customer = validateCustomer(body.customer);
+  const result = await createOrderFromBasket(env, site, body.items, body.notes, customer);
   return respond(env, { orderId: result.orderId, approveUrl: result.approveUrl });
 }
 
@@ -383,9 +421,10 @@ function buildReceipt(order) {
         .filter(Boolean)
         .join(', ')
     : 'Not provided';
-  const payer = order.payer
-    ? [`${order.payer.name?.given_name || ''} ${order.payer.name?.surname || ''}`.trim(), order.payer.email_address].filter(Boolean).join(' · ')
-    : 'Not provided';
+  const [contactEmail, contactPhone] = String(pu.custom_id || '').split('|');
+  const payerName = order.payer ? `${order.payer.name?.given_name || ''} ${order.payer.name?.surname || ''}`.trim() : '';
+  const customerName = pu.shipping?.name?.full_name || payerName || 'Not provided';
+  const paypalAccount = order.payer?.email_address || '';
   const notes = pu.description && pu.description !== 'HetAas Atelier order' ? `Special instructions: "${pu.description}"` : '';
 
   return [
@@ -396,8 +435,12 @@ function buildReceipt(order) {
     '--------------------------------------',
     notes,
     `Total paid: ${cur} ${pu.amount?.value}`,
-    `Customer: ${payer}`,
-    `Ship to: ${ship}`,
+    '--------------------------------------',
+    `Name: ${customerName}`,
+    `Email: ${contactEmail || paypalAccount || 'Not provided'}`,
+    `Phone: ${contactPhone || 'Not provided'}`,
+    `Delivery address: ${ship}`,
+    paypalAccount && paypalAccount !== contactEmail ? `Paid with PayPal account: ${paypalAccount}` : '',
     '--------------------------------------',
     'Custom pieces: 4-6 days curing. Customized items are non-returnable.',
   ]
@@ -518,6 +561,10 @@ const MCP_TOOLS = [
           },
         },
         notes: { type: 'string' },
+        customer: {
+          type: 'object',
+          description: 'Optional buyer details: name, email, phone (10-digit Indian mobile), address, city, state, pincode. If omitted, PayPal asks for the address.',
+        },
       },
       required: ['items'],
     },
@@ -552,7 +599,7 @@ async function handleMcp(request, env) {
         return p ? text(publicProduct(p)) : fail(-32602, 'Product not found');
       }
       if (name === 'create_checkout') {
-        const result = await createOrderFromBasket(env, site, a.items, a.notes);
+        const result = await createOrderFromBasket(env, site, a.items, a.notes, a.customer ? validateCustomer(a.customer) : null);
         return text({ orderId: result.orderId, total: result.total, approveUrl: result.approveUrl, note: 'Send the buyer to approveUrl to pay with PayPal.' });
       }
       return fail(-32602, 'Unknown tool');

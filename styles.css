@@ -3573,3 +3573,14 @@ h1, h2, h3, h4 {
     .chat-launcher-label { display: none; }
     .chat-panel { left: 12px; right: 12px; width: auto; bottom: 134px; height: min(520px, calc(100vh - 160px)); }
 }
+
+/* Delivery details popup (before PayPal) */
+.delivery-popup { max-height: calc(100vh - 32px); overflow-y: auto; }
+.delivery-form { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.delivery-form label { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; color: #5a3b35; }
+.delivery-form input { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid #e7d3cd; border-radius: 10px; padding: 10px 12px; font-size: .95rem; font-weight: 400; color: #333; outline: none; background: #fff; }
+.delivery-form input:focus { border-color: #c89a90; }
+.delivery-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.delivery-popup { overflow-x: hidden; }
+.delivery-error { color: #b3261e; font-size: .85rem; min-height: 1.1em; margin: 0; }
+.delivery-back-btn { background: #f1e6e2 !important; color: #5a3b35 !important; }

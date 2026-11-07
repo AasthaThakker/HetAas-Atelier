@@ -915,11 +915,61 @@ function copyTextToClipboard(text) {
 }
 
 // PayPal checkout via the API Worker (see worker/). The server prices the basket itself.
-async function startPayPalCheckout() {
+// Step 1: the basket's checkout button opens the Delivery Details popup.
+// Step 2: submitting the details creates the PayPal order and redirects to PayPal.
+const CUSTOMER_KEY = 'hetaas_customer';
+
+function openDeliveryDetails() {
     if (cart.length === 0) return;
-    const btn = document.getElementById('checkoutBtn');
+    const form = document.getElementById('deliveryForm');
+    // Prefill from the last order on this device.
+    try {
+        const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || '{}');
+        Object.keys(saved).forEach(k => { if (form.elements[k] && !form.elements[k].value) form.elements[k].value = saved[k]; });
+    } catch (e) { /* ignore bad saved data */ }
+    document.getElementById('deliveryError').textContent = '';
+    document.getElementById('cartDrawerOverlay').classList.remove('open');
+    document.getElementById('deliveryPopupOverlay').classList.add('open');
+    form.elements.name.focus();
+}
+
+function closeDeliveryDetails(reopenBasket) {
+    document.getElementById('deliveryPopupOverlay').classList.remove('open');
+    if (reopenBasket) document.getElementById('cartDrawerOverlay').classList.add('open');
+}
+
+function initDeliveryForm() {
+    const form = document.getElementById('deliveryForm');
+    if (!form) return;
+    document.getElementById('deliveryBackBtn').onclick = () => closeDeliveryDetails(true);
+    form.addEventListener('input', () => { document.getElementById('deliveryError').textContent = ''; });
+    document.getElementById('deliveryPopupOverlay').onclick = (e) => {
+        if (e.target.id === 'deliveryPopupOverlay') closeDeliveryDetails(false);
+    };
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const errorEl = document.getElementById('deliveryError');
+        if (!form.checkValidity()) {
+            const bad = form.querySelector(':invalid');
+            const label = bad.closest('label').firstChild.textContent.trim();
+            errorEl.textContent = `Please enter a valid ${label.toLowerCase()}.`;
+            bad.focus();
+            return;
+        }
+        const customer = {};
+        ['name', 'email', 'phone', 'address', 'city', 'state', 'pincode'].forEach(k => { customer[k] = form.elements[k].value.trim(); });
+        localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
+        startPayPalCheckout(customer);
+    });
+}
+
+async function startPayPalCheckout(customer) {
+    if (cart.length === 0) return;
+    const btn = document.getElementById('deliveryPayBtn');
+    const errorEl = document.getElementById('deliveryError');
     btn.disabled = true;
     btn.textContent = 'Opening PayPal…';
+    errorEl.textContent = '';
     const items = cart.map(item => ({
         id: item.isCustom ? undefined : item.product.id,
         qty: item.quantity,
@@ -937,13 +987,13 @@ async function startPayPalCheckout() {
         const res = await fetch(`${window.HETAAS_API}/api/checkout`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items, notes })
+            body: JSON.stringify({ items, notes, customer })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Checkout failed');
         window.location.href = data.approveUrl;
     } catch (err) {
-        showToast(err.message || 'Checkout failed. Please try again.', '⚠️');
+        errorEl.textContent = err.message || 'Checkout failed. Please try again.';
         btn.disabled = false;
         btn.textContent = 'Pay with PayPal 🌸';
     }
@@ -951,7 +1001,7 @@ async function startPayPalCheckout() {
 
 function handleCheckout() {
     if (cart.length === 0) return;
-    if (window.HETAAS_API) return startPayPalCheckout();
+    if (window.HETAAS_API) return openDeliveryDetails();
 
     let message = "Hi HetAas Atelier! 🌸 I would love to place a pre-paid order:\n\n";
     message += "--------------------------------------\n";
@@ -1216,7 +1266,10 @@ function initUIHandlers() {
     }
     
     document.getElementById('checkoutBtn').onclick = handleCheckout;
-    if (window.HETAAS_API) document.getElementById('checkoutBtn').textContent = 'Pay with PayPal 🌸';
+    if (window.HETAAS_API) {
+        document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
+        initDeliveryForm();
+    }
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');
     const igGoBtn = document.getElementById('checkoutGoBtn');
