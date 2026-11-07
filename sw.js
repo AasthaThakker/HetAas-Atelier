@@ -7,7 +7,7 @@
  *   - Navigations: network-first, fall back to cached page, then offline.html.
  * Bump CACHE_VERSION on a release when you want to force-purge all old caches.
  */
-const CACHE_VERSION = 'hetaas-v4';
+const CACHE_VERSION = 'hetaas-v5';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 const IMG_CACHE = `${CACHE_VERSION}-img`;

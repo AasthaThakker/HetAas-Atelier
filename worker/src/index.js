@@ -3,7 +3,8 @@
 //
 // Routes
 //   POST /api/chat             scoped sales assistant + gift finder (Gemini)
-//   POST /api/checkout         price the basket server-side, create a PayPal order
+//   POST /api/shipping-quote   live Shiprocket delivery charge for a PIN code (cheapest + markup)
+//   POST /api/checkout         price the basket + delivery server-side, create a PayPal order
 //   POST /api/capture          capture an approved order, email the owner the receipt
 //   POST /api/webhook/paypal   PayPal webhook: email the owner if the capture was missed
 //   POST /mcp                  agent endpoint (JSON-RPC, MCP-style tools)
@@ -35,6 +36,8 @@ const TOPIC_RE = new RegExp(
 // Module-level caches survive between requests while the isolate is warm.
 let siteCache = { at: 0, products: null, content: null };
 let paypalTokenCache = { token: null, exp: 0 };
+let shiprocketTokenCache = { token: null, exp: 0 };
+const shippingQuoteCache = new Map(); // `${pin}|${kg}` -> { at, quote }
 const mailedOrders = new Set(); // fallback dedupe when no KV binding is set
 
 class HttpError extends Error {
@@ -142,7 +145,7 @@ function buildSystemPrompt(content, picks, faqs) {
 RULES
 - Only discuss this shop: products, prices, availability, gift ideas, custom pieces, orders, payment, delivery and care. For anything else, return "off_topic": true and an empty reply.
 - Use ONLY the catalogue and FAQ below. Never invent products, prices, discounts, stock counts or delivery dates. If something is not listed, say you will check with the owner on Instagram.
-- Every piece is made to order: curing takes about 4-6 days. Payment is pre-paid only (PayPal). No refunds or exchanges on custom pieces. Delivery is paid by the buyer; self pickup in Ahmedabad is free.
+- Every piece is made to order: curing takes about 4-6 days. Payment is pre-paid only (PayPal). No refunds or exchanges on custom pieces. Delivery is paid by the buyer: the exact charge is calculated at checkout from their PIN code (live courier rate via Shiprocket); self pickup in Ahmedabad is free.
 - Custom pieces start from: ${bases || 'see the customizer'}, plus ₹${CUSTOM_STICKER_FEE} for a metallic name sticker.
 - GIFT FINDER: if the customer wants a gift, ask at most ONE short question for anything missing (recipient, occasion, budget). Once you know enough, recommend 2-3 catalogue items with one line on why each suits them.
 - UPSELL: suggest at most one complementary item, only when it fits naturally.
@@ -274,7 +277,7 @@ async function paypal(env, path, { method = 'GET', body, headers = {} } = {}) {
 }
 
 // Server-side pricing. The browser only sends ids, quantities and customization choices.
-function priceBasket(items, site) {
+function priceBasket(items, site, env = {}) {
   if (!Array.isArray(items) || items.length === 0) throw new HttpError(400, 'Basket is empty');
   let count = 0;
   return items.map((it) => {
@@ -294,6 +297,7 @@ function priceBasket(items, site) {
         sticker ? `Metallic name: "${text}"` : '',
       ].filter(Boolean);
       return {
+        weight: weightFor(base.category, base.name, env),
         name: `Custom Resin ${base.name}`,
         qty,
         unit: Number(base.price) + (sticker ? CUSTOM_STICKER_FEE : 0),
@@ -305,8 +309,74 @@ function priceBasket(items, site) {
     if (!p) throw new HttpError(400, 'Unknown product in basket');
     if (p.available === false) throw new HttpError(409, `${p.name} is currently unavailable`);
     const detail = it.customName ? `Name/inscription: "${clean(it.customName, 30)}"` : p.category;
-    return { name: p.name, qty, unit: Number(p.price), desc: detail.slice(0, 127) };
+    return { weight: weightFor(p.category, p.name, env), name: p.name, qty, unit: Number(p.price), desc: detail.slice(0, 127) };
   });
+}
+
+// ---------- Delivery charges (Shiprocket) ----------
+
+// Packed weight per piece: pooja thalis and decor plates are heavy, everything else is light.
+function weightFor(category, name, env) {
+  const heavy = /thali/i.test(category) || /plate/i.test(name);
+  return Number(heavy ? env.WEIGHT_HEAVY_KG || 2 : env.WEIGHT_STANDARD_KG || 0.5);
+}
+
+async function shiprocketToken(env, force = false) {
+  if (!force && shiprocketTokenCache.token && Date.now() < shiprocketTokenCache.exp) return shiprocketTokenCache.token;
+  if (!env.SHIPROCKET_EMAIL || !env.SHIPROCKET_PASSWORD) throw new HttpError(503, 'Delivery charges are not configured yet');
+  const r = await fetch('https://apiv2.shiprocket.in/v1/external/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: env.SHIPROCKET_EMAIL, password: env.SHIPROCKET_PASSWORD }),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.token) throw new HttpError(502, 'Could not reach the delivery partner. Please try again.');
+  // Shiprocket tokens last 10 days; refresh after 9.
+  shiprocketTokenCache = { token: d.token, exp: Date.now() + 9 * 24 * 60 * 60 * 1000 };
+  return d.token;
+}
+
+// Cheapest courier for this PIN code and weight, plus the shop's fixed markup (whole rupees).
+async function quoteShipping(env, pincode, weightKg) {
+  if (!/^[1-9]\d{5}$/.test(String(pincode))) throw new HttpError(400, 'Please enter a valid 6-digit PIN code');
+  const kg = Math.max(0.5, Math.round(weightKg * 100) / 100);
+  const key = `${pincode}|${kg}`;
+  const cached = shippingQuoteCache.get(key);
+  if (cached && Date.now() - cached.at < 10 * 60 * 1000) return cached.quote;
+
+  const url = `https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=${env.PICKUP_PINCODE || '380052'}&delivery_postcode=${pincode}&weight=${kg}&cod=0`;
+  let token = await shiprocketToken(env);
+  let r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (r.status === 401) {
+    token = await shiprocketToken(env, true);
+    r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  }
+  const d = await r.json().catch(() => ({}));
+  const couriers = (d.data?.available_courier_companies || []).filter((c) => Number(c.rate) > 0);
+  if (!couriers.length) throw new HttpError(400, "Sorry, we can't deliver to this PIN code yet. Please DM the artist on Instagram.");
+
+  const best = couriers.reduce((a, b) => (Number(b.rate) < Number(a.rate) ? b : a));
+  const cost = Math.ceil(Number(best.rate));
+  const quote = {
+    charge: cost + Number(env.SHIPPING_MARKUP_INR || 10), // what the buyer pays
+    cost, // what Shiprocket charges the shop (owner email only)
+    courier: String(best.courier_name || 'Courier'),
+    days: best.estimated_delivery_days ? String(best.estimated_delivery_days) : '',
+    weightKg: kg,
+  };
+  shippingQuoteCache.set(key, { at: Date.now(), quote });
+  return quote;
+}
+
+const basketWeight = (lines) => lines.reduce((s, l) => s + l.weight * l.qty, 0);
+
+async function handleShippingQuote(request, env) {
+  const body = await request.json().catch(() => ({}));
+  const site = await loadSite(env);
+  const lines = priceBasket(body.items, site, env);
+  const quote = await quoteShipping(env, String(body.pincode || '').trim(), basketWeight(lines));
+  const itemsTotal = lines.reduce((s, l) => s + l.unit * l.qty, 0);
+  return respond(env, { itemsTotal, delivery: quote.charge, courier: quote.courier, days: quote.days, total: itemsTotal + quote.charge });
 }
 
 // Buyer's contact + delivery details. Required for website orders (they go in the owner's email).
@@ -334,8 +404,13 @@ async function createOrderFromBasket(env, site, items, notes, customer) {
   // Shop prices are in ₹. If PayPal charges in another currency (sandbox does not support INR),
   // convert at the fixed INR_PER_UNIT rate from wrangler.toml.
   const rate = cur === 'INR' ? 1 : Number(env.INR_PER_UNIT || 85);
-  const lines = priceBasket(items, site).map((l) => ({ ...l, unit: Math.round((l.unit / rate) * 100) / 100 }));
-  const total = Math.round(lines.reduce((s, l) => s + l.unit * l.qty, 0) * 100) / 100;
+  const inrLines = priceBasket(items, site, env);
+  // Delivery is quoted again here (never trusted from the browser). Needs the buyer's PIN code.
+  const ship = customer ? await quoteShipping(env, customer.pincode, basketWeight(inrLines)) : null;
+  const lines = inrLines.map((l) => ({ ...l, unit: Math.round((l.unit / rate) * 100) / 100 }));
+  const itemTotal = Math.round(lines.reduce((s, l) => s + l.unit * l.qty, 0) * 100) / 100;
+  const shipping = ship ? Math.round((ship.charge / rate) * 100) / 100 : 0;
+  const total = Math.round((itemTotal + shipping) * 100) / 100;
   const origin = env.SITE_URL.replace(/\/$/, '');
   const order = await paypal(env, '/v2/checkout/orders', {
     method: 'POST',
@@ -348,7 +423,10 @@ async function createOrderFromBasket(env, site, items, notes, customer) {
           // PayPal allows 127 chars here. Notes travel with the order, so the receipt can be rebuilt from PayPal alone.
           description: clean(notes, 127) || 'HetAas Atelier order',
           // Buyer email + phone travel with the order (PayPal custom_id, max 127 chars).
-          ...(customer ? { custom_id: `${customer.email}|${customer.phone}`.slice(0, 127) } : {}),
+          // email|phone|delivery charged (INR)|shiprocket cost (INR)|courier, read back for the owner email.
+          ...(customer
+            ? { custom_id: [customer.email, customer.phone, ship.charge, ship.cost, ship.courier].join('|').slice(0, 127) }
+            : {}),
           ...(customer
             ? {
                 shipping: {
@@ -366,7 +444,10 @@ async function createOrderFromBasket(env, site, items, notes, customer) {
           amount: {
             currency_code: cur,
             value: total.toFixed(2),
-            breakdown: { item_total: { currency_code: cur, value: total.toFixed(2) } },
+            breakdown: {
+              item_total: { currency_code: cur, value: itemTotal.toFixed(2) },
+              ...(ship ? { shipping: { currency_code: cur, value: shipping.toFixed(2) } } : {}),
+            },
           },
           items: lines.map((l) => ({
             name: l.name.slice(0, 127),
@@ -394,7 +475,7 @@ async function createOrderFromBasket(env, site, items, notes, customer) {
   });
   const approve = (order.links || []).find((l) => l.rel === 'payer-action') || (order.links || []).find((l) => l.rel === 'approve');
   if (!approve) throw new HttpError(502, 'PayPal did not return an approval link');
-  return { orderId: order.id, approveUrl: approve.href, total };
+  return { orderId: order.id, approveUrl: approve.href, total, delivery: ship };
 }
 
 async function handleCheckout(request, env) {
@@ -421,7 +502,7 @@ function buildReceipt(order) {
         .filter(Boolean)
         .join(', ')
     : 'Not provided';
-  const [contactEmail, contactPhone] = String(pu.custom_id || '').split('|');
+  const [contactEmail, contactPhone, deliveryInr, , courier] = String(pu.custom_id || '').split('|');
   const payerName = order.payer ? `${order.payer.name?.given_name || ''} ${order.payer.name?.surname || ''}`.trim() : '';
   const customerName = pu.shipping?.name?.full_name || payerName || 'Not provided';
   const paypalAccount = order.payer?.email_address || '';
@@ -434,6 +515,9 @@ function buildReceipt(order) {
     lines.trimEnd(),
     '--------------------------------------',
     notes,
+    deliveryInr
+      ? `Delivery charge: ₹${deliveryInr} via ${courier || 'courier'}${cur !== 'INR' ? ` (${cur} ${pu.amount?.breakdown?.shipping?.value || ''})` : ''}`
+      : '',
     `Total paid: ${cur} ${pu.amount?.value}`,
     '--------------------------------------',
     `Name: ${customerName}`,
@@ -473,7 +557,10 @@ async function notifyOwnerOnce(env, order) {
   const already = env.ORDERS ? await env.ORDERS.get(`mailed:${id}`) : mailedOrders.has(id);
   if (already) return;
   const receipt = buildReceipt(order);
-  const sent = await sendOwnerEmail(env, `New paid order ${id}`, receipt);
+  // The buyer never sees this line; it is only in the owner's email.
+  const shipCost = String(order.purchase_units?.[0]?.custom_id || '').split('|')[3];
+  const ownerNote = shipCost ? `\n\n(Owner only) Shiprocket quoted ₹${shipCost} for the cheapest courier at checkout.` : '';
+  const sent = await sendOwnerEmail(env, `New paid order ${id}`, receipt + ownerNote);
   if (sent) {
     if (env.ORDERS) await env.ORDERS.put(`mailed:${id}`, '1', { expirationTtl: 60 * 60 * 24 * 365 });
     else mailedOrders.add(id);
@@ -548,7 +635,7 @@ const MCP_TOOLS = [
   },
   {
     name: 'create_checkout',
-    description: 'Create a PayPal checkout for a basket of product ids. Returns approveUrl for the buyer to pay.',
+    description: 'Create a PayPal checkout (items + live delivery charge) for a basket of product ids. Returns approveUrl for the buyer to pay.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -563,10 +650,10 @@ const MCP_TOOLS = [
         notes: { type: 'string' },
         customer: {
           type: 'object',
-          description: 'Optional buyer details: name, email, phone (10-digit Indian mobile), address, city, state, pincode. If omitted, PayPal asks for the address.',
+          description: 'Buyer details: name, email, phone (10-digit Indian mobile), address, city, state, pincode. The delivery charge is calculated from the pincode.',
         },
       },
-      required: ['items'],
+      required: ['items', 'customer'],
     },
   },
 ];
@@ -599,8 +686,8 @@ async function handleMcp(request, env) {
         return p ? text(publicProduct(p)) : fail(-32602, 'Product not found');
       }
       if (name === 'create_checkout') {
-        const result = await createOrderFromBasket(env, site, a.items, a.notes, a.customer ? validateCustomer(a.customer) : null);
-        return text({ orderId: result.orderId, total: result.total, approveUrl: result.approveUrl, note: 'Send the buyer to approveUrl to pay with PayPal.' });
+        const result = await createOrderFromBasket(env, site, a.items, a.notes, validateCustomer(a.customer));
+        return text({ orderId: result.orderId, total: result.total, deliveryInr: result.delivery?.charge, courier: result.delivery?.courier, approveUrl: result.approveUrl, note: 'Send the buyer to approveUrl to pay with PayPal.' });
       }
       return fail(-32602, 'Unknown tool');
     }
@@ -621,6 +708,7 @@ export default {
       if (request.method !== 'POST') return respond(env, { error: 'Method not allowed' }, 405);
 
       if (pathname === '/api/chat') return await handleChat(request, env);
+      if (pathname === '/api/shipping-quote') return await handleShippingQuote(request, env);
       if (pathname === '/api/checkout') return await handleCheckout(request, env);
       if (pathname === '/api/capture') return await handleCapture(request, env);
       if (pathname === '/api/webhook/paypal') return await handleWebhook(request, env);

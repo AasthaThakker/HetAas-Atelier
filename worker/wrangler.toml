@@ -11,6 +11,12 @@ CURRENCY = "USD"
 # Shop prices are in INR. PayPal sandbox does not accept INR, so prices are converted at this fixed rate.
 INR_PER_UNIT = "85"
 GEMINI_MODEL = "gemini-2.5-flash"
+# Delivery (Shiprocket): cheapest courier from the pickup PIN code, plus a fixed markup in rupees.
+PICKUP_PINCODE = "380052"
+SHIPPING_MARKUP_INR = "10"
+# Packed weight per piece (kg). Heavy = pooja thalis and decor plates.
+WEIGHT_STANDARD_KG = "0.5"
+WEIGHT_HEAVY_KG = "2"
 
 # Optional: dedupe order emails across restarts. Create with `wrangler kv namespace create ORDERS`
 # and uncomment:

@@ -930,6 +930,7 @@ function openDeliveryDetails() {
     document.getElementById('deliveryError').textContent = '';
     document.getElementById('cartDrawerOverlay').classList.remove('open');
     document.getElementById('deliveryPopupOverlay').classList.add('open');
+    refreshDeliveryQuote();
     form.elements.name.focus();
 }
 
@@ -942,7 +943,10 @@ function initDeliveryForm() {
     const form = document.getElementById('deliveryForm');
     if (!form) return;
     document.getElementById('deliveryBackBtn').onclick = () => closeDeliveryDetails(true);
-    form.addEventListener('input', () => { document.getElementById('deliveryError').textContent = ''; });
+    form.addEventListener('input', (e) => {
+        document.getElementById('deliveryError').textContent = '';
+        if (e.target.name === 'pincode') refreshDeliveryQuote();
+    });
     document.getElementById('deliveryPopupOverlay').onclick = (e) => {
         if (e.target.id === 'deliveryPopupOverlay') closeDeliveryDetails(false);
     };
@@ -956,6 +960,10 @@ function initDeliveryForm() {
             bad.focus();
             return;
         }
+        if (!deliveryQuote) {
+            errorEl.textContent = 'Please wait for the delivery charge, or check your PIN code.';
+            return;
+        }
         const customer = {};
         ['name', 'email', 'phone', 'address', 'city', 'state', 'pincode'].forEach(k => { customer[k] = form.elements[k].value.trim(); });
         localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
@@ -963,14 +971,9 @@ function initDeliveryForm() {
     });
 }
 
-async function startPayPalCheckout(customer) {
-    if (cart.length === 0) return;
-    const btn = document.getElementById('deliveryPayBtn');
-    const errorEl = document.getElementById('deliveryError');
-    btn.disabled = true;
-    btn.textContent = 'Opening PayPal…';
-    errorEl.textContent = '';
-    const items = cart.map(item => ({
+// Basket as the API expects it (ids + choices only; the server sets the prices).
+function cartItemsForApi() {
+    return cart.map(item => ({
         id: item.isCustom ? undefined : item.product.id,
         qty: item.quantity,
         customName: item.customName || undefined,
@@ -982,6 +985,64 @@ async function startPayPalCheckout(customer) {
             text: item.customization.text
         } : undefined
     }));
+}
+
+// Live delivery charge (Shiprocket cheapest courier + shop markup), fetched when the PIN code is valid.
+let deliveryQuote = null;
+let quoteSeq = 0;
+
+function setPayEnabled(enabled) {
+    const btn = document.getElementById('deliveryPayBtn');
+    if (btn && btn.textContent !== 'Opening PayPal…') btn.disabled = !enabled;
+}
+
+async function refreshDeliveryQuote() {
+    const form = document.getElementById('deliveryForm');
+    const pin = form.elements.pincode.value.trim();
+    const itemsTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    document.getElementById('sumItems').textContent = `₹${itemsTotal}`;
+    deliveryQuote = null;
+    setPayEnabled(false);
+    const label = document.getElementById('sumDeliveryLabel');
+    const value = document.getElementById('sumDelivery');
+    const total = document.getElementById('sumTotal');
+    label.textContent = 'Delivery';
+    total.textContent = '-';
+    if (!/^[1-9][0-9]{5}$/.test(pin)) {
+        value.textContent = 'Enter PIN code';
+        return;
+    }
+    value.textContent = 'Checking…';
+    const seq = ++quoteSeq;
+    try {
+        const res = await fetch(`${window.HETAAS_API}/api/shipping-quote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: cartItemsForApi(), pincode: pin })
+        });
+        const data = await res.json();
+        if (seq !== quoteSeq) return; // a newer PIN code was typed meanwhile
+        if (!res.ok) throw new Error(data.error || 'Could not get a delivery charge');
+        deliveryQuote = data;
+        label.textContent = `Delivery (${data.courier}${data.days ? `, ~${data.days} days` : ''})`;
+        value.textContent = `₹${data.delivery}`;
+        total.textContent = `₹${data.total}`;
+        setPayEnabled(true);
+    } catch (err) {
+        if (seq !== quoteSeq) return;
+        value.textContent = 'Unavailable';
+        document.getElementById('deliveryError').textContent = err.message;
+    }
+}
+
+async function startPayPalCheckout(customer) {
+    if (cart.length === 0) return;
+    const btn = document.getElementById('deliveryPayBtn');
+    const errorEl = document.getElementById('deliveryError');
+    btn.disabled = true;
+    btn.textContent = 'Opening PayPal…';
+    errorEl.textContent = '';
+    const items = cartItemsForApi();
     const notes = document.getElementById('cartNotes').value.trim();
     try {
         const res = await fetch(`${window.HETAAS_API}/api/checkout`, {
@@ -994,8 +1055,8 @@ async function startPayPalCheckout(customer) {
         window.location.href = data.approveUrl;
     } catch (err) {
         errorEl.textContent = err.message || 'Checkout failed. Please try again.';
-        btn.disabled = false;
         btn.textContent = 'Pay with PayPal 🌸';
+        btn.disabled = !deliveryQuote;
     }
 }
 
@@ -1268,6 +1329,8 @@ function initUIHandlers() {
     document.getElementById('checkoutBtn').onclick = handleCheckout;
     if (window.HETAAS_API) {
         document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
+        const totalLabel = document.querySelector('.cart-total-label');
+        if (totalLabel) totalLabel.textContent = 'Items Total (delivery added at checkout):';
         initDeliveryForm();
     }
     

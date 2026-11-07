@@ -3584,3 +3584,7 @@ h1, h2, h3, h4 {
 .delivery-popup { overflow-x: hidden; }
 .delivery-error { color: #b3261e; font-size: .85rem; min-height: 1.1em; margin: 0; }
 .delivery-back-btn { background: #f1e6e2 !important; color: #5a3b35 !important; }
+.delivery-summary { background: #faf6f4; border: 1px dashed #c89a90; border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: .88rem; color: #5a3b35; }
+.delivery-summary-row { display: flex; justify-content: space-between; gap: 10px; }
+.delivery-summary-total { font-weight: 700; border-top: 1px solid #ecdcd6; padding-top: 6px; margin-top: 2px; }
+#deliveryPayBtn:disabled { opacity: .55; cursor: not-allowed; }
