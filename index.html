@@ -564,13 +564,20 @@
                 <p>Pick what suits you best 🌸</p>
             </div>
             <div class="order-options">
-                <button type="button" class="order-option" data-mode="paypal">
+                <button type="button" class="order-option" data-mode="paypal" data-only="demo">
                     <span class="order-option-icon">💳</span>
                     <span class="order-option-text">
                         <strong>Pay now &amp; get it delivered</strong>
                         <small>Secure PayPal checkout. Delivery charge added from your PIN code.</small>
                     </span>
                     <span class="order-option-tag">Fastest</span>
+                </button>
+                <button type="button" class="order-option" data-mode="deliver" data-only="live">
+                    <span class="order-option-icon">🚚</span>
+                    <span class="order-option-text">
+                        <strong>Get it delivered</strong>
+                        <small>See your delivery charge, then send the order on Instagram. Pay once the artist confirms.</small>
+                    </span>
                 </button>
                 <button type="button" class="order-option" data-mode="pickup">
                     <span class="order-option-icon">🏠</span>
@@ -580,7 +587,7 @@
                     </span>
                     <span class="order-option-tag">Free</span>
                 </button>
-                <button type="button" class="order-option" data-mode="confirm">
+                <button type="button" class="order-option" data-mode="confirm" data-only="demo">
                     <span class="order-option-icon">💬</span>
                     <span class="order-option-text">
                         <strong>Confirm first, pay later</strong>

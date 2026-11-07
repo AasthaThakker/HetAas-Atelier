@@ -31,6 +31,24 @@ Customers add items to the **Resin Basket** → checkout copies a tidy order sum
 
 ---
 
+## PayPal + AI hackathon demo
+
+🧪 **Demo (PayPal sandbox, every feature):** https://hetaas-demo.pages.dev
+🛍️ **Real shop (no PayPal):** https://aasthathakker.github.io/HetAas-Atelier/
+
+The same code runs both sites; `config.js` picks the mode from the address:
+
+| | Real shop (`live`) | Hackathon demo (`demo`) |
+|---|---|---|
+| Resi AI assistant + gift finder | ✅ | ✅ |
+| Live Shiprocket delivery charge | ✅ (sent with the order on Instagram) | ✅ (added to the PayPal bill) |
+| Self pickup in Ahmedabad | ✅ | ✅ |
+| PayPal checkout (sandbox) | ❌ | ✅ |
+| Confirm first, pay later | ✅ (as "Get it delivered") | ✅ |
+| Agent endpoint (`/mcp`) | - | ✅ |
+
+To try PayPal on the demo, pay with a PayPal **sandbox Personal** test account (no real money).
+
 ## Online payments, AI concierge & order emails (optional backend)
 
 The site works without a backend (orders go via Instagram DM). To turn on PayPal checkout, the AI chat and owner order emails, deploy the free API Worker in [`worker/`](worker/).

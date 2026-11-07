@@ -919,8 +919,14 @@ function copyTextToClipboard(text) {
 // Step 2: submitting the details creates the PayPal order and redirects to PayPal.
 const CUSTOMER_KEY = 'hetaas_customer';
 
-function openDeliveryDetails() {
+// Where the delivery form sends the order: 'paypal' (demo) or 'instagram' (live shop).
+let deliveryTarget = 'paypal';
+
+function openDeliveryDetails(target = 'paypal') {
     if (cart.length === 0) return;
+    deliveryTarget = target;
+    document.getElementById('deliveryPayBtn').textContent =
+        target === 'instagram' ? 'Send Order on Instagram 💬' : 'Pay with PayPal 🌸';
     const form = document.getElementById('deliveryForm');
     // Prefill from the last order on this device.
     try {
@@ -939,6 +945,16 @@ function closeDeliveryDetails(goBack) {
     if (goBack) openOrderOptions();
 }
 
+// Hackathon demo only: make it obvious that PayPal runs in sandbox (test money).
+function showDemoBanner() {
+    if (document.getElementById('demoBanner')) return;
+    const bar = document.createElement('div');
+    bar.id = 'demoBanner';
+    bar.className = 'demo-banner';
+    bar.textContent = '🧪 PayPal + AI hackathon demo · PayPal sandbox: use a PayPal sandbox test account, no real money is charged';
+    document.body.prepend(bar);
+}
+
 // ---- Order options: PayPal + delivery, self pickup, or confirm first ----
 function openOrderOptions() {
     if (cart.length === 0) return;
@@ -949,11 +965,16 @@ function openOrderOptions() {
 function initOrderOptions() {
     const overlay = document.getElementById('orderOptionsOverlay');
     if (!overlay) return;
+    // Show only the cards for this site: PayPal + confirm-first on the demo, delivery-on-Instagram on the live shop.
+    overlay.querySelectorAll('[data-only]').forEach(card => {
+        card.hidden = card.dataset.only !== (window.HETAAS_MODE || 'live');
+    });
     overlay.querySelectorAll('.order-option').forEach(btn => {
         btn.addEventListener('click', () => {
             overlay.classList.remove('open');
             const mode = btn.dataset.mode;
-            if (mode === 'paypal') openDeliveryDetails();
+            if (mode === 'paypal') openDeliveryDetails('paypal');
+            else if (mode === 'deliver') openDeliveryDetails('instagram');
             else sendOrderViaInstagram(mode);
         });
     });
@@ -992,7 +1013,12 @@ function initDeliveryForm() {
         const customer = {};
         ['name', 'email', 'phone', 'address', 'city', 'state', 'pincode'].forEach(k => { customer[k] = form.elements[k].value.trim(); });
         localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
-        startPayPalCheckout(customer);
+        if (deliveryTarget === 'instagram') {
+            closeDeliveryDetails(false);
+            sendOrderViaInstagram('deliver', customer, deliveryQuote);
+        } else {
+            startPayPalCheckout(customer);
+        }
     });
 }
 
@@ -1110,6 +1136,20 @@ const INSTAGRAM_ORDER_MODES = {
         badge: "SELF PICKUP",
         footer: "🏠 Free Self Pickup • Ahmedabad • Hand-cured in 4-6 Days"
     },
+    deliver: {
+        greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order for DELIVERY. Please confirm it and share payment details:",
+        policies: [
+            "• I'll pay once you confirm the order.",
+            "• Custom curing takes 4 to 6 days before shipping.",
+            "• Customized items - no returns/refunds/exchanges."
+        ],
+        closing: "Please confirm availability and share payment details! ✨",
+        icon: "🚚✨",
+        title: "Order Ready to Send!",
+        text: "Your order and delivery details are copied. Tap below and paste them in the Instagram chat. The artist will confirm and share payment details. 🌸",
+        badge: "DELIVERY ORDER",
+        footer: "🚚 Pay after confirmation • Hand-cured in 4-6 Days • Pan-India Shipping"
+    },
     confirm: {
         greeting: "Hi HetAas Atelier! 🌸 I'd like to place an order. Please confirm it and share payment details:",
         policies: [
@@ -1127,7 +1167,7 @@ const INSTAGRAM_ORDER_MODES = {
     }
 };
 
-function sendOrderViaInstagram(mode) {
+function sendOrderViaInstagram(mode, customer, quote) {
     if (cart.length === 0) return;
     const m = INSTAGRAM_ORDER_MODES[mode] || INSTAGRAM_ORDER_MODES.confirm;
 
@@ -1158,7 +1198,19 @@ function sendOrderViaInstagram(mode) {
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     message += `Basket Subtotal: ₹${subtotal}\n`;
+    if (quote) {
+        message += `Delivery Charge: ₹${quote.delivery} (${quote.courier}${quote.days ? `, ~${quote.days} days` : ''})\n`;
+        message += `Total: ₹${subtotal + quote.delivery}\n`;
+    }
     message += "--------------------------------------\n";
+    if (customer) {
+        message += "📦 DELIVERY DETAILS:\n";
+        message += `Name: ${customer.name}\n`;
+        message += `Phone: ${customer.phone}\n`;
+        message += `Email: ${customer.email}\n`;
+        message += `Address: ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n`;
+        message += "--------------------------------------\n";
+    }
     message += "⚠️ ORDER AGREEMENT & POLICIES:\n";
     message += m.policies.join("\n") + "\n";
     message += "--------------------------------------\n\n";
@@ -1394,6 +1446,7 @@ function initUIHandlers() {
         document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
         initOrderOptions();
         initDeliveryForm();
+        if (window.HETAAS_MODE === 'demo') showDemoBanner();
     }
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');

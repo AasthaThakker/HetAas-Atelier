@@ -5,7 +5,10 @@ compatibility_date = "2025-01-01"
 # Public, non-secret settings. Secrets go in the dashboard or `wrangler secret put` (never in git).
 [vars]
 SITE_URL = "https://aasthathakker.github.io/HetAas-Atelier"
-ALLOWED_ORIGIN = "https://aasthathakker.github.io"
+# Sites allowed to call the API: the live shop and the PayPal hackathon demo.
+ALLOWED_ORIGIN = "https://aasthathakker.github.io,https://hetaas-demo.pages.dev"
+# Hackathon demo (Cloudflare Pages): PayPal sandbox checkout returns buyers here.
+DEMO_SITE_URL = "https://hetaas-demo.pages.dev"
 PAYPAL_ENV = "sandbox"
 CURRENCY = "USD"
 # Shop prices are in INR. PayPal sandbox does not accept INR, so prices are converted at this fixed rate.

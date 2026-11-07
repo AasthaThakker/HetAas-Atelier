@@ -49,6 +49,28 @@ class HttpError extends Error {
 
 // ---------- HTTP helpers ----------
 
+// ALLOWED_ORIGIN may list several sites (comma-separated): the live shop and the hackathon demo.
+function allowedOrigin(env, request) {
+  const list = String(env.ALLOWED_ORIGIN || '*').split(',').map((o) => o.trim()).filter(Boolean);
+  if (list.includes('*')) return '*';
+  const origin = request?.headers.get('Origin') || '';
+  return list.includes(origin) ? origin : list[0];
+}
+
+// True for requests from the PayPal hackathon demo site (or local testing).
+function isDemoRequest(env, request) {
+  const origin = request?.headers.get('Origin') || '';
+  const demo = env.DEMO_SITE_URL ? new URL(env.DEMO_SITE_URL).origin : '';
+  return (demo && origin === demo) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+}
+
+function withCors(response, env, request) {
+  const r = new Response(response.body, response);
+  r.headers.set('Access-Control-Allow-Origin', allowedOrigin(env, request));
+  r.headers.set('Vary', 'Origin');
+  return r;
+}
+
 function corsHeaders(env) {
   return {
     'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
@@ -139,7 +161,7 @@ function publicProduct(p) {
 
 // ---------- Gemini (chat) ----------
 
-function buildSystemPrompt(content, picks, faqs) {
+function buildSystemPrompt(content, picks, faqs, demo = false) {
   const b = content.business || {};
   const catalogue = picks
     .map((p) => `#${p.id} | ${p.name} | ${p.category} | ₹${p.price}${p.bestseller ? ' | bestseller' : ''} | ${stripHtml(p.description).slice(0, 140)}`)
@@ -152,8 +174,10 @@ function buildSystemPrompt(content, picks, faqs) {
 RULES
 - Only discuss this shop: products, prices, availability, gift ideas, custom pieces, orders, payment, delivery and care. For anything else, return "off_topic": true and an empty reply.
 - Use ONLY the catalogue and FAQ below. Never invent products, prices, discounts, stock counts or delivery dates. If something is not listed, say you will check with the owner on Instagram.
-- Every piece is made to order: curing takes about 4-6 days. Payment is pre-paid only (PayPal). No refunds or exchanges on custom pieces. Delivery is paid by the buyer: the exact charge is calculated at checkout from their PIN code (live courier rate via Shiprocket); self pickup in Ahmedabad is free.
-- Three ways to order at checkout: (1) Pay now with PayPal and get it delivered (delivery charge added from the PIN code), (2) Self pickup in Ahmedabad, free, arranged with the artist on Instagram ("DM the Artist"), (3) Confirm first, pay later: send the order on Instagram and pay once the artist confirms.
+- Every piece is made to order: curing takes about 4-6 days. ${demo ? 'Payment is pre-paid (PayPal).' : 'Payment details are shared by the artist on Instagram after confirming the order.'} No refunds or exchanges on custom pieces. Delivery is paid by the buyer: the exact charge is calculated at checkout from their PIN code (live courier rate via Shiprocket); self pickup in Ahmedabad is free.
+- ${demo
+    ? 'Three ways to order at checkout: (1) Pay now with PayPal and get it delivered (delivery charge added from the PIN code), (2) Self pickup in Ahmedabad, free, arranged with the artist on Instagram ("DM the Artist"), (3) Confirm first, pay later: send the order on Instagram and pay once the artist confirms.'
+    : 'Two ways to order at checkout: (1) Get it delivered: enter the address to see the delivery charge, then send the order to the artist on Instagram and pay once the artist confirms, (2) Self pickup in Ahmedabad, free, arranged with the artist on Instagram ("DM the Artist"). There is no online card or PayPal payment on this site.'}
 - Custom pieces start from: ${bases || 'see the customizer'}, plus ₹${CUSTOM_STICKER_FEE} for a metallic name sticker.
 - GIFT FINDER: if the customer wants a gift, ask at most ONE short question for anything missing (recipient, occasion, budget). Once you know enough, recommend 2-3 catalogue items with one line on why each suits them.
 - UPSELL: suggest at most one complementary item, only when it fits naturally.
@@ -277,7 +301,7 @@ async function handleChat(request, env) {
   const faqs = retrieveFaqs(site.content.faqs || [], query);
 
   try {
-    const parsed = await askModels(env, buildSystemPrompt(site.content, picks, faqs), history);
+    const parsed = await askModels(env, buildSystemPrompt(site.content, picks, faqs, isDemoRequest(env, request)), history);
     if (parsed.off_topic) return respond(env, { reply: OFF_TOPIC_REPLY, products: [] });
 
     const wanted = new Set((parsed.product_ids || []).map(Number));
@@ -496,7 +520,7 @@ function validateCustomer(c) {
   return { name, email, phone: '+91' + digits, address, city, state, pincode };
 }
 
-async function createOrderFromBasket(env, site, items, notes, customer) {
+async function createOrderFromBasket(env, site, items, notes, customer, siteUrl = env.SITE_URL) {
   const cur = env.CURRENCY || 'INR';
   // Shop prices are in ₹. If PayPal charges in another currency (sandbox does not support INR),
   // convert at the fixed INR_PER_UNIT rate from wrangler.toml.
@@ -508,7 +532,7 @@ async function createOrderFromBasket(env, site, items, notes, customer) {
   const itemTotal = Math.round(lines.reduce((s, l) => s + l.unit * l.qty, 0) * 100) / 100;
   const shipping = ship ? Math.round((ship.charge / rate) * 100) / 100 : 0;
   const total = Math.round((itemTotal + shipping) * 100) / 100;
-  const origin = env.SITE_URL.replace(/\/$/, '');
+  const origin = siteUrl.replace(/\/$/, '');
   const order = await paypal(env, '/v2/checkout/orders', {
     method: 'POST',
     headers: { 'PayPal-Request-Id': crypto.randomUUID() },
@@ -579,7 +603,11 @@ async function handleCheckout(request, env) {
   const body = await request.json().catch(() => ({}));
   const site = await loadSite(env);
   const customer = validateCustomer(body.customer);
-  const result = await createOrderFromBasket(env, site, body.items, body.notes, customer);
+  // PayPal sends the buyer back to the site they came from (the demo, or local testing).
+  const back = isDemoRequest(env, request) && env.DEMO_SITE_URL && request.headers.get('Origin') === new URL(env.DEMO_SITE_URL).origin
+    ? env.DEMO_SITE_URL
+    : env.SITE_URL;
+  const result = await createOrderFromBasket(env, site, body.items, body.notes, customer, back);
   return respond(env, { orderId: result.orderId, approveUrl: result.approveUrl, receiptKey: await receiptKey(env, result.orderId) });
 }
 
@@ -657,7 +685,8 @@ async function notifyOwnerOnce(env, order) {
   // The buyer never sees this line; it is only in the owner's email.
   const shipCost = String(order.purchase_units?.[0]?.custom_id || '').split('|')[3];
   const ownerNote = shipCost ? `\n\n(Owner only) Shiprocket quoted ₹${shipCost} for the cheapest courier at checkout.` : '';
-  const sent = await sendOwnerEmail(env, `New paid order ${id}`, receipt + ownerNote);
+  const subject = `${env.PAYPAL_ENV === 'live' ? '' : '[DEMO, sandbox] '}New paid order ${id}`;
+  const sent = await sendOwnerEmail(env, subject, receipt + ownerNote);
   if (sent) {
     if (env.ORDERS) await env.ORDERS.put(`mailed:${id}`, '1', { expirationTtl: 60 * 60 * 24 * 365 });
     else mailedOrders.add(id);
@@ -802,7 +831,7 @@ async function handleMcp(request, env) {
         return p ? text(publicProduct(p)) : fail(-32602, 'Product not found');
       }
       if (name === 'create_checkout') {
-        const result = await createOrderFromBasket(env, site, a.items, a.notes, validateCustomer(a.customer));
+        const result = await createOrderFromBasket(env, site, a.items, a.notes, validateCustomer(a.customer), env.DEMO_SITE_URL || env.SITE_URL);
         return text({ orderId: result.orderId, total: result.total, deliveryInr: result.delivery?.charge, courier: result.delivery?.courier, approveUrl: result.approveUrl, note: 'Send the buyer to approveUrl to pay with PayPal.' });
       }
       return fail(-32602, 'Unknown tool');
@@ -816,6 +845,12 @@ async function handleMcp(request, env) {
 
 export default {
   async fetch(request, env) {
+    return withCors(await route(request, env), env, request);
+  },
+};
+
+async function route(request, env) {
+  {
     const { pathname } = new URL(request.url);
     if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders(env) });
 
@@ -835,5 +870,5 @@ export default {
       console.error(err);
       return respond(env, { error: 'Something went wrong. Please try again or DM us on Instagram.' }, 500);
     }
-  },
-};
+  }
+}
