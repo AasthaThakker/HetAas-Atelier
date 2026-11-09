@@ -473,6 +473,16 @@ function initCustomizer() {
     const stickerCheckbox = document.getElementById('addStickerCheckbox');
     const txtInput = document.getElementById('customText');
     
+    // Tapping anywhere on the row (not just the small box) toggles the name sticker
+    const stickerRow = document.getElementById('stickerCheckboxContainer');
+    if (stickerRow) {
+        stickerRow.addEventListener('click', (e) => {
+            if (e.target === stickerCheckbox) return;
+            stickerCheckbox.checked = !stickerCheckbox.checked;
+            stickerCheckbox.dispatchEvent(new Event('change'));
+        });
+    }
+
     stickerCheckbox.addEventListener('change', (e) => {
         customSelections.addSticker = e.target.checked;
         if (customSelections.addSticker) {

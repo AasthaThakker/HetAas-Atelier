@@ -3621,9 +3621,55 @@ h1, h2, h3, h4 {
 .studio-invite-text strong { font-size: 1.15rem; color: #5a3b35; }
 .studio-invite-text small { font-size: .9rem; color: #777; }
 .studio-invite-cta { background: #c89a90; color: #fff; border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: .9rem; white-space: nowrap; }
-.studio-page-intro { padding-top: 110px; }
+.studio-page-intro { padding-top: 24px; } /* the sticky header already takes its own space */
 .studio-back-link { color: #8a5a50; font-weight: 600; text-decoration: none; font-size: .9rem; }
 .studio-back-link:hover { text-decoration: underline; }
 .nav-link.active { color: var(--color-primary-dark, #8a5a50); }
 
 .custom-note { margin: 0; text-align: center; font-size: .78rem; color: var(--color-secondary, #8a7b76); }
+
+/* ==========================================
+   RESPONSIVE & TOUCH POLISH
+   Readable text, finger-sized controls and no wrapping logo on every screen size.
+   ========================================== */
+
+/* Logo stays on one line on narrow phones */
+.logo h1 { white-space: nowrap; }
+@media (max-width: 360px) {
+    .logo h1 { font-size: 1rem; }
+    .logo p { font-size: 0.5rem; }
+}
+
+/* Readable small text on phones and tablets (nothing under ~11.5px) */
+@media (max-width: 768px) {
+    .category-badge { font-size: 0.72rem; }
+    .product-tag, .bestseller-tag { font-size: 0.7rem; }
+    .description { font-size: 0.8rem; line-height: 1.45; }
+    .option-name { font-size: 0.74rem; }
+}
+
+/* Comfortable tap targets (about 40px) */
+.close-drawer-btn { min-width: 40px; min-height: 40px; }
+.modal-close-btn { width: 40px; height: 40px; }
+.cart-item-qty button { width: 32px; min-height: 32px; font-size: 0.95rem; }
+.remove-cart-item { min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+.search-bar-input { padding: 10px 0; }
+.sticker-checkbox-container { cursor: pointer; }
+.sticker-checkbox-container input { width: 20px; height: 20px; flex-shrink: 0; }
+.studio-back-link { display: inline-block; padding: 10px 0; }
+
+/* Studio page: a little less space under the header on phones */
+@media (max-width: 768px) {
+    .studio-page-intro { padding-top: 12px; }
+}
+
+/* Demo banner (hackathon demo only): one or two short lines on phones */
+@media (max-width: 600px) {
+    .demo-banner { font-size: 0.7rem; padding: 5px 10px; }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
