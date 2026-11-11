@@ -362,6 +362,59 @@ function renderCartPerks(subtotal, count) {
             giftLeft <= 0, count / GIFT_ITEMS_NEEDED, `${Math.min(count, GIFT_ITEMS_NEEDED)} of ${GIFT_ITEMS_NEEDED}`);
 }
 
+// ---- Basket suggestions: small add-more cards that fit the amount still needed ----
+function ensureCartSuggestBox() {
+    let box = document.getElementById('cartSuggest');
+    if (box) return box;
+    const items = document.getElementById('cartItemsContainer');
+    if (!items) return null;
+    box = document.createElement('div');
+    box.id = 'cartSuggest';
+    box.className = 'cart-suggest';
+    box.hidden = true;
+    items.insertAdjacentElement('afterend', box);
+    box.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-suggest-id]');
+        if (btn) addToCartById(Number(btn.dataset.suggestId));
+    });
+    return box;
+}
+
+function renderCartSuggestions(subtotal, count) {
+    const box = ensureCartSuggestBox();
+    if (!box) return;
+    const shipLeft = FREE_SHIPPING_MIN - subtotal;
+    const giftLeft = GIFT_ITEMS_NEEDED - count;
+    if (count === 0 || (shipLeft <= 0 && giftLeft <= 0) || !allProducts.length) { box.hidden = true; box.innerHTML = ''; return; }
+
+    const inBasket = new Set(cart.map(i => i.product.id));
+    const pool = allProducts.filter(p => p.available !== false && !p.customizable && !inBasket.has(p.id));
+    let title, picks;
+    if (shipLeft > 0) {
+        // Fill the gap: anything up to the amount still needed, priciest first so one add gets closest.
+        title = `Add ₹${shipLeft} more for free shipping`;
+        picks = pool.filter(p => Number(p.price) <= shipLeft).sort((a, b) => Number(b.price) - Number(a.price));
+        if (picks.length === 0) picks = pool.slice().sort((a, b) => Number(a.price) - Number(b.price)); // gap is tiny: cheapest pieces
+    } else {
+        title = `Add ${giftLeft} more ${giftLeft === 1 ? 'piece' : 'pieces'} for a free gift`;
+        picks = pool.slice().sort((a, b) => Number(a.price) - Number(b.price));
+    }
+    picks = picks.slice(0, 8);
+    if (picks.length === 0) { box.hidden = true; box.innerHTML = ''; return; }
+
+    box.innerHTML = `
+        <h4 class="cart-suggest-title">${title}</h4>
+        <div class="cart-suggest-row">
+            ${picks.map(p => `
+                <button type="button" class="suggest-card" data-suggest-id="${escapeHtml(p.id)}" aria-label="Add ${escapeHtml(p.name)} for ₹${escapeHtml(p.price)}">
+                    <img src="${escapeHtml(p.image)}" alt="" loading="lazy" decoding="async" width="72" height="72" data-fallback="product" data-name="${escapeHtml(p.name)}" data-category="${escapeHtml(p.category)}">
+                    <span class="suggest-name">${escapeHtml(p.name)}</span>
+                    <span class="suggest-price">+ ₹${escapeHtml(p.price)}</span>
+                </button>`).join('')}
+        </div>`;
+    box.hidden = false;
+}
+
 function updateCartUI() {
     const cartCountBadge = document.getElementById('cartBadgeCount');
     const floatCartBadge = document.getElementById('floatingCartBadgeCount');
@@ -385,6 +438,7 @@ function updateCartUI() {
         `;
         cartTotalDisplay.textContent = '₹0';
         renderCartPerks(0, 0);
+        renderCartSuggestions(0, 0);
         return;
     }
     
@@ -448,6 +502,7 @@ function updateCartUI() {
     
     cartTotalDisplay.textContent = `₹${subtotal}`;
     renderCartPerks(subtotal, totalItems);
+    renderCartSuggestions(subtotal, totalItems);
 }
 
 function changeCartQty(index, change) {

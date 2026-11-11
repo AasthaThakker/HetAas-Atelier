@@ -4291,3 +4291,82 @@ h1, h2, h3, h4 {
     .nav-link { font-size: 0.8rem; }
     .header .container { gap: 0.8rem; }
 }
+
+
+/* ==========================================
+   BASKET: add-more suggestions (small cards)
+   ========================================== */
+.cart-suggest {
+    flex-shrink: 0;
+    margin: 0 1.2rem 0.4rem;
+    padding: 0.8rem 0.9rem 0.9rem;
+    background: var(--color-accent);
+    border: var(--edge);
+    border-radius: 16px;
+    box-shadow: 3px 3px 0 var(--color-primary);
+}
+.cart-suggest[hidden] { display: none; }
+.cart-suggest-title {
+    font-family: var(--font-secondary);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    margin-bottom: 0.6rem;
+}
+.cart-suggest-row {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding: 0 4px 6px 0;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) transparent;
+}
+.suggest-card {
+    flex: 0 0 84px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 0 6px;
+    background: var(--color-white);
+    border: var(--edge);
+    border-radius: 12px;
+    box-shadow: 2px 2px 0 var(--color-dark);
+    cursor: pointer;
+    font-family: var(--font-secondary);
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.suggest-card:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--color-dark); }
+.suggest-card:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--color-dark); }
+.suggest-card img {
+    width: 100%;
+    height: 72px;
+    object-fit: cover;
+    display: block;
+    border-bottom: var(--edge);
+}
+.suggest-name {
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-dark);
+    padding: 0 5px;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.4em;
+}
+.suggest-price {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--color-white);
+    background: var(--color-cta);
+    border-radius: 999px;
+    padding: 1px 8px;
+}
+@media (prefers-reduced-motion: reduce) { .suggest-card { transition: none; } }
