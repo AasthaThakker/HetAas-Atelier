@@ -1296,9 +1296,6 @@ function initSearchAndProfile() {
         });
     });
     
-    document.getElementById('profileBtn').onclick = () => {
-        showToast('Guest checkout active - account system offline! 🌸');
-    };
 }
 
 // ==========================================
@@ -1595,10 +1592,16 @@ function renderTrustBar() {
     if (!bar || !wrap) return;
     const tb = content.trustBar;
     if (!tb || tb.enabled === false || !Array.isArray(tb.items) || tb.items.length === 0) { bar.hidden = true; return; }
-    wrap.innerHTML = tb.items.map((item, i) => `
-        ${i > 0 ? '<div class="trust-divider">•</div>' : ''}
+    // One run of the items; it is repeated so the strip can scroll right to left without a gap.
+    const run = tb.items.map(item => `
         <div class="trust-item"><span>${escapeHtml(item.icon || '')}</span> ${escapeHtml(item.text || '')}</div>
+        <div class="trust-divider" aria-hidden="true">•</div>
     `).join('');
+    wrap.innerHTML = `
+        <div class="trust-track">
+            <div class="trust-run">${run}</div>
+            <div class="trust-run" aria-hidden="true">${run}</div>
+        </div>`;
     bar.hidden = false;
 }
 
@@ -1612,7 +1615,6 @@ function renderHowToOrder() {
     grid.innerHTML = h.steps.map((s, i) => `
         <div class="hto-step">
             <div class="hto-num">${i + 1}</div>
-            <div class="hto-emoji">${escapeHtml(s.icon || '')}</div>
             <h3>${escapeHtml(s.title || '')}</h3>
             <p>${escapeHtml(s.text || '')}</p>
         </div>

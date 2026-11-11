@@ -7,7 +7,7 @@
  *   - Navigations: network-first, fall back to cached page, then offline.html.
  * Bump CACHE_VERSION on a release when you want to force-purge all old caches.
  */
-const CACHE_VERSION = 'hetaas-v17';
+const CACHE_VERSION = 'hetaas-v18';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 const IMG_CACHE = `${CACHE_VERSION}-img`;
@@ -21,6 +21,8 @@ const APP_SHELL = [
   './styles.css',
   './collab.html',
   './custom.html',
+  './shipping.html',
+  './contact.html',
   './offline.html',
   './manifest.webmanifest',
   './icons/favicon.svg',
@@ -33,7 +35,8 @@ const APP_SHELL = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(SHELL_CACHE)
-      .then((cache) => cache.addAll(APP_SHELL))
+      // cache: 'reload' skips the browser's HTTP cache, so a new release never precaches stale files.
+      .then((cache) => cache.addAll(APP_SHELL.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
       .catch((err) => console.warn('[SW] Precache failed', err))
   );

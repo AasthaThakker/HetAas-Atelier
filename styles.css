@@ -3,13 +3,13 @@
 /* Root Variables - Mockup Palette */
 :root {
     --color-primary: #c89a90;          /* Warm peach-mauve */
-    --color-primary-dark: #b08278;     /* Deeper peach-mauve */
+    --color-primary-dark: #8f5f55;     /* Deeper peach-mauve (dark enough for text) */
     --color-cta: #9e635c;              /* Deep rose - CTA buttons, ~4.8:1 on white text (WCAG AA) */
     --color-cta-hover: #86504a;        /* Darker rose for CTA hover */
     --color-primary-light: #fdf0f0;    /* Soft padded pink frame background */
-    --color-secondary: #a39594;        /* Muted taupe-brown */
+    --color-secondary: #66524f;        /* Muted taupe-brown, dark enough to read on cream */
     --color-accent: #f5e6d3;           /* Soft Cream */
-    --color-dark: #4a3e3d;             /* Deep warm brown text */
+    --color-dark: #35292a;             /* Deep warm brown text */
     --color-light: #faf6f0;            /* Creamy warm vanilla backdrop */
     --color-white: #ffffff;
     --color-border: rgba(200, 154, 144, 0.15); /* Light pink-beige border */
@@ -111,13 +111,13 @@ body {
 }
 
 a {
-    color: var(--color-primary);
+    color: var(--color-cta);
     text-decoration: none;
     transition: var(--transition);
 }
 
 a:hover {
-    color: var(--color-primary-dark);
+    color: var(--color-cta-hover);
 }
 
 h1, h2, h3, h4 {
@@ -3354,7 +3354,7 @@ h1, h2, h3, h4 {
 
 .collab-subtitle {
     font-size: 1.05rem;
-    color: #7a6e6d;
+    color: #5a4a48;
     max-width: 640px;
     margin: 0 auto;
     line-height: 1.6;
@@ -3467,7 +3467,7 @@ h1, h2, h3, h4 {
 
 .collab-cta-card p {
     font-size: 1rem;
-    color: #7a6e6d;
+    color: #5a4a48;
     max-width: 580px;
     margin: 0 auto 24px;
     line-height: 1.6;
@@ -3544,7 +3544,7 @@ h1, h2, h3, h4 {
 .order-option-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
 .order-option-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .order-option-text strong { font-size: .97rem; color: #5a3b35; }
-.order-option-text small { font-size: .8rem; color: #777; line-height: 1.35; }
+.order-option-text small { font-size: .8rem; color: #5a4a48; line-height: 1.35; }
 .order-option-tag { flex-shrink: 0; font-size: .7rem; font-weight: 700; color: #5a3b35; background: #f6e8e3; border-radius: 999px; padding: 3px 9px; }
 .order-option[hidden] { display: none !important; } /* the card style would otherwise override the hidden attribute */
 .order-options-back { margin-top: 12px; width: 100%; background: none; border: 0; color: #8a5a50; font-weight: 600; cursor: pointer; padding: 8px; }
@@ -3562,12 +3562,12 @@ h1, h2, h3, h4 {
 .studio-invite-icon { font-size: 2rem; line-height: 1; }
 .studio-invite-text { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px; }
 .studio-invite-text strong { font-size: 1.15rem; color: #5a3b35; }
-.studio-invite-text small { font-size: .9rem; color: #777; }
+.studio-invite-text small { font-size: .9rem; color: #5a4a48; }
 .studio-invite-cta { background: #c89a90; color: #fff; border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: .9rem; white-space: nowrap; }
 .studio-page-intro { padding-top: 24px; } /* the sticky header already takes its own space */
 .studio-back-link { color: #8a5a50; font-weight: 600; text-decoration: none; font-size: .9rem; }
 .studio-back-link:hover { text-decoration: underline; }
-.nav-link.active { color: var(--color-primary-dark, #8a5a50); }
+.nav-link.active { color: var(--color-cta); }
 
 .custom-note { margin: 0; text-align: center; font-size: .78rem; color: var(--color-secondary, #8a7b76); }
 
@@ -3827,13 +3827,6 @@ h1, h2, h3, h4 {
 }
 
 /* ---- Trust bar: pill chips ---- */
-.trust-bar-content > * {
-    background: var(--color-accent);
-    border: var(--edge);
-    border-radius: 999px;
-    padding: 0.3rem 0.9rem;
-    font-weight: 700;
-}
 
 /* ---- Studio invite card (home) ---- */
 .studio-invite-card {
@@ -4112,4 +4105,182 @@ h1, h2, h3, h4 {
     .delivery-row { grid-template-columns: 1fr; }
     .delivery-popup .checkout-popup-buttons { flex-direction: column-reverse; }
     .delivery-back-btn { flex: 1 1 auto !important; }
+}
+
+
+/* ==========================================
+   SHARED HEADER, MOVING TRUST LINE, STEPS, INFO PAGES
+   ========================================== */
+
+/* Active page in the header: dark rose with a small underline dot */
+.nav-link.active { color: var(--color-cta); font-weight: 700; }
+.nav-link.active::after { transform: translateX(-50%) scaleX(1); background-color: var(--color-cta); }
+.mobile-nav-link[aria-current="page"] { color: var(--color-cta); font-weight: 700; }
+
+/* Trust line: dark rose band, light pink text, scrolling right to left */
+.trust-bar {
+    background-color: var(--color-cta);
+    border: 0;
+    border-top: var(--edge);
+    border-bottom: var(--edge);
+    padding: 0.7rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.trust-bar-content {
+    display: block;
+    max-width: none;
+    padding: 0;
+    color: var(--color-primary-light);
+}
+.trust-track {
+    display: flex;
+    width: max-content;
+    animation: trustScroll 32s linear infinite;
+}
+.trust-bar:hover .trust-track { animation-play-state: paused; }
+.trust-run {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 1.8rem;
+    padding-right: 1.8rem;
+}
+.trust-item {
+    color: var(--color-primary-light);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.trust-divider { color: var(--color-accent); opacity: 0.8; }
+@keyframes trustScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .trust-bar { overflow-x: auto; }
+    .trust-track { animation: none; width: auto; }
+    .trust-run[aria-hidden="true"] { display: none; }
+}
+
+/* Order steps: outlined cards with a number, no emoji */
+.hto-step {
+    border: var(--edge);
+    border-radius: 20px;
+    box-shadow: 4px 4px 0 var(--color-primary);
+    padding-top: 1.8rem;
+}
+.hto-num {
+    background: var(--color-cta);
+    border: var(--edge);
+    box-shadow: 2px 2px 0 var(--color-dark);
+}
+.hto-step h3 { font-weight: 700; }
+.hto-step p { color: var(--color-secondary); }
+
+/* Shipping + Contact pages */
+.info-page { padding: 3.5rem 0 5rem; min-height: 70vh; }
+.info-container { max-width: 820px; }
+.info-card {
+    background: var(--color-white);
+    border: var(--edge);
+    border-radius: 24px;
+    box-shadow: var(--offset-shadow);
+    padding: 2rem 2.2rem;
+    margin-bottom: 2.2rem;
+}
+.info-card h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-dark); }
+.policy-list { list-style: none; display: flex; flex-direction: column; gap: 0.9rem; }
+.policy-list li {
+    position: relative;
+    padding-left: 2rem;
+    line-height: 1.55;
+    color: var(--color-dark);
+}
+.policy-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.3em;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: var(--color-cta);
+    border: var(--edge);
+}
+.policy-list li::after {
+    content: "";
+    position: absolute;
+    left: 0.38rem;
+    top: calc(0.3em + 0.2rem);
+    width: 0.28rem;
+    height: 0.5rem;
+    border: solid var(--color-white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.info-card .faq-container { display: flex; flex-direction: column; gap: 0.8rem; }
+.info-card .faq-card {
+    border: var(--edge);
+    border-radius: 16px;
+    box-shadow: 3px 3px 0 var(--color-primary);
+    background: var(--color-white);
+}
+.info-card .faq-question { color: var(--color-dark); font-weight: 700; }
+.info-card .faq-answer-content { color: var(--color-dark); }
+
+.contact-card { text-align: center; }
+.contact-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--color-primary-light);
+    border: var(--edge);
+    color: var(--color-cta);
+    margin-bottom: 0.8rem;
+}
+.contact-icon svg { width: 30px; height: 30px; }
+.contact-card p { color: var(--color-secondary); max-width: 460px; margin: 0 auto 1.4rem; }
+.contact-actions { display: flex; justify-content: center; gap: 0.9rem; flex-wrap: wrap; }
+.contact-btn {
+    display: inline-block;
+    padding: 0.8rem 1.8rem;
+    border-radius: 999px;
+    border: var(--edge);
+    background: var(--color-white);
+    color: var(--color-dark);
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 3px 3px 0 var(--color-primary);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.contact-btn:hover { color: var(--color-dark); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--color-primary); }
+.contact-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-primary); }
+.contact-btn-primary { background: var(--color-cta); color: var(--color-white); box-shadow: 3px 3px 0 var(--color-dark); }
+.contact-btn-primary:hover { color: var(--color-white); background: var(--color-cta-hover); box-shadow: 4px 4px 0 var(--color-dark); }
+.contact-card .contact-note { margin: 1.4rem auto 0; font-size: 0.85rem; font-weight: 600; }
+
+/* Collab page: same outlined look as the rest of the shop */
+.collab-page { padding-top: 3.5rem; background: transparent; }
+.collab-badge { border: var(--edge); background: var(--color-accent); color: var(--color-dark); }
+.collab-title { font-weight: 700; font-size: clamp(2rem, 4vw, 2.8rem); }
+.collab-subtitle { color: var(--color-secondary); }
+.collab-card {
+    border: var(--edge);
+    border-radius: 24px;
+    box-shadow: var(--offset-shadow);
+}
+.collab-card:hover { transform: translate(-2px, -2px); box-shadow: var(--offset-shadow-hover); }
+.collab-card-header h3 { color: var(--color-dark); font-weight: 700; }
+.collab-card p, .collab-list li { color: var(--color-dark); }
+.collab-note-box, .collab-proposal-box { border: var(--edge); border-radius: 14px; color: var(--color-dark); }
+.collab-cta-card { border: var(--edge); box-shadow: var(--offset-shadow); }
+.collab-dm-btn { border: var(--edge); box-shadow: 4px 4px 0 var(--color-dark); }
+.collab-dm-btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--color-dark); }
+
+@media (max-width: 600px) {
+    .info-card { padding: 1.5rem 1.2rem; box-shadow: 3px 3px 0 var(--color-primary); }
+    .trust-item { font-size: 0.82rem; }
 }

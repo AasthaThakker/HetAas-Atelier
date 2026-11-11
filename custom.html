@@ -116,23 +116,22 @@
     </script>
 </head>
 <body data-page="custom">
-    <!-- Floating Navigation Bar Wrapper -->
+    <!-- Shared header: identical on every page -->
     <div class="header-wrapper">
         <header class="header">
             <div class="container">
                 <div class="logo">
-                    <a href="index.html#home">
+                    <a href="index.html">
                         <h1>HetAas Atelier</h1>
                         <p>Resin Art</p>
                     </a>
                 </div>
-                <nav class="nav">
-                    <a href="index.html#products" class="nav-link">Shop All</a>
+                <nav class="nav" aria-label="Main">
                     <a href="index.html#products" class="nav-link">Collections</a>
                     <a href="custom.html" class="nav-link active" aria-current="page">Customization</a>
-                    <!-- <a href="index.html#about" class="nav-link">About</a> -->
                     <a href="collab.html" class="nav-link">Collab</a>
-                    <a href="index.html#faq" class="nav-link">Contact</a>
+                    <a href="shipping.html" class="nav-link">Shipping</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
                 </nav>
                 <!-- Mobile Menu Toggle Button -->
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
@@ -142,20 +141,12 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <!-- Header Icons Menu (Search, Account, Cart) -->
+                <!-- Header Icons Menu (Search, Cart) -->
                 <div class="nav-icons">
-                    <!-- Search Icon Button -->
                     <button class="nav-icon-btn" id="searchBtn" aria-label="Search Shop">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                    <!-- Account Icon Button -->
-                    <button class="nav-icon-btn" id="profileBtn" aria-label="Profile Account">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </button>
                     <!-- Install App Button (shown only when installable) -->
@@ -166,7 +157,6 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                     </button>
-                    <!-- Cart Icon Button -->
                     <div class="nav-cart-btn-wrapper">
                         <button class="nav-icon-btn" id="navCartBtn" aria-label="Open Basket">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -191,12 +181,12 @@
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
-            <nav class="mobile-nav">
-                <a href="index.html#products" class="mobile-nav-link">Shop All</a>
+            <nav class="mobile-nav" aria-label="Main">
                 <a href="index.html#products" class="mobile-nav-link">Collections</a>
                 <a href="custom.html" class="mobile-nav-link" aria-current="page">Customization</a>
                 <a href="collab.html" class="mobile-nav-link">Collab</a>
-                <a href="index.html#faq" class="mobile-nav-link">Contact</a>
+                <a href="shipping.html" class="mobile-nav-link">Shipping</a>
+                <a href="contact.html" class="mobile-nav-link">Contact</a>
             </nav>
         </div>
     </div>
