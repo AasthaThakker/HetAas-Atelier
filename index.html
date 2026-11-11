@@ -116,23 +116,22 @@
     </script>
 </head>
 <body>
-    <!-- Floating Navigation Bar Wrapper -->
+    <!-- Shared header: identical on every page -->
     <div class="header-wrapper">
         <header class="header">
             <div class="container">
                 <div class="logo">
-                    <a href="#home">
+                    <a href="index.html">
                         <h1>HetAas Atelier</h1>
                         <p>Resin Art</p>
                     </a>
                 </div>
-                <nav class="nav">
-                    <a href="#products" class="nav-link">Shop All</a>
-                    <a href="#products" class="nav-link">Collections</a>
+                <nav class="nav" aria-label="Main">
+                    <a href="index.html#products" class="nav-link active" aria-current="page">Collections</a>
                     <a href="custom.html" class="nav-link">Customization</a>
-                    <!-- <a href="#about" class="nav-link">About</a> -->
                     <a href="collab.html" class="nav-link">Collab</a>
-                    <a href="#faq" class="nav-link">Contact</a>
+                    <a href="shipping.html" class="nav-link">Shipping</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
                 </nav>
                 <!-- Mobile Menu Toggle Button -->
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
@@ -142,20 +141,12 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <!-- Header Icons Menu (Search, Account, Cart) -->
+                <!-- Header Icons Menu (Search, Cart) -->
                 <div class="nav-icons">
-                    <!-- Search Icon Button -->
                     <button class="nav-icon-btn" id="searchBtn" aria-label="Search Shop">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                    <!-- Account Icon Button -->
-                    <button class="nav-icon-btn" id="profileBtn" aria-label="Profile Account">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </button>
                     <!-- Install App Button (shown only when installable) -->
@@ -166,7 +157,6 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                     </button>
-                    <!-- Cart Icon Button -->
                     <div class="nav-cart-btn-wrapper">
                         <button class="nav-icon-btn" id="navCartBtn" aria-label="Open Basket">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -191,12 +181,12 @@
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
-            <nav class="mobile-nav">
-                <a href="#products" class="mobile-nav-link">Shop All</a>
-                <a href="#products" class="mobile-nav-link">Collections</a>
+            <nav class="mobile-nav" aria-label="Main">
+                <a href="index.html#products" class="mobile-nav-link" aria-current="page">Collections</a>
                 <a href="custom.html" class="mobile-nav-link">Customization</a>
                 <a href="collab.html" class="mobile-nav-link">Collab</a>
-                <a href="#faq" class="mobile-nav-link">Contact</a>
+                <a href="shipping.html" class="mobile-nav-link">Shipping</a>
+                <a href="contact.html" class="mobile-nav-link">Contact</a>
             </nav>
         </div>
     </div>
@@ -293,109 +283,6 @@
                 </span>
                 <span class="studio-invite-cta">Open the Custom Design Studio →</span>
             </a>
-        </div>
-    </section>
-
-    <!-- About Section / Handmade Story Strip -->
-    <section id="about" class="about-section">
-        <div class="container">
-            <div class="about-card">
-                <span class="about-badge" id="aboutBadge">✨ Handmade Story</span>
-                <h2 class="section-title" id="aboutHeading" style="margin-bottom: 0.4rem;">Why HetAas Atelier?</h2>
-                <p class="section-subtitle" id="aboutSubtitle" style="margin-bottom: 1.8rem;">Poured & polished with love in Ahmedabad, Gujarat since 2022</p>
-
-                <div class="about-story-text" id="aboutStory">
-                    Born out of a deep love for botanical art, <strong>HetAas Atelier</strong> transforms organic pressed flowers, foil accents, and high-clarity resin into timeless keepsakes. From personalized golden name keychains to sacred pooja thalis and home decor, every single creation is individually poured, cured over 4 to 6 days, and polished by hand in our studio.
-                </div>
-
-                <div class="features" id="aboutFeatures">
-                    <div class="feature">
-                        <span class="feature-icon">🏡</span>
-                        <h3>Handcrafted in Ahmedabad</h3>
-                        <p>Locally made with individual attention to detail.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🌸</span>
-                        <h3>Real Botanicals</h3>
-                        <p>100% genuine dried flowers preserved in gloss.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">✨</span>
-                        <h3>Custom Inscriptions</h3>
-                        <p>Golden name stickers & custom color palettes.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Interactive FAQ & Care Guide Section -->
-    <section class="faq-section" id="faq">
-        <div class="container">
-            <h2 class="section-title">Order Policies & FAQs</h2>
-            <p class="section-subtitle">Please read our shipping, return, and creation guidelines below.</p>
-
-            <div class="faq-container" id="faqContainer">
-                <!-- FAQ 1 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <span>How do I place an order?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Add your desired items (either standard shop items or customized creations) to your <strong>Resin Basket</strong>. When ready, open the basket and click checkout. This copies a fully detailed order list to your clipboard and opens Instagram DM so you can paste and send it directly!
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- FAQ 2 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <span>What are the payment and refund rules?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            We accept <strong>pre-paid orders only</strong>. Since all items are handcrafted and customized specifically for you, <strong>no returns, refunds, or exchanges are accepted</strong>.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FAQ 3 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <span>How long does it take to make customized items?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            Resin curing is a slow, artistic process. It takes around <strong>4 to 6 days</strong> to design, pour, bubble-pop, and fully cure a customized order before it can be collected or dispatched.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FAQ 4 -->
-                <div class="faq-card">
-                    <div class="faq-question">
-                        <span>What is the shipping policy?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="faq-answer">
-                        <div class="faq-answer-content">
-                            <strong>Delivery is free on orders of ₹700 or more.</strong> Below that, the delivery charge is paid by the buyer and shown at checkout from your PIN code. Customers in Ahmedabad can also choose free self-pickup. Order 3 or more pieces and you get a <strong>free gift</strong> too.
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 

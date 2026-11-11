@@ -16,12 +16,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aasthathakker.github.io/HetAas-Atelier/#about</loc>
+    <loc>https://aasthathakker.github.io/HetAas-Atelier/shipping.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://aasthathakker.github.io/HetAas-Atelier/#faq</loc>
+    <loc>https://aasthathakker.github.io/HetAas-Atelier/contact.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

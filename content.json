@@ -34,6 +34,7 @@
     "items": [
       { "icon": "🔒", "text": "Pre-Paid & Secure Orders" },
       { "icon": "🚚", "text": "Pan-India Shipping" },
+      { "icon": "🎁", "text": "Free Shipping over ₹700" },
       { "icon": "⭐", "text": "Loved by Happy Patrons" },
       { "icon": "📍", "text": "Handcrafted in Ahmedabad" }
     ]
@@ -42,9 +43,9 @@
     "enabled": true,
     "heading": "Order in 3 Easy Steps",
     "steps": [
-      { "icon": "🛒", "title": "Pick Your Pieces", "text": "Browse the collection or design a custom treasure, then add to your Resin Basket." },
-      { "icon": "📋", "title": "Review Your Basket", "text": "Open the basket, adjust quantities, and add any special notes for your order." },
-      { "icon": "🌸", "title": "Send Your Order", "text": "Choose delivery (we show the charge for your PIN code) or free self pickup in Ahmedabad, and send your order." }
+      { "title": "Pick Your Pieces", "text": "Browse the collection or design a custom treasure, then add to your Resin Basket." },
+      { "title": "Review Your Basket", "text": "Open the basket, adjust quantities, and add any special notes for your order." },
+      { "title": "Send Your Order", "text": "Choose delivery (we show the charge for your PIN code) or free self pickup in Ahmedabad, and send your order." }
     ]
   },
   "about": {
@@ -71,10 +72,6 @@
     {
       "q": "How long does it take to make customized items?",
       "a": "Resin curing is a slow, artistic process. It takes around <strong>4 to 6 days</strong> to design, pour, bubble-pop, and fully cure a customized order before it can be collected or dispatched."
-    },
-    {
-      "q": "What is the shipping policy?",
-      "a": "<strong>Delivery is free on orders of ₹700 or more.</strong> Below that, the delivery charge is paid by the buyer and shown at checkout from your PIN code. Customers in Ahmedabad can also choose free self-pickup. Order 3 or more pieces and you get a <strong>free gift</strong> too."
     }
   ],
   "reviews": [
