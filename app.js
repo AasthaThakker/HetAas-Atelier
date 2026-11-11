@@ -1432,7 +1432,17 @@ function showReview(index) {
 // GENERAL UI HANDLERS & TOASTS
 // ==========================================
 
+// Hide the floating "DM the Artist" and "Ask Resi" buttons while the footer is on screen.
+function initFooterAwareButtons() {
+    const footer = document.querySelector('.footer');
+    if (!footer || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver((entries) => {
+        document.body.classList.toggle('footer-in-view', entries[0].isIntersecting);
+    }, { threshold: 0.05 }).observe(footer);
+}
+
 function initUIHandlers() {
+    initFooterAwareButtons();
     const cartDrawerOverlay = document.getElementById('cartDrawerOverlay');
     const openBtn = document.getElementById('navCartBtn');
     const openBtnFloat = document.getElementById('floatingCartBtn');
