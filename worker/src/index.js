@@ -10,6 +10,11 @@
 const CUSTOM_STICKER_FEE = 90; // must match the customizer in app.js
 const MAX_ITEMS = 15;          // must match the basket limit in app.js
 
+// AI reply speed: give each model call a short deadline, and start Groq early if Gemini is slow.
+const GEMINI_TIMEOUT_MS = 6000;
+const GROQ_TIMEOUT_MS = 8000;
+const GROQ_HEDGE_MS = 3000;
+
 
 const OFF_TOPIC_REPLY =
   "I can only help with HetAas Atelier products, availability, gift ideas, custom pieces and orders. Happy to help with any of those! 🌸";
@@ -195,7 +200,8 @@ async function callGemini(env, system, messages) {
       return await callGeminiModel(env, model, system, messages);
     } catch (err) {
       lastError = err;
-      if (!/Gemini (429|503)/.test(err.message)) throw err;
+      // Rate-limited, busy or too slow: try the next model. Anything else is a real error.
+      if (!/Gemini (429|503)|TimeoutError|aborted/i.test(`${err.name} ${err.message}`)) throw err;
       console.warn(`${model} unavailable, trying next model:`, err.message.slice(0, 80));
     }
   }
@@ -212,12 +218,17 @@ async function callGeminiModel(env, model, system, messages) {
     })),
     generationConfig: {
       responseMimeType: 'application/json',
-      maxOutputTokens: 600,
+      maxOutputTokens: 400,
       temperature: 0.4,
       thinkingConfig: { thinkingBudget: 0 }, // thinking would eat the output budget and cut off the JSON
     },
   };
-  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+  });
   if (!r.ok) throw new Error(`Gemini ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const data = await r.json();
   const text = (data.candidates?.[0]?.content?.parts || []).map((p) => p.text || '').join('');
@@ -225,14 +236,32 @@ async function callGeminiModel(env, model, system, messages) {
   return text;
 }
 
-// Gemini first (all configured models); if that fails for any reason, Groq. Returns parsed JSON.
+// Gemini first. Groq is the backup: it starts at once if Gemini fails, or after GROQ_HEDGE_MS if
+// Gemini is just slow, and whichever answers first wins. Returns parsed JSON.
 async function askModels(env, system, history) {
+  const gemini = callGemini(env, system, history).then(parseModelJson);
+  if (!env.GROQ_API_KEY) return gemini;
+  const groq = new Promise((resolve, reject) => {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      callGroq(env, system, history).then(parseModelJson).then(resolve, reject);
+    };
+    const timer = setTimeout(start, GROQ_HEDGE_MS);
+    gemini.then(
+      () => { started = true; clearTimeout(timer); }, // Gemini won: no backup call needed
+      (err) => {
+        clearTimeout(timer);
+        console.warn('Gemini failed, using Groq:', String(err.message).slice(0, 120));
+        start();
+      }
+    );
+  });
   try {
-    return parseModelJson(await callGemini(env, system, history));
-  } catch (geminiErr) {
-    if (!env.GROQ_API_KEY) throw geminiErr;
-    console.warn('Gemini failed, using Groq:', geminiErr.message.slice(0, 120));
-    return parseModelJson(await callGroq(env, system, history));
+    return await Promise.any([gemini, groq]);
+  } catch (err) {
+    throw err.errors?.[0] || err;
   }
 }
 
@@ -245,9 +274,10 @@ async function callGroq(env, system, messages) {
       model: env.GROQ_MODEL || 'llama-3.3-70b-versatile',
       messages: [{ role: 'system', content: system }, ...messages.map((m) => ({ role: m.role, content: m.content }))],
       temperature: 0.4,
-      max_tokens: 600,
+      max_tokens: 400,
       response_format: { type: 'json_object' },
     }),
+    signal: AbortSignal.timeout(GROQ_TIMEOUT_MS),
   });
   if (!r.ok) throw new Error(`Groq ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const data = await r.json();
