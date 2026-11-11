@@ -1755,7 +1755,6 @@ function renderFooter() {
     const ig = document.getElementById('footerInstagram');
     if (ig && content.business) {
         if (content.business.instagramUrl) ig.href = content.business.instagramUrl;
-        if (content.business.instagramHandle) ig.textContent = '@' + content.business.instagramHandle;
     }
 }
 
