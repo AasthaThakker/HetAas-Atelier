@@ -4284,3 +4284,10 @@ h1, h2, h3, h4 {
     .info-card { padding: 1.5rem 1.2rem; box-shadow: 3px 3px 0 var(--color-primary); }
     .trust-item { font-size: 0.82rem; }
 }
+
+/* Six header links: tighten the spacing on mid-size screens so the logo never touches them */
+@media (max-width: 1100px) {
+    .nav { gap: 1rem; }
+    .nav-link { font-size: 0.8rem; }
+    .header .container { gap: 0.8rem; }
+}
