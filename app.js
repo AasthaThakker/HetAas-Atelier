@@ -960,19 +960,13 @@ function copyTextToClipboard(text) {
     }
 }
 
-// PayPal checkout via the API Worker (see worker/). The server prices the basket itself.
-// Step 1: the basket's checkout button opens the Delivery Details popup.
-// Step 2: submitting the details creates the PayPal order and redirects to PayPal.
+// Delivery orders: the basket's checkout button opens the Delivery Details popup, which shows the
+// live delivery charge (API worker) and then sends the order request to the artist on Instagram.
 const CUSTOMER_KEY = 'hetaas_customer';
 
-// Where the delivery form sends the order: 'paypal' (demo) or 'instagram' (live shop).
-let deliveryTarget = 'paypal';
-
-function openDeliveryDetails(target = 'paypal') {
+function openDeliveryDetails() {
     if (cart.length === 0) return;
-    deliveryTarget = target;
-    document.getElementById('deliveryPayBtn').textContent =
-        target === 'instagram' ? 'Send Order Request 💬' : 'Pay with PayPal 🌸';
+    document.getElementById('deliveryPayBtn').textContent = 'Send Order Request 💬';
     const form = document.getElementById('deliveryForm');
     // Prefill from the last order on this device.
     try {
@@ -991,17 +985,7 @@ function closeDeliveryDetails(goBack) {
     if (goBack) openOrderOptions();
 }
 
-// Hackathon demo only: make it obvious that PayPal runs in sandbox (test money).
-function showDemoBanner() {
-    if (document.getElementById('demoBanner')) return;
-    const bar = document.createElement('div');
-    bar.id = 'demoBanner';
-    bar.className = 'demo-banner';
-    bar.textContent = '🧪 PayPal + AI hackathon demo · PayPal sandbox: use a PayPal sandbox test account, no real money is charged';
-    document.body.prepend(bar);
-}
-
-// ---- Order options: PayPal + delivery, self pickup, or confirm first ----
+// ---- Order options: delivery or self pickup ----
 function openOrderOptions() {
     if (cart.length === 0) return;
     document.getElementById('cartDrawerOverlay').classList.remove('open');
@@ -1011,16 +995,11 @@ function openOrderOptions() {
 function initOrderOptions() {
     const overlay = document.getElementById('orderOptionsOverlay');
     if (!overlay) return;
-    // Show only the cards for this site: PayPal + confirm-first on the demo, delivery-on-Instagram on the live shop.
-    overlay.querySelectorAll('[data-only]').forEach(card => {
-        card.hidden = card.dataset.only !== (window.HETAAS_MODE || 'live');
-    });
     overlay.querySelectorAll('.order-option').forEach(btn => {
         btn.addEventListener('click', () => {
             overlay.classList.remove('open');
             const mode = btn.dataset.mode;
-            if (mode === 'paypal') openDeliveryDetails('paypal');
-            else if (mode === 'deliver') openDeliveryDetails('instagram');
+            if (mode === 'deliver') openDeliveryDetails();
             else sendOrderViaInstagram(mode);
         });
     });
@@ -1059,12 +1038,8 @@ function initDeliveryForm() {
         const customer = {};
         ['name', 'email', 'phone', 'address', 'city', 'state', 'pincode'].forEach(k => { customer[k] = form.elements[k].value.trim(); });
         localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
-        if (deliveryTarget === 'instagram') {
-            closeDeliveryDetails(false);
-            sendOrderViaInstagram('deliver', customer, deliveryQuote);
-        } else {
-            startPayPalCheckout(customer);
-        }
+        closeDeliveryDetails(false);
+        sendOrderViaInstagram('deliver', customer, deliveryQuote);
     });
 }
 
@@ -1090,7 +1065,7 @@ let quoteSeq = 0;
 
 function setPayEnabled(enabled) {
     const btn = document.getElementById('deliveryPayBtn');
-    if (btn && btn.textContent !== 'Opening PayPal…') btn.disabled = !enabled;
+    if (btn) btn.disabled = !enabled;
 }
 
 async function refreshDeliveryQuote() {
@@ -1120,9 +1095,9 @@ async function refreshDeliveryQuote() {
         const data = await res.json();
         if (seq !== quoteSeq) return; // a newer PIN code was typed meanwhile
         if (!res.ok) throw new Error(data.error || 'Could not get a delivery charge');
-        // Instagram orders are priced by hand, so the free-shipping rule also applies here
-        // even if the API worker has not been redeployed yet. (PayPal is always priced by the worker.)
-        if (deliveryTarget === 'instagram' && itemsTotal >= FREE_SHIPPING_MIN && !data.free) {
+        // Orders are priced by hand, so the free-shipping rule also applies here
+        // even if the API worker has not been redeployed yet.
+        if (itemsTotal >= FREE_SHIPPING_MIN && !data.free) {
             Object.assign(data, { delivery: 0, free: true, total: itemsTotal });
         }
         deliveryQuote = data;
@@ -1134,33 +1109,6 @@ async function refreshDeliveryQuote() {
         if (seq !== quoteSeq) return;
         value.textContent = 'Unavailable';
         document.getElementById('deliveryError').textContent = err.message;
-    }
-}
-
-async function startPayPalCheckout(customer) {
-    if (cart.length === 0) return;
-    const btn = document.getElementById('deliveryPayBtn');
-    const errorEl = document.getElementById('deliveryError');
-    btn.disabled = true;
-    btn.textContent = 'Opening PayPal…';
-    errorEl.textContent = '';
-    const items = cartItemsForApi();
-    const notes = document.getElementById('cartNotes').value.trim();
-    try {
-        const res = await fetch(`${window.HETAAS_API}/api/checkout`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items, notes, customer })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Checkout failed');
-        // Lets order-success.html show this buyer's receipt (and nobody else's).
-        localStorage.setItem('hetaas_receipt_key', JSON.stringify({ orderId: data.orderId, key: data.receiptKey }));
-        window.location.href = data.approveUrl;
-    } catch (err) {
-        errorEl.textContent = err.message || 'Checkout failed. Please try again.';
-        btn.textContent = 'Pay with PayPal 🌸';
-        btn.disabled = !deliveryQuote;
     }
 }
 
@@ -1500,7 +1448,6 @@ function initUIHandlers() {
         document.getElementById('checkoutBtn').textContent = 'Place Order Request 🌸';
         initOrderOptions();
         initDeliveryForm();
-        if (window.HETAAS_MODE === 'demo') showDemoBanner();
     }
     
     const popupOverlay = document.getElementById('checkoutPopupOverlay');

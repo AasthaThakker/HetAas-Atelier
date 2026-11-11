@@ -305,7 +305,7 @@
         </div>
     </footer>
 
-    <!-- Floating Contact Button: a real person (the artist) on Instagram DM. The AI assistant "Resi" sits above it. -->
+    <!-- Floating Contact Button: a real person (the artist) on Instagram DM. -->
     <a class="floating-contact-fab" id="contactFab" href="https://ig.me/m/hetaas_atelier" aria-label="DM the artist on Instagram" target="_blank" rel="noopener noreferrer">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="5"></rect>
@@ -366,7 +366,7 @@
         </div>
     </div>
 
-    <!-- Order options: shown when checking out (PayPal + delivery, self pickup, or confirm first) -->
+    <!-- Order options: shown when checking out (delivery or self pickup) -->
     <div class="checkout-popup-overlay" id="orderOptionsOverlay">
         <div class="checkout-popup order-options-popup">
             <div class="checkout-popup-header">
@@ -374,15 +374,7 @@
                 <p>Pick what suits you best 🌸</p>
             </div>
             <div class="order-options">
-                <button type="button" class="order-option" data-mode="paypal" data-only="demo" hidden>
-                    <span class="order-option-icon">💳</span>
-                    <span class="order-option-text">
-                        <strong>Pay now &amp; get it delivered</strong>
-                        <small>Secure PayPal checkout. Delivery charge added from your PIN code.</small>
-                    </span>
-                    <span class="order-option-tag">Fastest</span>
-                </button>
-                <button type="button" class="order-option" data-mode="deliver" data-only="live">
+                <button type="button" class="order-option" data-mode="deliver">
                     <span class="order-option-icon">🚚</span>
                     <span class="order-option-text">
                         <strong>Get it delivered</strong>
@@ -397,19 +389,12 @@
                     </span>
                     <span class="order-option-tag">Free</span>
                 </button>
-                <button type="button" class="order-option" data-mode="confirm" data-only="demo" hidden>
-                    <span class="order-option-icon">💬</span>
-                    <span class="order-option-text">
-                        <strong>Confirm first, pay later</strong>
-                        <small>Send your order on Instagram. Pay once the artist confirms.</small>
-                    </span>
-                </button>
             </div>
             <button type="button" class="order-options-back" id="orderOptionsBackBtn">Back to basket</button>
         </div>
     </div>
 
-    <!-- Delivery Details (asked before PayPal; sent with the order and in the owner's email) -->
+    <!-- Delivery Details (asked before the order request is sent on Instagram) -->
     <div class="checkout-popup-overlay" id="deliveryPopupOverlay">
         <div class="checkout-popup delivery-popup">
             <div class="checkout-popup-header">
@@ -435,7 +420,7 @@
                 <p class="delivery-error" id="deliveryError" role="alert"></p>
                 <div class="checkout-popup-buttons">
                     <button type="button" class="checkout-popup-btn delivery-back-btn" id="deliveryBackBtn">Back</button>
-                    <button type="submit" class="checkout-popup-btn" id="deliveryPayBtn">Pay with PayPal 🌸</button>
+                    <button type="submit" class="checkout-popup-btn" id="deliveryPayBtn">Send Order Request 💬</button>
                 </div>
             </form>
         </div>
@@ -525,6 +510,5 @@
     <script src="data.js"></script>
     <script src="config.js"></script>
     <script src="app.js" defer></script>
-    <script src="chat.js" defer></script>
 </body>
 </html>
