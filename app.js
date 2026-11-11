@@ -333,6 +333,34 @@ function addToCartById(productId, qty = 1, customName = '') {
 
 window.addToCartById = addToCartById; // Expose globally
 
+// ---- Basket perks: free-shipping and free-gift progress bars ----
+const FREE_SHIPPING_MIN = 700;   // ₹ items total for free delivery (worker: FREE_SHIPPING_MIN_INR)
+const GIFT_ITEMS_NEEDED = 3;     // pieces in the basket to unlock the free gift
+
+function perkBar(icon, title, done, ratio, text) {
+    const pct = Math.max(0, Math.min(100, Math.round(ratio * 100)));
+    return `
+        <div class="perk${done ? ' perk-done' : ''}">
+            <div class="perk-row"><span>${icon} ${title}</span><span>${text}</span></div>
+            <div class="perk-track" role="progressbar" aria-label="${title}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}">
+                <div class="perk-fill" style="width:${pct}%"></div>
+            </div>
+        </div>`;
+}
+
+function renderCartPerks(subtotal, count) {
+    const el = document.getElementById('cartPerks');
+    if (!el) return;
+    if (count === 0) { el.innerHTML = ''; return; }
+    const shipLeft = FREE_SHIPPING_MIN - subtotal;
+    const giftLeft = GIFT_ITEMS_NEEDED - count;
+    el.innerHTML =
+        perkBar('🚚', shipLeft > 0 ? `₹${shipLeft} to free shipping` : 'Free shipping unlocked! 🎉',
+            shipLeft <= 0, subtotal / FREE_SHIPPING_MIN, `₹${Math.min(subtotal, FREE_SHIPPING_MIN)} of ₹${FREE_SHIPPING_MIN}`) +
+        perkBar('🎁', giftLeft > 0 ? `Add ${giftLeft} more ${giftLeft === 1 ? 'piece' : 'pieces'} for a free gift` : 'Free gift unlocked! 🎉',
+            giftLeft <= 0, count / GIFT_ITEMS_NEEDED, `${Math.min(count, GIFT_ITEMS_NEEDED)} of ${GIFT_ITEMS_NEEDED}`);
+}
+
 function updateCartUI() {
     const cartCountBadge = document.getElementById('cartBadgeCount');
     const floatCartBadge = document.getElementById('floatingCartBadgeCount');
@@ -355,6 +383,7 @@ function updateCartUI() {
             </div>
         `;
         cartTotalDisplay.textContent = '₹0';
+        renderCartPerks(0, 0);
         return;
     }
     
@@ -417,6 +446,7 @@ function updateCartUI() {
     });
     
     cartTotalDisplay.textContent = `₹${subtotal}`;
+    renderCartPerks(subtotal, totalItems);
 }
 
 function changeCartQty(index, change) {
@@ -943,11 +973,17 @@ function handleCheckout() {
     
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     message += `Basket Subtotal: ₹${subtotal}\n`;
+    if (cart.reduce((n, i) => n + i.quantity, 0) >= GIFT_ITEMS_NEEDED) {
+        message += `🎁 Free gift unlocked (${GIFT_ITEMS_NEEDED}+ pieces)\n`;
+    }
+    if (subtotal >= FREE_SHIPPING_MIN) {
+        message += `🚚 Free delivery (order over ₹${FREE_SHIPPING_MIN})\n`;
+    }
     message += "--------------------------------------\n";
     message += "⚠️ ORDER AGREEMENT & POLICIES:\n";
     message += "• Pre-paid orders accepted only.\n";
     message += "• Custom curing takes 3 to 4 days before shipping.\n";
-    message += "• Delivery cost is borne entirely by the buyer (self-pickup in Ahmedabad is free).\n";
+    message += "• Delivery is free over ₹700, otherwise paid by the buyer (self-pickup in Ahmedabad is free).\n";
     message += "• Customized items - no returns/refunds/exchanges.\n";
     message += "--------------------------------------\n\n";
     message += "Please verify availability and share payment details! ✨";
