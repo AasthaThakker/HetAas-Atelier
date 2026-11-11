@@ -490,13 +490,18 @@ async function quoteShipping(env, pincode, weightKg) {
 
 const basketWeight = (lines) => lines.reduce((s, l) => s + l.weight * l.qty, 0);
 
+// Free delivery once the items total reaches this many rupees (override with FREE_SHIPPING_MIN_INR).
+const freeShippingMin = (env) => Number(env.FREE_SHIPPING_MIN_INR || 700);
+const withFreeShipping = (quote, itemsTotal, env) =>
+  itemsTotal >= freeShippingMin(env) ? { ...quote, charge: 0, free: true } : quote;
+
 async function handleShippingQuote(request, env) {
   const body = await request.json().catch(() => ({}));
   const site = await loadSite(env);
   const lines = priceBasket(body.items, site, env);
-  const quote = await quoteShipping(env, String(body.pincode || '').trim(), basketWeight(lines));
   const itemsTotal = lines.reduce((s, l) => s + l.unit * l.qty, 0);
-  return respond(env, { itemsTotal, delivery: quote.charge, courier: quote.courier, days: quote.days, total: itemsTotal + quote.charge });
+  const quote = withFreeShipping(await quoteShipping(env, String(body.pincode || '').trim(), basketWeight(lines)), itemsTotal, env);
+  return respond(env, { itemsTotal, delivery: quote.charge, free: !!quote.free, courier: quote.courier, days: quote.days, total: itemsTotal + quote.charge });
 }
 
 // Buyer's contact + delivery details. Required for website orders (they go in the owner's email).
@@ -527,7 +532,8 @@ async function createOrderFromBasket(env, site, items, notes, customer, siteUrl 
   const rate = cur === 'INR' ? 1 : Number(env.INR_PER_UNIT || 85);
   const inrLines = priceBasket(items, site, env);
   // Delivery is quoted again here (never trusted from the browser). Needs the buyer's PIN code.
-  const ship = customer ? await quoteShipping(env, customer.pincode, basketWeight(inrLines)) : null;
+  const inrItemsTotal = inrLines.reduce((t, l) => t + l.unit * l.qty, 0);
+  const ship = customer ? withFreeShipping(await quoteShipping(env, customer.pincode, basketWeight(inrLines)), inrItemsTotal, env) : null;
   const lines = inrLines.map((l) => ({ ...l, unit: Math.round((l.unit / rate) * 100) / 100 }));
   const itemTotal = Math.round(lines.reduce((s, l) => s + l.unit * l.qty, 0) * 100) / 100;
   const shipping = ship ? Math.round((ship.charge / rate) * 100) / 100 : 0;
