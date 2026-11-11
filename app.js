@@ -1206,7 +1206,7 @@ const INSTAGRAM_ORDER_MODES = {
         policies: [
             "• I'll pay once you confirm the order.",
             "• Custom curing takes 4 to 6 days before shipping.",
-            "• Delivery cost is paid by the buyer (self pickup in Ahmedabad is free).",
+            "• Delivery is free over ₹700, otherwise paid by the buyer (self pickup in Ahmedabad is free).",
             "• Customized items - no returns/refunds/exchanges."
         ],
         closing: "Please confirm availability and share payment details! ✨",
