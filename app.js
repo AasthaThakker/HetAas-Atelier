@@ -1101,7 +1101,7 @@ async function refreshDeliveryQuote() {
             Object.assign(data, { delivery: 0, free: true, total: itemsTotal });
         }
         deliveryQuote = data;
-        label.textContent = `Delivery (${data.courier}${data.days ? `, ~${data.days} days` : ''})`;
+        label.textContent = 'Delivery';
         value.textContent = data.free ? 'FREE 🎉' : `₹${data.delivery}`;
         total.textContent = `₹${data.total}`;
         setPayEnabled(true);
@@ -1201,7 +1201,7 @@ function sendOrderViaInstagram(mode, customer, quote) {
         message += `🎁 Free gift unlocked (${GIFT_ITEMS_NEEDED}+ pieces)\n`;
     }
     if (quote) {
-        message += `Delivery Charge: ${quote.free ? 'FREE (order over ₹' + FREE_SHIPPING_MIN + ')' : '₹' + quote.delivery} (${quote.courier}${quote.days ? `, ~${quote.days} days` : ''})\n`;
+        message += `Delivery Charge: ${quote.free ? 'FREE (order over ₹' + FREE_SHIPPING_MIN + ')' : '₹' + quote.delivery} (${quote.courier})\n`;
         message += `Total: ₹${subtotal + quote.delivery}\n`;
     }
     message += "--------------------------------------\n";
