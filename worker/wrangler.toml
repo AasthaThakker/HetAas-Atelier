@@ -7,6 +7,10 @@ compatibility_date = "2025-01-01"
 SITE_URL = "https://hetaas-atelier.aasthathakker.com"
 # Sites allowed to call the API: the live shop.
 ALLOWED_ORIGIN = "https://hetaas-atelier.aasthathakker.com,https://aasthathakker.github.io"
+# AI assistant (Resi). First model with free quota left is used (each model has its own daily free limit).
+GEMINI_MODEL = "gemini-3.1-flash-lite,gemini-2.5-flash"
+# Used when every Gemini model fails (needs the GROQ_API_KEY secret).
+GROQ_MODEL = "openai/gpt-oss-120b"
 # Delivery (Shiprocket): cheapest courier from the pickup PIN code, plus a fixed markup in rupees.
 PICKUP_PINCODE = "380052"
 SHIPPING_MARKUP_INR = "10"
