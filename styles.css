@@ -4025,3 +4025,91 @@ h1, h2, h3, h4 {
 .chat-product-price { color: var(--color-cta); }
 .chat-form { border-top: var(--edge); }
 .chat-add:disabled { background: #bbb; }
+
+
+/* ==========================================
+   CHECKOUT POPUPS: delivery details + order options (same look as the shop)
+   ========================================== */
+.checkout-popup {
+    border: var(--edge);
+    border-radius: 24px;
+    box-shadow: 8px 8px 0 var(--color-primary);
+}
+.checkout-popup h3 { color: var(--color-dark); font-weight: 700; }
+.checkout-popup-btn {
+    background: var(--color-cta);
+    border: var(--edge);
+    box-shadow: 4px 4px 0 var(--color-dark);
+}
+.checkout-popup-btn:hover {
+    background: var(--color-cta-hover);
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--color-dark);
+}
+.checkout-popup-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-dark); }
+.checkout-popup-btn:disabled { opacity: 0.55; transform: none; box-shadow: 2px 2px 0 var(--color-dark); cursor: not-allowed; }
+
+/* Delivery details */
+.delivery-popup { padding: 1.6rem 1.6rem 1.4rem; }
+.delivery-popup .checkout-popup-header { margin-bottom: 0.9rem; }
+.delivery-popup .checkout-popup-icon { font-size: 1.8rem; margin-bottom: 0.3rem; }
+.delivery-popup .checkout-popup-header p { margin-bottom: 0; }
+.delivery-form { gap: 12px; }
+.delivery-form label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px; color: var(--color-dark); }
+.delivery-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.delivery-form input {
+    border: var(--edge);
+    border-radius: 12px;
+    padding: 11px 13px;
+    color: var(--color-dark);
+    background: var(--color-white);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.delivery-form input::placeholder { color: var(--color-secondary); opacity: 0.8; }
+.delivery-form input:focus {
+    border-color: var(--color-dark);
+    box-shadow: 3px 3px 0 var(--color-primary);
+}
+.delivery-form input:user-invalid { border-color: #b3261e; }
+
+.delivery-summary {
+    background: var(--color-primary-light);
+    border: var(--edge);
+    border-radius: 16px;
+    padding: 12px 14px;
+    gap: 6px;
+    box-shadow: 3px 3px 0 var(--color-primary);
+    color: var(--color-dark);
+}
+.delivery-summary-row { font-weight: 600; }
+.delivery-summary-total {
+    border-top: 1.5px dashed rgba(74, 62, 61, 0.35);
+    padding-top: 8px;
+    margin-top: 4px;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.delivery-summary-total span:last-child {
+    background: var(--color-accent);
+    border: var(--edge);
+    border-radius: 999px;
+    padding: 0 0.8rem;
+}
+
+/* Back (small, secondary) next to Send (wide, primary) */
+.delivery-popup .checkout-popup-buttons { flex-direction: row; gap: 12px; margin-top: 4px; }
+.delivery-popup .checkout-popup-btn { flex: 1 1 auto; }
+.delivery-back-btn {
+    flex: 0 0 30% !important;
+    background: var(--color-white);
+    color: var(--color-dark);
+    box-shadow: 3px 3px 0 var(--color-primary);
+}
+.delivery-back-btn:hover { background: var(--color-accent); box-shadow: 4px 4px 0 var(--color-primary); }
+
+@media (max-width: 480px) {
+    .checkout-popup { box-shadow: 5px 5px 0 var(--color-primary); }
+    .delivery-row { grid-template-columns: 1fr; }
+    .delivery-popup .checkout-popup-buttons { flex-direction: column-reverse; }
+    .delivery-back-btn { flex: 1 1 auto !important; }
+}
