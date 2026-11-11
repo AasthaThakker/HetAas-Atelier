@@ -9,6 +9,8 @@ Storefront for **HetAas Atelier** — handmade resin treasures crafted in Ahmeda
 
 A fast, mobile-first static website — plain **HTML, CSS & JavaScript**, no build step or framework. Works offline as a PWA and is hosted free on GitHub Pages.
 
+> This repo is the real shop (with the Resi AI assistant and Instagram order requests). The PayPal checkout hackathon demo lives in its own repo: [hetaas-paypal-ai-hackathon](https://github.com/AasthaThakker/hetaas-paypal-ai-hackathon). The two are developed separately.
+
 ## Project structure
 
 | File | Purpose |
