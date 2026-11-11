@@ -68,14 +68,20 @@
         input.value = '';
         addUser(text);
         history.push({ role: 'user', content: text });
-        var typing = addBot('…');
+        var typing = addBot('Resi is thinking…');
         typing.classList.add('typing');
         setBusy(true);
+
+        // Never leave the visitor waiting: say so after a few seconds, give up after 20.
+        var slowTimer = setTimeout(function () { typing.textContent = 'Still thinking, one moment…'; }, 5000);
+        var ctrl = new AbortController();
+        var giveUp = setTimeout(function () { ctrl.abort(); }, 20000);
 
         fetch(api + '/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages: history.slice(-8) })
+            body: JSON.stringify({ messages: history.slice(-8) }),
+            signal: ctrl.signal
         })
             .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
             .then(function (res) {
@@ -87,9 +93,15 @@
             })
             .catch(function (err) {
                 typing.remove();
-                addBot(err.message + ' You can also tap "DM the Artist" to message us on Instagram.');
+                var msg = err && err.name === 'AbortError' ? 'Sorry, that took too long.' : err.message;
+                history.pop(); // let them retry the same question cleanly
+                addBot(msg + ' Please try again, or tap "DM the Artist" to message us on Instagram.');
             })
-            .then(function () { setBusy(false); });
+            .then(function () {
+                clearTimeout(slowTimer);
+                clearTimeout(giveUp);
+                setBusy(false);
+            });
     }
 
     function setBusy(busy) {
