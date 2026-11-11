@@ -334,6 +334,34 @@ function addToCartById(productId, qty = 1, customName = '') {
 
 window.addToCartById = addToCartById; // Expose globally
 
+// ---- Basket perks: free-shipping and free-gift progress bars ----
+const FREE_SHIPPING_MIN = 700;   // ₹ items total for free delivery (worker: FREE_SHIPPING_MIN_INR)
+const GIFT_ITEMS_NEEDED = 3;     // pieces in the basket to unlock the free gift
+
+function perkBar(icon, title, done, ratio, text) {
+    const pct = Math.max(0, Math.min(100, Math.round(ratio * 100)));
+    return `
+        <div class="perk${done ? ' perk-done' : ''}">
+            <div class="perk-row"><span>${icon} ${title}</span><span>${text}</span></div>
+            <div class="perk-track" role="progressbar" aria-label="${title}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}">
+                <div class="perk-fill" style="width:${pct}%"></div>
+            </div>
+        </div>`;
+}
+
+function renderCartPerks(subtotal, count) {
+    const el = document.getElementById('cartPerks');
+    if (!el) return;
+    if (count === 0) { el.innerHTML = ''; return; }
+    const shipLeft = FREE_SHIPPING_MIN - subtotal;
+    const giftLeft = GIFT_ITEMS_NEEDED - count;
+    el.innerHTML =
+        perkBar('🚚', shipLeft > 0 ? `₹${shipLeft} to free shipping` : 'Free shipping unlocked! 🎉',
+            shipLeft <= 0, subtotal / FREE_SHIPPING_MIN, `₹${Math.min(subtotal, FREE_SHIPPING_MIN)} of ₹${FREE_SHIPPING_MIN}`) +
+        perkBar('🎁', giftLeft > 0 ? `Add ${giftLeft} more ${giftLeft === 1 ? 'piece' : 'pieces'} for a free gift` : 'Free gift unlocked! 🎉',
+            giftLeft <= 0, count / GIFT_ITEMS_NEEDED, `${Math.min(count, GIFT_ITEMS_NEEDED)} of ${GIFT_ITEMS_NEEDED}`);
+}
+
 function updateCartUI() {
     const cartCountBadge = document.getElementById('cartBadgeCount');
     const floatCartBadge = document.getElementById('floatingCartBadgeCount');
@@ -356,6 +384,7 @@ function updateCartUI() {
             </div>
         `;
         cartTotalDisplay.textContent = '₹0';
+        renderCartPerks(0, 0);
         return;
     }
     
@@ -418,6 +447,7 @@ function updateCartUI() {
     });
     
     cartTotalDisplay.textContent = `₹${subtotal}`;
+    renderCartPerks(subtotal, totalItems);
 }
 
 function changeCartQty(index, change) {
@@ -942,7 +972,7 @@ function openDeliveryDetails(target = 'paypal') {
     if (cart.length === 0) return;
     deliveryTarget = target;
     document.getElementById('deliveryPayBtn').textContent =
-        target === 'instagram' ? 'Send Order on Instagram 💬' : 'Pay with PayPal 🌸';
+        target === 'instagram' ? 'Send Order Request 💬' : 'Pay with PayPal 🌸';
     const form = document.getElementById('deliveryForm');
     // Prefill from the last order on this device.
     try {
@@ -1090,9 +1120,14 @@ async function refreshDeliveryQuote() {
         const data = await res.json();
         if (seq !== quoteSeq) return; // a newer PIN code was typed meanwhile
         if (!res.ok) throw new Error(data.error || 'Could not get a delivery charge');
+        // Instagram orders are priced by hand, so the free-shipping rule also applies here
+        // even if the API worker has not been redeployed yet. (PayPal is always priced by the worker.)
+        if (deliveryTarget === 'instagram' && itemsTotal >= FREE_SHIPPING_MIN && !data.free) {
+            Object.assign(data, { delivery: 0, free: true, total: itemsTotal });
+        }
         deliveryQuote = data;
         label.textContent = `Delivery (${data.courier}${data.days ? `, ~${data.days} days` : ''})`;
-        value.textContent = `₹${data.delivery}`;
+        value.textContent = data.free ? 'FREE 🎉' : `₹${data.delivery}`;
         total.textContent = `₹${data.total}`;
         setPayEnabled(true);
     } catch (err) {
@@ -1214,8 +1249,11 @@ function sendOrderViaInstagram(mode, customer, quote) {
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
     message += `Basket Subtotal: ₹${subtotal}\n`;
+    if (cart.reduce((n, i) => n + i.quantity, 0) >= GIFT_ITEMS_NEEDED) {
+        message += `🎁 Free gift unlocked (${GIFT_ITEMS_NEEDED}+ pieces)\n`;
+    }
     if (quote) {
-        message += `Delivery Charge: ₹${quote.delivery} (${quote.courier}${quote.days ? `, ~${quote.days} days` : ''})\n`;
+        message += `Delivery Charge: ${quote.free ? 'FREE (order over ₹' + FREE_SHIPPING_MIN + ')' : '₹' + quote.delivery} (${quote.courier}${quote.days ? `, ~${quote.days} days` : ''})\n`;
         message += `Total: ₹${subtotal + quote.delivery}\n`;
     }
     message += "--------------------------------------\n";
@@ -1459,7 +1497,7 @@ function initUIHandlers() {
     
     document.getElementById('checkoutBtn').onclick = handleCheckout;
     if (window.HETAAS_API) {
-        document.getElementById('checkoutBtn').textContent = 'Continue to Checkout 🌸';
+        document.getElementById('checkoutBtn').textContent = 'Place Order Request 🌸';
         initOrderOptions();
         initDeliveryForm();
         if (window.HETAAS_MODE === 'demo') showDemoBanner();
